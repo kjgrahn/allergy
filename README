@@ -23,7 +23,7 @@ Install it by hand or do
 As far as I know, allergy doesn't depend on any particularly new
 Perl feature. What it *does* depend on is a set of image
 manipulation tools collectively known as "netpbm". Since these
-don't cover the JPEG format, you also need 'djpeg' and 'djpeg', which
+don't cover the JPEG format[0], you also need 'djpeg' and 'djpeg', which
 comes bundled in one way or another with 'libjpeg'.
 
 
@@ -31,11 +31,13 @@ LICENSE
 
 I'm too bored by this subject right now to give it much thought, so let it
 be known: 'allergy' is available under a BSD-style license, without the
-no-advertisingg clause.
+non-advertising clause.
 
 
 		-- Jörgen Grahn <jgrahn@algonet.se>
 
+[0] Or I thought they didn't. ppmtojpeg and jpegtopnm seem to be there.
 
-$Id: README,v 1.1 2001-07-28 12:10:08 grahn Exp $
+
+$Id: README,v 1.2 2001-07-29 12:14:11 grahn Exp $
 $Name:  $
