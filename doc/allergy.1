@@ -1,4 +1,4 @@
-.\" $Id: allergy.1,v 1.11 2002-07-23 19:38:48 grahn Exp $
+.\" $Id: allergy.1,v 1.12 2002-07-23 20:05:27 grahn Exp $
 .\" $Name:  $
 .\" 
 .\"
@@ -157,9 +157,7 @@ The filename expansion is implemented by the
 .BR perl (1)
 .B glob
 function, which expands patterns in the manner of
-.BR sh (1)
-(or is it
-.BR csh (1)?)
+.BR csh (1)
 \(em things like
 .BR * ,
 .BR ? ,
@@ -167,6 +165,7 @@ function, which expands patterns in the manner of
 and
 .B {}
 are supported.
+See your perl documentation for details.
 
 Images are laid out in the order of appearance in the input file.
 Patterns expand to a sorted (usually) list of all matching file names.
