@@ -4,6 +4,12 @@ Major changes (with focus on user-visible changes) to allergy, per version.
 
 _________________________________________
 
+	- Now defaults to silent mode, rather than printing the name
+	  of each image; that now requires the -v command-line option.
+	- New option -V for printing a '.' for each image.
+        - Input from multiple files, or from standard input,
+	  works again as advertised.
+
 allergy 2.0 (2004-06-16):
 	- Rewritten in Python using the Python Imaging Library.
 	- Runs much (several times?) faster than previous versions.
@@ -39,5 +45,5 @@ allergy 1.0 (2001-07-28):
 	- First public version.
 
 _________________________________________
-$Id: NEWS,v 1.6 2004-06-15 22:43:20 grahn Exp $
+$Id: NEWS,v 1.7 2004-06-19 20:44:17 grahn Exp $
 $Name:  $

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: allergy,v 1.21 2004-06-15 22:22:32 grahn Exp $
+# $Id: allergy,v 1.22 2004-06-19 20:44:17 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004 Jörgen Grahn <jgrahn@algonet.se>
@@ -17,9 +17,32 @@ import os
 import sys
 
 class Any:
-    # the wildcard object ...
+    "The wildcard object."
     def __cmp__(self, other): return 0
 ANY = Any()
+
+class Feedback:
+    def __init__(self, verbosity=2):
+        if verbosity==0:
+            self.__call__ = self.nop
+        elif verbosity==1:
+            self.__call__ = self.dot
+        else:
+            self.__call__ = self.string
+        self.final_nl = 0
+    def close(self):
+        if self.final_nl:
+            sys.stderr.write('\n')
+            sys.stderr.flush()
+    def string(self, s):
+        print >>sys.stderr, s
+        sys.stderr.flush()
+    def dot(self, s):
+        sys.stderr.write('.')
+        sys.stderr.flush()
+        self.final_nl = 1
+    def nop(self, s):
+        pass
 
 def make(a, b):
     """Return true iff file 'a' needs to be regenerated
@@ -77,9 +100,9 @@ class Gallery:
     qualityre = re.compile(r'\\quality{(\d+)}')
     commentre = re.compile(r'\s*(#.+)?$')
     annotre = re.compile(r'(.+?)\s*:\s*(.+)')
-    def __init__(self, thumbnailing=1):
+    def __init__(self, feedback, thumbnailing=1):
         self.thumbnailing = thumbnailing
-        self.verbose = 1
+        self.feedback = feedback
         self.columns = 4
         self.formatter = gridentry
         self.cls = ''
@@ -144,12 +167,10 @@ class Gallery:
             if make(tf, f) and self.thumbnailing:
                 i = Image.open(f)
                 i.thumbnail(self.bbox)
-                if self.verbose:
-                    print >>sys.stderr, '%s, thumbnailing' % f
+                self.feedback('%s, thumbnailing' % f)
                 i.save(thumbname(f), 'JPEG', quality=self.quality)
             else:
-                if self.verbose:
-                    print >>sys.stderr, f
+                self.feedback(f)
                 i = Image.open(tf)
             if self.columns and n % self.columns == 0:
                 html.append('<tr>')
@@ -159,30 +180,32 @@ class Gallery:
             html.append('</table>')
         else:
             html.append('</div>')
+        self.feedback.close()
         return '\n'.join(html)
 
 
 if __name__ == "__main__":
     import getopt
+    import fileinput
 
-    usage = 'usage: allergy [-k] file'
+    usage = 'usage: allergy [-k] [-v | -V] file'
 
     try:
-        opts, files = getopt.getopt(sys.argv[1:], '-k')
+        opts, files = getopt.getopt(sys.argv[1:], 'kvV')
     except getopt.GetoptError, s:
         print >>sys.stderr, s
         print >>sys.stderr, usage
         sys.exit(1)
-    if not len(files)==1:
-        print >>sys.stderr, usage
-        sys.exit(1)
-    thumbnailing = len(opts)==0
-    file = files[0]
+    thumbnailing = 1
+    verbosity = 0
+    for option, value in opts:
+        if option == '-k': thumbnailing = 0
+        if option == '-v': verbosity = 2
+        if option == '-V': verbosity = 1
 
     ingallery = 0
 
-    f = open(file, 'rb')
-    for line in f.xreadlines():
+    for line in fileinput.input(files):
         if ingallery:
             if line.count(r'\end{gallery}'):
                 print gallery.do()
@@ -192,6 +215,6 @@ if __name__ == "__main__":
         else:
             if line.count(r'\begin{gallery}'):
                 ingallery = 1
-                gallery = Gallery(thumbnailing)
+                gallery = Gallery(Feedback(verbosity), thumbnailing)
             else:
                 print line[:-1]

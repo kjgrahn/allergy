@@ -1,4 +1,4 @@
-.\" $Id: allergy.1,v 1.17 2004-06-15 22:43:08 grahn Exp $
+.\" $Id: allergy.1,v 1.18 2004-06-19 20:44:17 grahn Exp $
 .\" $Name:  $
 .\" 
 .\"
@@ -6,7 +6,7 @@
 .SH "NAME"
 allergy \- thumbnail and HTML picture gallery creator
 .SH "SYNOPSIS"
-.B allergy [\-k]
+.B allergy [\-k] [\-v | \-V]
 .I file
 .B ...
 .
@@ -27,6 +27,11 @@ This is useful if you
 .I know
 you have the exact thumbnails you want, but something keeps messing up
 the timestamps.
+.IP \-v
+List the image names, and whether they are being thumbnailed or not,
+as they are processed.
+.IP \-V
+Print a dot as each image is being processed, cpio-style.
 .
 .SH "GENERAL INPUT SYNTAX"
 Everything in the input outside the gallery descriptions
