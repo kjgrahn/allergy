@@ -1,0 +1,41 @@
+ALLERGY
+
+'Allergy' (many thanks to http://www.wordsmith.org/anagram/ for the name)
+is yet another utility to generate a 'photo album' or 'image gallery' for
+presenting an overview of lots of images in a web browser.
+
+Generating and updating thumbnails and the supporting HTML by hand is
+time consuming and boring.
+
+Yes, I did do a search on http://freshmeat.net first. However, most
+gallery programs were PHP applications (apparently dynamic pages have
+a higher macho factor than static ones) or were too complex.
+I just wanted the job done, so I did it myself.
+
+
+INSTALLATION AND REQUIREMENTS
+
+Allergy is just a medium-sized Perl script and a manpage.
+Install it by hand or do
+
+# make install
+
+As far as I know, allergy doesn't depend on any particularly new
+Perl feature. What it *does* depend on is a set of image
+manipulation tools collectively known as "netpbm". Since these
+don't cover the JPEG format, you also need 'djpeg' and 'djpeg', which
+comes bundled in one way or another with 'libjpeg'.
+
+
+LICENSE
+
+I'm too bored by this subject right now to give it much thought, so let it
+be known: 'allergy' is available under a BSD-style license, without the
+no-advertisingg clause.
+
+
+		-- Jörgen Grahn <jgrahn@algonet.se>
+
+
+$Id: README,v 1.1 2001-07-28 12:10:08 grahn Exp $
+$Name:  $
