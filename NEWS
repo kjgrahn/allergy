@@ -4,6 +4,10 @@ Major changes (with focus on user-visible changes) to allergy, per version.
 
 _________________________________________
 
+allergy 1.4 (2001-12-06):
+	- Added an option (-k) to keep existing thumbnails from
+	  being overwritten, even if they appear to be obsolete.
+
 allergy 1.3 (2001-10-04):
 	- Added the 'list' style as a table-free alternative to
 	  the 'grid' style; more useful for pictures with caption
@@ -27,5 +31,5 @@ allergy 1.0 (2001-07-28):
 	- First public version.
 
 _________________________________________
-$Id: NEWS,v 1.4 2001-10-04 15:54:35 grahn Exp $
+$Id: NEWS,v 1.5 2001-12-06 19:59:52 grahn Exp $
 $Name:  $
