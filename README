@@ -20,6 +20,10 @@ Install it by hand or do
 
 # make install
 
+The generated HTML text will render well only in the presence of a
+suitable style sheet; `examples/darkroom.css' is included, but you
+will have to install or copy it manually.
+
 As far as I know, allergy doesn't depend on any particularly new
 Perl feature. What it *does* depend on is a set of image
 manipulation tools collectively known as "netpbm". Since these
@@ -42,5 +46,6 @@ non-advertising clause.
     promising, but I found out about it too late.
     'cthumb' and 'webmagick' seem to be alternatives too.
 
-$Id: README,v 1.5 2001-08-29 21:15:26 grahn Exp $
+
+$Id: README,v 1.6 2001-10-04 15:44:10 grahn Exp $
 $Name:  $
