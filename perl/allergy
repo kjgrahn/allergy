@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: allergy,v 1.15 2004-05-31 15:12:24 grahn Exp $
+# $Id: allergy,v 1.16 2004-05-31 17:29:03 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004 Jörgen Grahn <jgrahn@algonet.se>
@@ -13,28 +13,26 @@ import Image
 import glob
 import re
 import os.path
+import os
 import sys
-
-def dimensions(file):
-    """Return (width, height) of the image in 'file'
-    -- or throw IOError."""
-    return Image.open(file).size
 
 def make(a, b):
     """Return true iff file 'a' needs to be regenerated
-    from 'b', i.e. if it doesn't exist or is older than 'b'."""
-    return 1
-
-def thumbnail(img, bbox=(140,100)):
-    """Return a copy of 'img', scaled down to fit
-    inside 'bbox'."""
-    pass
+    from 'b', i.e. if it doesn't exist or is older than 'b'.
+    May raise os.error, aka OSError."""
+    try:
+        amtime = os.path.getmtime(a)
+    except os.error:
+        return 1
+    bmtime = os.path.getmtime(b)
+    return bmtime <= amtime
 
 def thumbname(path):
     """Return the thumbnail file name corresponding
     to an image name, i.e. prepend an underscore and
-    append a .jpg suffix."""
+    append a .jpg suffix (killing any existing suffix)."""
     head, tail = os.path.split(path)
+    tail, ext = os.path.splitext(tail)
     tail = '_%s.jpg' % tail
     return os.path.join(head, tail)
 
@@ -57,6 +55,7 @@ class Gallery:
         self.bbox = (140, 100)
         self.images = []
     def add(self, line):
+        "Parse a source line of the gallery definition"
         m = self.commentre.match(line)
         if m: return
         m = self.gridre.match(line)
@@ -90,21 +89,38 @@ class Gallery:
             self.images[-1][1].append(line)
             return
     def do(self):
+        """Execute the gallery, performing thumbnailing as
+        appropriate. Returns a string containing the HTML for this
+        gallery."""
         images = []
+        html = []
         for pat, caption in self.images:
             for image in glob.glob(pat):
                 if image[0] != '_' and not image in images:
                     images.append(image)
+        if self.cls:
+            html.append('<table class="%s">' % self.cls)
+        else:
+            html.append('<table>')
+        n = 0
         for f in images:
             tf = thumbname(f)
-            if make(tf, f):
+            if self.thumbnailing or make(tf, f):
                 i = Image.open(f)
                 i.thumbnail(self.bbox)
                 print >>sys.stderr, '%s -> %s bbox %s' % (f, i.size, self.bbox)
                 i.save(thumbname(f), 'JPEG', quality=self.quality)
             else:
                 i = Image.open(tf)
-        return '\n'.join(images)
+            if n % self.columns == 0:
+                html.append('<tr>')
+            html.append('<td><a href="%s">' % f)
+            html.append('  <img src="%s"' % tf)
+            html.append('  alt="[%s]"' % f)
+            html.append('  width="%d" height="%d"></a>' % i.size)
+            n += 1
+        html.append('</table>')
+        return '\n'.join(html)
 
 
 if __name__ == "__main__":
@@ -137,6 +153,6 @@ if __name__ == "__main__":
         else:
             if line.count(r'\begin{gallery}'):
                 ingallery = 1
-                gallery = Gallery()
+                gallery = Gallery(thumbnailing)
             else:
                 print line[:-1]
