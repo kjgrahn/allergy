@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w  # -*- perl -*-
 #
-# $Id: allergy,v 1.12 2001-10-03 08:36:06 grahn Exp $
+# $Id: allergy,v 1.13 2001-10-04 15:45:52 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001 Jörgen Grahn <jgrahn@algonet.se>
@@ -34,8 +34,12 @@ sub gallery {
     while(<>) {
 	chomp;
 
-	if(/^\s/) {
-	    $multiline .= $_;
+	# hack to support continuation lines;
+	# from the switch and down, $_ is the most recent multi-line,
+	# i.e. the most recent group of lines where the first starts
+	# with a non-blank and the rest do not.
+	if(/^\s+(.+)/) {
+	    $multiline .= "\n$1";
 	    next;
 	}
 	else {
@@ -76,10 +80,10 @@ sub explode {
     my ($pat, $templ);
 
 
-    if($s =~ /\s*(.+?)\s*:\s*(.+)/) {
+    if($s =~ /\s*(.+?)\s*:\s*(.+)/s) {
 	($pat, $templ) = ($1, $2);
     }
-    elsif($s =~ /\s*(\S+)\s*/) {
+    elsif($s =~ /\s*(\S+)\s*/s) {
 	($pat, $templ) = ($1, "");
     }
     else {
@@ -129,7 +133,7 @@ sub table {
     my $i = 0;
 
     foreach (@files) {
-	my ($name, $text) = /(.+?)\s:\s(.*)/;
+	my ($name, $text) = /(.+?)\s:\s(.*)/s;
 
 	print "<tr>\n" unless $i % $columns;
 	print "<td>";
@@ -164,7 +168,7 @@ sub list {
     }
 
     foreach (@files) {
-	my ($name, $text) = /(.+?)\s:\s(.*)/;
+	my ($name, $text) = /(.+?)\s:\s(.*)/s;
 
 	print "<p>\n";
 
