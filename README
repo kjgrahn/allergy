@@ -15,20 +15,18 @@ I just wanted the job done, so I did it myself.
 
 INSTALLATION AND REQUIREMENTS
 
-Allergy is just a medium-sized Perl script and a manpage.
+Allergy is just a Python script and a manpage.
 Install it by hand or do
 
 # make install
 
+Allergy requires Python and the Python Imaging Library (PIL).
+I believe it is portable to any platform which can support Python and
+PIL, but I only have access to Linux syetems myself.
+
 The generated HTML text will render well only in the presence of a
 suitable style sheet; `examples/darkroom.css' is included, but you
 will have to install or copy (and customize!) it manually.
-
-As far as I know, allergy doesn't depend on any particularly new
-Perl feature. What it *does* depend on is a set of image
-manipulation tools collectively known as "netpbm". Since these
-don't cover the JPEG format[0], you also need 'djpeg' and 'djpeg', which
-come bundled in one way or another with 'libjpeg'.
 
 
 LICENSE
@@ -40,12 +38,10 @@ non-advertising clause.
 
 		-- Jörgen Grahn <jgrahn@algonet.se>
 
-[0] Or I thought they didn't. ppmtojpeg and jpegtopnm seem to be there
-    in current versions.
 [1] Photoaddict <URL:http://photoaddict.sourceforge.net/> looks kind of
     promising, but I found out about it too late.
     'cthumb' and 'webmagick' seem to be alternatives too.
 
 
-$Id: README,v 1.7 2001-10-04 15:55:44 grahn Exp $
+$Id: README,v 1.8 2004-06-15 22:43:21 grahn Exp $
 $Name:  $

@@ -4,6 +4,14 @@ Major changes (with focus on user-visible changes) to allergy, per version.
 
 _________________________________________
 
+allergy 2.0 (2004-06-16):
+	- Rewritten in Python using the Python Imaging Library.
+	- Runs much (several times?) faster than previous versions.
+	  This was the primary reason for the rewrite.
+	- Supports placing caption text in the "title" attribute.
+	- A handful of incompatibilities against 1.4; see the man
+	  page for details.
+
 allergy 1.4 (2001-12-06):
 	- Added an option (-k) to keep existing thumbnails from
 	  being overwritten, even if they appear to be obsolete.
@@ -31,5 +39,5 @@ allergy 1.0 (2001-07-28):
 	- First public version.
 
 _________________________________________
-$Id: NEWS,v 1.5 2001-12-06 19:59:52 grahn Exp $
+$Id: NEWS,v 1.6 2004-06-15 22:43:20 grahn Exp $
 $Name:  $
