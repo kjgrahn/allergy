@@ -1,4 +1,4 @@
-.\" $Id: allergy.1,v 1.9 2001-10-04 15:48:28 grahn Exp $
+.\" $Id: allergy.1,v 1.10 2001-12-06 19:59:36 grahn Exp $
 .\" $Name:  $
 .\" 
 .\"
@@ -6,7 +6,7 @@
 .SH "NAME"
 allergy \- thumbnail and HTML picture gallery creator
 .SH "SYNOPSIS"
-.B allergy
+.B allergy [-k]
 .I file
 .B ...
 .SH "DESCRIPTION"
@@ -20,6 +20,14 @@ and writes the result to standard output.
 It generates the thumbnail images as well, with the help of external
 utilities. To speed up the process, thumbnails that exist and are
 newer than the source image will not be regenerated.
+.SH "OPTIONS"
+.IP -k
+(keep) Never regenerate existing thumbnails, even if they are
+newer than the source image.
+This is useful if you
+.I know
+you have the exact thumbnails you want, but something keeps messing up
+the timestamps.
 .SH "GENERAL INPUT SYNTAX"
 Everything in the input outside the gallery descriptions
 is output as-is. Presumably, it consists of HTML code.

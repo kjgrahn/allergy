@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w  # -*- perl -*-
 #
-# $Id: allergy,v 1.13 2001-10-04 15:45:52 grahn Exp $
+# $Id: allergy,v 1.14 2001-12-06 19:59:36 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001 Jörgen Grahn <jgrahn@algonet.se>
@@ -10,6 +10,11 @@
 # a number of photos as an 'album' or 'photo gallery'.
 # 
 use strict;
+use vars qw($opt_k);
+use Getopt::Std;
+
+getopts("k") or die "usage: allergy [-k] file ...\n";
+$opt_k = 0 unless defined($opt_k);
 
 while(<>) {
     if(/^\s*\\begin{gallery}\s*$/) {
@@ -238,7 +243,7 @@ sub thumb {
 	print STDERR "$file does not exist, skipping\n";
 	return (0,0);
     }
-    elsif(-f $tfile and -M $tfile < -M $file) {
+    elsif(-f $tfile and (-M $tfile < -M $file or $opt_k)) {
 	print STDERR "$file\n";
     }
     else {
