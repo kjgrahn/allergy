@@ -1,0 +1,82 @@
+#!/usr/bin/perl -w  # -*- perl -*-
+#
+# $Id: allergy,v 1.1 2001-07-27 19:17:34 grahn Exp $
+#
+# Copyright (c) 2001 Jörgen Grahn <jgrahn@algonet.se>
+# All rights reserved.
+#
+# allergy - build thumbnails and html code to present
+# a number of photos as an 'album' or 'photo gallery'.
+# 
+use strict;
+
+while(<>) {
+    if(/^\s*\\begin{gallery}\s*$/) {
+	gallery();
+    }
+    else {
+	print;
+    }
+}
+
+sub gallery {
+    my ($columns, $class, $dx, $dy, $texpr);
+    my @files = ();
+
+    while(<>) {
+	chomp;
+	last if /^\s*\\end{gallery}\s*$/;
+
+      SWITCH: {
+	  /^\s*$/ and last SWITCH;
+	  /\\grid{(\d+).+}/ and $columns = $1, last SWITCH;
+	  /\\class{(.+?)}/ and $class = $1, last SWITCH;
+	  /\\bounded{(\d+),(\d+)}/ and ($dx,$dy) = ($1,$2), last SWITCH;
+	  /\\thumb{(.+)}/ and $texpr = $1, last SWITCH;
+
+	  @files = (@files, explode($_));
+	}
+    }
+
+    @files = normalize(@files);
+
+    map {print "$_\n"} @files;    
+}
+
+sub explode {
+    my $s = shift;
+    my ($pat, $templ);
+
+    if($s =~ /\s*(.+?)\s*:\s*(.+)/) {
+	($pat, $templ) = ($1, $2);
+    }
+    elsif($s =~ /\s*(.+?)\s*/) {
+	($pat, $templ) = ($1, "");
+    }
+    else {
+	die "malformed line\n";
+    }
+
+    map {"$_ : $templ"} glob $pat;
+}
+
+sub normalize {
+    my @names = @_;
+    my ($i, $j);
+
+    # names beginning with underscore are assumed to
+    # be thumbnails, skip them
+    grep !/^_/, @names;
+
+    # remove duplicates, keeping the first
+    for($i=0; $i<@names; $i++) {
+	for($j=$i+1; $j<@names; $j++) {
+	    my ($in) = $names[$i] =~ /(.+?)\s:/;
+	    my ($jn) = $names[$j] =~ /(.+?)\s:/;
+
+	    $names[$j] = "dead" if $in eq $jn;
+	}
+    }
+
+    grep !/^dead$/, @names;
+}
