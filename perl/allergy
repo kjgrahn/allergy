@@ -1,6 +1,7 @@
 #!/usr/bin/env python
+# -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy,v 1.23 2004-06-19 23:41:07 grahn Exp $
+# $Id: allergy,v 1.24 2004-06-23 19:37:29 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004 Jörgen Grahn <jgrahn@algonet.se>
