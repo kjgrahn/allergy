@@ -3,9 +3,12 @@
 Major changes (with focus on user-visible changes) to allergy, per version.
 
 _________________________________________
+allergy 1.1 (2001-07-29):
+	- Lots of bug fixes.
+
 allergy 1.0 (2001-07-28):
 	- First public version.
 
 _________________________________________
-$Id: NEWS,v 1.1 2001-07-28 12:10:08 grahn Exp $
+$Id: NEWS,v 1.2 2001-07-29 12:14:19 grahn Exp $
 $Name:  $
