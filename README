@@ -22,7 +22,7 @@ Install it by hand or do
 
 The generated HTML text will render well only in the presence of a
 suitable style sheet; `examples/darkroom.css' is included, but you
-will have to install or copy it manually.
+will have to install or copy (and customize!) it manually.
 
 As far as I know, allergy doesn't depend on any particularly new
 Perl feature. What it *does* depend on is a set of image
@@ -47,5 +47,5 @@ non-advertising clause.
     'cthumb' and 'webmagick' seem to be alternatives too.
 
 
-$Id: README,v 1.6 2001-10-04 15:44:10 grahn Exp $
+$Id: README,v 1.7 2001-10-04 15:55:44 grahn Exp $
 $Name:  $
