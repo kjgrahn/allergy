@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: allergy,v 1.22 2004-06-19 20:44:17 grahn Exp $
+# $Id: allergy,v 1.23 2004-06-19 23:41:07 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004 Jörgen Grahn <jgrahn@algonet.se>
@@ -167,6 +167,8 @@ class Gallery:
             if make(tf, f) and self.thumbnailing:
                 i = Image.open(f)
                 i.thumbnail(self.bbox)
+                if i.mode=='P':
+                    i = i.convert('RGB')
                 self.feedback('%s, thumbnailing' % f)
                 i.save(thumbname(f), 'JPEG', quality=self.quality)
             else:
