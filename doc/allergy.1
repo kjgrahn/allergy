@@ -1,4 +1,4 @@
-.\" $Id: allergy.1,v 1.1 2001-07-28 10:45:31 grahn Exp $
+.\" $Id: allergy.1,v 1.2 2001-07-28 11:36:37 grahn Exp $
 .\" 
 .\"
 .TH allergy 1 "JUL 2001" "Allergy" "User Manuals"
@@ -15,6 +15,10 @@ concatenates them,
 processes embedded gallery descriptions into HTML code
 for displaying thumbnail images
 and writes the result to standard output.
+
+It generates the thumbnail images as well, with the help of external
+utilities. To speed up the process, thumbnails that exist and are
+newer that the source image will not be regenerated.
 .SH "GENERAL INPUT SYNTAX"
 Everything in the input outside the gallery descriptions
 is output as-is. Presumably, it consists of HTML code.
@@ -32,7 +36,7 @@ delimited as follows:
 The gallery description consists of optional definitions lines
 which determine general characteristics of the gallery to be rendered,
 followed by a list of file names and descriptions.
-.SH "GALLERY DEFINITION SYNTAX"
+.SH "GALLERY DEFINITIONS"
 The following definitions are recognized:
 .IP
 .ft CW
@@ -80,7 +84,7 @@ Controls the generation of thumbnail filenames from the corresponding
 full-size image filename.
 .I substitution
 is a
-.IR perl (1)
+.BR perl (1)
 expression which is evaluated with
 .B $_
 set to the file name. The value of the expression is used as the thumbnail name.
@@ -88,8 +92,50 @@ set to the file name. The value of the expression is used as the thumbnail name.
 Default: '_' prefix and 'jpg' suffix:
 .ft CW
 s/(.+)\\..+/_$1.jpg/
+.SH "IMAGE DEFINITIONS"
+Images to be included in the gallery are defined by lines on the forms
+.IP 
+.ft CW
+filename-or-pattern : caption-text
+.br
+filename-or-pattern
+.LP
+The images can be specified one at a time, using filename expansion, or
+using a combination of the two.
+The filename expansion is implemented by the
+.BR perl (1)
+.B glob
+function, which expands patterns in the manner of
+.BR sh (1)
+(or is it
+.BR csh (1)?)
+
+Images are laid out in the order of appearance in the input file.
+Patterns expand to a sorted list of all matching file names.
+For each gallery definition, duplicate image definitions are removed
+by removing all but the first one in the list. This makes it possible
+to move important images to near the top and let the others appear in
+order below. For example:
+.IP 
+.ft CW
+foo.png
+.br
+bar.png
+.br
+*.png
+.LP
+(I could document the caption text here, but since it isn't rendered,
+what would be the point?)
 .SH "GENERATED HTML CODE"
-TBD.
+The general idea is to generate strictly conformant code, and let
+the user take care of specific rendering details using style sheets.
+
+The focus is on navigation and presentation of the images themselves,
+on performance and browser independence \(em not on bells and whistles.
+
+Images are given an
+.B ALT
+text, which simply is the filename, bracketed.
 .SH "BUGS"
 All names of thumbnail images are expected to being
 with an underscore ('_'). Thumbnails are never generated
@@ -98,7 +144,7 @@ for these files, even if the input explicitly requests it.
 The caption text is not rendered.
 
 Are the generated tables browser-friendly, or do the delay rendering
-unneccesarily over slow connections?
+unnecessarily over slow connections?
 
 Since
 .B allergy
