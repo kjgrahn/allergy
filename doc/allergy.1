@@ -1,4 +1,4 @@
-.\" $Id: allergy.1,v 1.10 2001-12-06 19:59:36 grahn Exp $
+.\" $Id: allergy.1,v 1.11 2002-07-23 19:38:48 grahn Exp $
 .\" $Name:  $
 .\" 
 .\"
@@ -132,7 +132,7 @@ s/(.+)\\..+/_$1.jpg/
 .IP
 .ft CW
 \\quality{
-.IR no }
+.IR n }
 .LP
 Quality of the generated JPEG thumbnails, from 0 (worst) to 100 (best).
 .br
@@ -225,7 +225,7 @@ Images are given an
 text, which simply is the filename, bracketed.
 .SH "BUGS"
 .IP \(bu
-All names of thumbnail images are expected to being
+All names of thumbnail images are expected to begin
 with an underscore ('_'). Thumbnails are never generated
 for these files, even if the input explicitly requests it.
 .IP \(bu
