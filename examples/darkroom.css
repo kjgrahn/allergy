@@ -1,0 +1,18 @@
+BODY {
+	background-color: rgb(0,0,128);
+	color: rgb(200,200,128);
+	font-family: sans-serif;
+}
+TABLE.allergy {
+	background-color: rgb(0,0,128);
+	color: rgb(200,200,128);
+	text-align: center;
+}
+TABLE.allergy TD {
+	background-color: rgb(0,0,64);
+	text-align: center;
+}
+TABLE.allergy IMG {
+        margin: 1em;
+	border-style: none
+}
