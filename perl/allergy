@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w  # -*- perl -*-
 #
-# $Id: allergy,v 1.8 2001-08-05 20:04:08 grahn Exp $
+# $Id: allergy,v 1.9 2001-08-29 21:13:35 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001 Jörgen Grahn <jgrahn@algonet.se>
@@ -111,10 +111,17 @@ sub table {
     my $i = 0;
 
     foreach (@files) {
+	my ($name, $text) = /(.+?)\s:\s(.*)/;
+
 	print "<tr>\n" unless $i % $columns;
 	print "<td>";
 
-	image($quality, $dx, $dy, $texpr, $_);
+	image($quality, $dx, $dy, $texpr, $name);
+
+	my $dimension = "";
+	my $size = "";
+	print eval("\"<br>$text\\n\"")
+	    unless $text eq "";
 
 	$i++;
     }
@@ -127,7 +134,7 @@ sub image {
     my $dx = shift;
     my $dy = shift;
     my $texpr = shift;
-    my ($file, $text) = shift =~ /(.+?)\s:\s(.*)/;
+    my $file = shift;
     $_ = $file;
 
     eval("$texpr");

@@ -1,8 +1,8 @@
-.\" $Id: allergy.1,v 1.4 2001-08-11 20:14:14 grahn Exp $
+.\" $Id: allergy.1,v 1.5 2001-08-29 21:13:35 grahn Exp $
 .\" $Name:  $
 .\" 
 .\"
-.TH allergy 1 "JUL 2001" "Allergy" "User Manuals"
+.TH allergy 1 "AUG 2001" "Allergy" "User Manuals"
 .SH "NAME"
 allergy \- thumbnail and HTML picture gallery creator
 .SH "SYNOPSIS"
@@ -37,6 +37,8 @@ delimited as follows:
 The gallery description consists of optional definitions lines
 which determine general characteristics of the gallery to be rendered,
 followed by a list of file names and descriptions.
+Empty lines and lines starting with a hash are treated as comments
+and ignored.
 .SH "GALLERY DEFINITIONS"
 The following definitions are recognized:
 .IP
@@ -93,6 +95,14 @@ set to the file name. The value of the expression is used as the thumbnail name.
 Default: '_' prefix and 'jpg' suffix:
 .ft CW
 s/(.+)\\..+/_$1.jpg/
+.IP
+.ft CW
+\\quality{
+.IR no }
+.LP
+Quality of the generated JPEG thumbnails, from 0 (worst) to 100 (best).
+.br
+Default: 30.
 .SH "IMAGE DEFINITIONS"
 Images to be included in the gallery are defined by lines on the forms
 .IP 
@@ -133,10 +143,37 @@ bar.png
 *.png
 .LP
 Files that cannot be thumbnailed will appear as plain links in the
-output.
+output. Files that
+.I can
+be inlined are image files with extensions recognized by
+.BR allergy ,
+namely
+"jpg",
+"jpeg",
+"png",
+"gif",
+"iff" and
+"ilbm".
 
-(I could document the caption text here, but since it isn't rendered,
-what would be the point?)
+The caption text may be any piece of valid HTML.
+It will be laid out within the same table cell as the image,
+with a
+.B <br>
+inbetween.
+
+The text is interpolated before use, and
+.BR perl (1)
+variables within it will be substituted with their values.
+Currently, only
+.IP 
+.ft CW
+$name
+.LP
+is useful;
+it will be interpolated as the file name of the actual image.
+
+Caption texts aren't all that useful right now; they tend to render
+as larger than the actual thumbnail and mess up the table.
 .SH "GENERATED HTML CODE"
 The general idea is to generate strictly conforming code, and let
 the user take care of specific rendering details using style sheets.
@@ -153,9 +190,7 @@ All names of thumbnail images are expected to being
 with an underscore ('_'). Thumbnails are never generated
 for these files, even if the input explicitly requests it.
 .IP \(bu
-The caption text is not rendered.
-.IP \(bu
-Are the generated tables browser-friendly, or do the delay rendering
+Are the generated tables browser-friendly, or do they delay rendering
 unnecessarily over slow connections?
 .IP \(bu
 Since
@@ -166,7 +201,7 @@ you should be careful when generating galleries from unknown sources.
 The input syntax is messy, brittle and restrictive.
 .IP \(bu
 File type detection is based on filename extensions rather than analysis
-of actual contents, Microsoft-style.
+of actual contents.
 .IP \(bu
 Error handling and error reporting is probably unsatisfactory.
 .SH "DEPENDENCIES"
@@ -186,9 +221,7 @@ and
 .BR djpeg
 from the
 .B libjpeg
-distribution
-(in Debian GNU/Linux, at least, the latter two are packaged separately in
-.BR libjpeg-progs .)
+distribution.
 .SH "AUTHOR"
 Jörgen Grahn <jgrahn@algonet.se>
 .SH "LICENSE"
