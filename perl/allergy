@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w  # -*- perl -*-
 #
-# $Id: allergy,v 1.6 2001-07-29 11:59:01 grahn Exp $
+# $Id: allergy,v 1.7 2001-07-29 18:18:41 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001 Jörgen Grahn <jgrahn@algonet.se>
@@ -130,12 +130,12 @@ sub image {
     if($ddx && $ddy) {
 	print "<a href=\"$file\">\n",
 	"  <img src=\"$tfile\" alt=\"[$file]\"\n",
-	"  width=\"$ddx\", height=\"$ddy\"></a>";
+	"  width=\"$ddx\", height=\"$ddy\"></a>\n";
     }
     else {
 	print "<a href=\"$file\">\n",
 	"  $file\n",
-	"  </a>";
+	"  </a>\n";
     }
 }
 
