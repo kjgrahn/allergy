@@ -16,3 +16,7 @@ TABLE.allergy IMG {
         margin: 1em;
 	border-style: none
 }
+DIV.allergy IMG {
+	float: left;
+	margin-right: 1em
+}
