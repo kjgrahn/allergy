@@ -1,4 +1,4 @@
-.\" $Id: allergy.1,v 1.5 2001-08-29 21:13:35 grahn Exp $
+.\" $Id: allergy.1,v 1.6 2001-10-02 10:03:04 grahn Exp $
 .\" $Name:  $
 .\" 
 .\"
@@ -39,6 +39,13 @@ which determine general characteristics of the gallery to be rendered,
 followed by a list of file names and descriptions.
 Empty lines and lines starting with a hash are treated as comments
 and ignored.
+
+Additionally, lines starting with whitespace are considered as
+continuation lines, much like in Internet mail headers \(em
+.BR allergy (1)
+sees them as part of a logical line starting with the previous line
+which starts with a non-whitespace character.
+This is useful when you write long caption texts.
 .SH "GALLERY DEFINITIONS"
 The following definitions are recognized:
 .IP
@@ -108,6 +115,12 @@ Images to be included in the gallery are defined by lines on the forms
 .IP 
 .ft CW
 filename-or-pattern : caption-text
+.br
+filename-or-pattern : caption-text
+.br
+  more caption-text
+.br
+  ...
 .br
 filename-or-pattern
 .LP
@@ -180,6 +193,7 @@ the user take care of specific rendering details using style sheets.
 
 The focus is on navigation and presentation of the images themselves,
 on performance and browser independence \(em not on bells and whistles.
+Visual design of the gallery is best accomplished through style sheets.
 
 Images are given an
 .B ALT
@@ -193,8 +207,10 @@ for these files, even if the input explicitly requests it.
 Are the generated tables browser-friendly, or do they delay rendering
 unnecessarily over slow connections?
 .IP \(bu
+Conformance to W3C standards has not been verified.
+.IP \(bu
 Since
-.B allergy
+.BR allergy (1)
 evaluates arbitrary perl code in its input file,
 you should be careful when generating galleries from unknown sources.
 .IP \(bu
@@ -205,7 +221,7 @@ of actual contents.
 .IP \(bu
 Error handling and error reporting is probably unsatisfactory.
 .SH "DEPENDENCIES"
-.B allergy
+.BR allergy (1)
 depends on external utilities for converting and scaling thumbnail images.
 These are
 .BR pmnfile ,
@@ -225,4 +241,4 @@ distribution.
 .SH "AUTHOR"
 Jörgen Grahn <jgrahn@algonet.se>
 .SH "LICENSE"
-BSD-style, without non-advertising clause.
+BSD-style, without (non-) advertising clause.
