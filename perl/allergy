@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w  # -*- perl -*-
 #
-# $Id: allergy,v 1.4 2001-07-28 10:45:22 grahn Exp $
+# $Id: allergy,v 1.5 2001-07-28 12:24:41 grahn Exp $
 #
 # Copyright (c) 2001 Jörgen Grahn <jgrahn@algonet.se>
 # All rights reserved.
@@ -20,7 +20,7 @@ while(<>) {
 }
 
 sub gallery {
-    my ($columns, $class, $dx, $dy, $texpr);
+    my ($columns, $class, $dx, $dy, $texpr) = (4, "", 140, 100, "s/(.+)\..+/_\$1.jpg/");
     my @files = ();
 
     while(<>) {
@@ -33,6 +33,7 @@ sub gallery {
 	  /\\class{(.+?)}/ and $class = $1, last SWITCH;
 	  /\\bounded{(\d+),(\d+)}/ and ($dx,$dy) = ($1,$2), last SWITCH;
 	  /\\thumb{(.+)}/ and $texpr = $1, last SWITCH;
+	  /^\\/ and last SWITCH;
 
 	  @files = (@files, explode($_));
 	}
@@ -88,7 +89,13 @@ sub table {
     my $texpr = shift;
     my @files = @_;
 
-    print "<table class=\"$class\">\n";
+
+    if(defined $class and ! $class eq "") {
+	print "<table class=\"$class\">\n";
+    }
+    else  {
+	print "<table>\n";
+    }
 
     my $i = 0;
 
