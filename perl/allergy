@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy,v 1.26 2005-02-20 18:22:57 grahn Exp $
+# $Id: allergy,v 1.27 2005-03-28 21:51:55 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004, 2005 Jörgen Grahn <jgrahn@algonet.se>
 # All rights reserved.
+#
 """allergy - build thumbnails and html code to present
 a number of photos as an 'album' or 'photo gallery'.
 """
@@ -160,6 +161,8 @@ class Gallery:
             for image in pats:
                 if image[0] != '_' and not (image, ANY) in images:
                     images.append((image, ' '.join(caption)))
+        if not images:
+            return ''
         if self.columns:
             html.append('<table%s>' % self.cls)
         else:

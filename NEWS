@@ -4,6 +4,13 @@ Major changes (with focus on user-visible changes) to allergy, per version.
 
 _________________________________________
 
+allergy 2.3 (2005-03-28):
+	- Bug fix: Never generate empty tables when there are no
+	  images to show (e.g. theres a *.jpg gallery definition, but
+	  no files matching that pattern.)  Generating them meant
+	  generating invalid HTML (which browsers probably show
+	  correctly, but you never know).
+
 allergy 2.2 (2005-02-20):
 	- Bug fix: the -k flag broke when a thumbnail we expected to
 	  exist didn't.  Of course, it should have been generated in
@@ -52,5 +59,5 @@ allergy 1.0 (2001-07-28):
 	- First public version.
 
 _________________________________________
-$Id: NEWS,v 1.11 2005-02-20 18:22:57 grahn Exp $
+$Id: NEWS,v 1.12 2005-03-28 21:51:55 grahn Exp $
 $Name:  $
