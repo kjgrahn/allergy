@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: allergy,v 1.18 2004-06-15 20:34:40 grahn Exp $
+# $Id: allergy,v 1.19 2004-06-15 21:05:24 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004 Jörgen Grahn <jgrahn@algonet.se>
@@ -39,26 +39,27 @@ def thumbname(path):
 def gridentry(href, thumbnail, text=None):
     """Format an object (probably an image) as a grid item,
     with an existing thumbnail image and describing text."""
-    acc = []
-    acc.append('<td><a href="%s">' % href)
+    html = []
+    html.append('<td><a href="%s">' % href)
     html.append('  <img src="%s"' % thumbnail)
     html.append('      alt="[%s]"' % thumbnail)
     if text:
         html.append('  title="%s"' % text)
     html.append('  width="%d" height="%d"></a>' % Image.open(thumbnail).size)
-    return '\n'.join(acc)
+    return '\n'.join(html)
 
 def listentry(href, thumbnail, text=None):
     """Format an object (probably an image) as a list item,
     with an existing thumbnail image and describing text."""
-    acc = []
-    acc.append('<p><a href="%s">' % href)
+    html = []
+    html.append('<p><a href="%s">' % href)
     html.append('  <img src="%s"' % thumbnail)
     html.append('      alt="[%s]"' % thumbnail)
     html.append('  width="%d" height="%d"></a>' % Image.open(thumbnail).size)
     if text:
         html.append(text)
-    return '\n'.join(acc)
+    html.append('<br>') # ... clear="left" is a matter for CSS
+    return '\n'.join(html)
 
 class Gallery:
     """Main parser and gallery generator. After fed the lines
@@ -75,7 +76,8 @@ class Gallery:
         self.thumbnailing = thumbnailing
         self.verbose = 1
         self.columns = 4
-        self.cls = None
+        self.formatter = gridentry
+        self.cls = ''
         self.quality = 30
         self.bbox = (140, 100)
         self.images = []
@@ -86,14 +88,16 @@ class Gallery:
         m = self.gridre.match(line)
         if m:
             self.columns = int(m.group(1))
+            self.formatter = gridentry
             return
         m = self.listre.match(line)
         if m:
             self.columns = None
+            self.formatter = listentry
             return
         m = self.classre.match(line)
         if m:
-            self.cls = m.group(1)
+            self.cls = ' class="%s"' % m.group(1)
             return
         m = self.boundedre.match(line)
         if m:
@@ -125,10 +129,10 @@ class Gallery:
             for image in pats:
                 if image[0] != '_' and not image in images:
                     images.append(image)
-        if self.cls:
-            html.append('<table class="%s">' % self.cls)
+        if self.columns:
+            html.append('<table%s>' % self.cls)
         else:
-            html.append('<table>')
+            html.append('<div%s>' % self.cls)
         n = 0
         for f in images:
             tf = thumbname(f)
@@ -144,12 +148,12 @@ class Gallery:
                 i = Image.open(tf)
             if self.columns and n % self.columns == 0:
                 html.append('<tr>')
-            html.append('<td><a href="%s">' % f)
-            html.append('  <img src="%s"' % tf)
-            html.append('  alt="[%s]"' % f)
-            html.append('  width="%d" height="%d"></a>' % i.size)
+            html.append(self.formatter(f, tf))
             n += 1
-        html.append('</table>')
+        if self.columns:
+            html.append('</table>')
+        else:
+            html.append('</div>')
         return '\n'.join(html)
 
 
