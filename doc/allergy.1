@@ -1,4 +1,4 @@
-.\" $Id: allergy.1,v 1.6 2001-10-02 10:03:04 grahn Exp $
+.\" $Id: allergy.1,v 1.7 2001-10-03 08:36:06 grahn Exp $
 .\" $Name:  $
 .\" 
 .\"
@@ -54,11 +54,28 @@ The following definitions are recognized:
 .IR cols ,
 n}
 .LP
-Layout of the gallery \(em generates a HTML table with
+Layout of the gallery \(em generates a HTML
+.B <table>
+with
 .I cols
 columns and enough rows to fit all images.
+Caption text will appear inside the table cells,
+below the image.
+This is the default gallery layout.
 .br
 Default: four columns.
+.IP
+.ft CW
+\\list{}
+.LP
+Alternate layout strategy \(em generates a
+.B <div>
+containing a series of paragraphs,
+each containing the thumbnail and the caption text.
+.I list
+is more useful than
+.I grid
+when you have a lot to say about each picture.
 .IP
 .ft CW
 \\class{
@@ -67,7 +84,9 @@ Default: four columns.
 Sets the
 .B class
 attribute on the HTML construct (i.e. the
-.BR <table> )
+.B <table>
+or the
+.BR <div> )
 making up the gallery.
 This is useful for controlling rendering of the page using CSS.
 .br
@@ -169,10 +188,11 @@ namely
 "ilbm".
 
 The caption text may be any piece of valid HTML.
-It will be laid out within the same table cell as the image,
-with a
-.B <br>
-inbetween.
+Its layout varies with the overall gallery layout
+(
+.IR grid ,
+.IR list
+and so on).
 
 The text is interpolated before use, and
 .BR perl (1)
@@ -204,7 +224,8 @@ All names of thumbnail images are expected to being
 with an underscore ('_'). Thumbnails are never generated
 for these files, even if the input explicitly requests it.
 .IP \(bu
-Are the generated tables browser-friendly, or do they delay rendering
+When using generated tables, are they browser-friendly,
+or do they delay rendering
 unnecessarily over slow connections?
 .IP \(bu
 Conformance to W3C standards has not been verified.
