@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w  # -*- perl -*-
 #
-# $Id: allergy,v 1.1 2001-07-27 19:17:34 grahn Exp $
+# $Id: allergy,v 1.2 2001-07-27 22:17:26 grahn Exp $
 #
 # Copyright (c) 2001 Jörgen Grahn <jgrahn@algonet.se>
 # All rights reserved.
@@ -40,7 +40,7 @@ sub gallery {
 
     @files = normalize(@files);
 
-    map {print "$_\n"} @files;    
+    table($columns, $class, $dx, $dy, $texpr, @files);
 }
 
 sub explode {
@@ -69,14 +69,45 @@ sub normalize {
     grep !/^_/, @names;
 
     # remove duplicates, keeping the first
+    # yes, this is *ugly*...
     for($i=0; $i<@names; $i++) {
 	for($j=$i+1; $j<@names; $j++) {
 	    my ($in) = $names[$i] =~ /(.+?)\s:/;
 	    my ($jn) = $names[$j] =~ /(.+?)\s:/;
-
-	    $names[$j] = "dead" if $in eq $jn;
+	    $names[$j] = "dead :" if $in eq $jn;
 	}
     }
+    grep !/^dead :$/, @names;
+}
 
-    grep !/^dead$/, @names;
+sub table {
+    my $columns = shift;
+    my $class = shift;
+    my $dx = shift;
+    my $dy = shift;
+    my $texpr = shift;
+    my @files = @_;
+
+    print "<table class=\"$class\">\n";
+
+    my $i = 0;
+
+    foreach (@files) {
+	print "<tr>\n" unless $i % $columns;
+
+	image($dx, $dy, $texpr, $_);
+
+	$i++;
+    }
+
+    print "</table>\n";
+}
+
+sub image {
+    my $dx = shift;
+    my $dy = shift;
+    my $texpr = shift;
+    my ($file, $text) = shift =~ /(.+?)\s:\s(.+)/;
+
+    print "$file\n";
 }
