@@ -4,6 +4,7 @@ Major changes (with focus on user-visible changes) to allergy, per version.
 
 _________________________________________
 
+allergy 2.2 (2005-02-20):
 	- Bug fix: the -k flag broke when a thumbnail we expected to
 	  exist didn't.  Of course, it should have been generated in
 	  this case.
@@ -51,5 +52,5 @@ allergy 1.0 (2001-07-28):
 	- First public version.
 
 _________________________________________
-$Id: NEWS,v 1.10 2005-02-20 18:19:00 grahn Exp $
+$Id: NEWS,v 1.11 2005-02-20 18:22:57 grahn Exp $
 $Name:  $
