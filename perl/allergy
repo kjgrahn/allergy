@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: allergy,v 1.17 2004-05-31 21:37:10 grahn Exp $
+# $Id: allergy,v 1.18 2004-06-15 20:34:40 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004 Jörgen Grahn <jgrahn@algonet.se>
@@ -35,6 +35,30 @@ def thumbname(path):
     tail, ext = os.path.splitext(tail)
     tail = '_%s.jpg' % tail
     return os.path.join(head, tail)
+
+def gridentry(href, thumbnail, text=None):
+    """Format an object (probably an image) as a grid item,
+    with an existing thumbnail image and describing text."""
+    acc = []
+    acc.append('<td><a href="%s">' % href)
+    html.append('  <img src="%s"' % thumbnail)
+    html.append('      alt="[%s]"' % thumbnail)
+    if text:
+        html.append('  title="%s"' % text)
+    html.append('  width="%d" height="%d"></a>' % Image.open(thumbnail).size)
+    return '\n'.join(acc)
+
+def listentry(href, thumbnail, text=None):
+    """Format an object (probably an image) as a list item,
+    with an existing thumbnail image and describing text."""
+    acc = []
+    acc.append('<p><a href="%s">' % href)
+    html.append('  <img src="%s"' % thumbnail)
+    html.append('      alt="[%s]"' % thumbnail)
+    html.append('  width="%d" height="%d"></a>' % Image.open(thumbnail).size)
+    if text:
+        html.append(text)
+    return '\n'.join(acc)
 
 class Gallery:
     """Main parser and gallery generator. After fed the lines
@@ -118,7 +142,7 @@ class Gallery:
                 if self.verbose:
                     print >>sys.stderr, f
                 i = Image.open(tf)
-            if n % self.columns == 0:
+            if self.columns and n % self.columns == 0:
                 html.append('<tr>')
             html.append('<td><a href="%s">' % f)
             html.append('  <img src="%s"' % tf)
