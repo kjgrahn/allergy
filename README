@@ -36,9 +36,11 @@ non-advertising clause.
 
 		-- Jörgen Grahn <jgrahn@algonet.se>
 
-[0] Or I thought they didn't. ppmtojpeg and jpegtopnm seem to be there.
+[0] Or I thought they didn't. ppmtojpeg and jpegtopnm seem to be there
+    in current versions.
 [1] Photoaddict <URL:http://photoaddict.sourceforge.net/> looks kind of
     promising, but I found out about it too late.
+    'cthumb' and 'webmagick' seem to be alternatives too.
 
-$Id: README,v 1.4 2001-08-11 20:14:14 grahn Exp $
+$Id: README,v 1.5 2001-08-29 21:15:26 grahn Exp $
 $Name:  $
