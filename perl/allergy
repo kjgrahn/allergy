@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w  # -*- perl -*-
 #
-# $Id: allergy,v 1.7 2001-07-29 18:18:41 grahn Exp $
+# $Id: allergy,v 1.8 2001-08-05 20:04:08 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001 Jörgen Grahn <jgrahn@algonet.se>
@@ -10,9 +10,6 @@
 # a number of photos as an 'album' or 'photo gallery'.
 # 
 use strict;
-
-# thumbnail JPEG quality
-my $quality = 30;
 
 while(<>) {
     if(/^\s*\\begin{gallery}\s*$/) {
@@ -24,8 +21,14 @@ while(<>) {
 }
 
 sub gallery {
-    my ($columns, $class, $dx, $dy, $texpr) = (4, "", 140, 100, "s/(.+)\\..+/_\$1.jpg/");
+    my ($columns, $class, $quality, $dx, $dy, $texpr) =
+	(4,
+	 "",
+	 30,
+	 140, 100,
+	 "s/(.+)\\..+/_\$1.jpg/");
     my @files = ();
+
 
     while(<>) {
 	chomp;
@@ -33,8 +36,10 @@ sub gallery {
 
       SWITCH: {
 	  /^\s*$/ and last SWITCH;
+	  /^\s*\#/ and last SWITCH;
 	  /\\grid{(\d+).+}/ and $columns = $1, last SWITCH;
 	  /\\class{(.+?)}/ and $class = $1, last SWITCH;
+	  /\\quality{(\d+)}/ and $quality = $1, last SWITCH;
 	  /\\bounded{(\d+),(\d+)}/ and ($dx,$dy) = ($1,$2), last SWITCH;
 	  /\\thumb{(.+)}/ and $texpr = $1, last SWITCH;
 	  /^\\/ and last SWITCH;
@@ -45,12 +50,13 @@ sub gallery {
 
     @files = normalize(@files);
 
-    table($columns, $class, $dx, $dy, $texpr, @files);
+    table($columns, $class, $quality, $dx, $dy, $texpr, @files);
 }
 
 sub explode {
     my $s = shift;
     my ($pat, $templ);
+
 
     if($s =~ /\s*(.+?)\s*:\s*(.+)/) {
 	($pat, $templ) = ($1, $2);
@@ -88,6 +94,7 @@ sub normalize {
 sub table {
     my $columns = shift;
     my $class = shift;
+    my $quality = shift;
     my $dx = shift;
     my $dy = shift;
     my $texpr = shift;
@@ -107,7 +114,7 @@ sub table {
 	print "<tr>\n" unless $i % $columns;
 	print "<td>";
 
-	image($dx, $dy, $texpr, $_);
+	image($quality, $dx, $dy, $texpr, $_);
 
 	$i++;
     }
@@ -116,6 +123,7 @@ sub table {
 }
 
 sub image {
+    my $quality = shift;
     my $dx = shift;
     my $dy = shift;
     my $texpr = shift;
@@ -125,7 +133,7 @@ sub image {
     eval("$texpr");
     my $tfile = $_;
 
-    my ($ddx, $ddy) = thumb($dx, $dy, $tfile, $file);
+    my ($ddx, $ddy) = thumb($quality, $dx, $dy, $tfile, $file);
 
     if($ddx && $ddy) {
 	print "<a href=\"$file\">\n",
@@ -140,16 +148,19 @@ sub image {
 }
 
 sub thumb {
+    my $quality = shift;
     my $dx = shift;
     my $dy = shift;
     my $tfile = shift;
     my $file = shift;
     my $suffix;
 
-    my %decoder = ("jpg" => "djpeg",
+    my %decoder = ("jpg"  => "djpeg",
 		   "jpeg" => "djpeg",
-		   "gif" => "giftopnm",
-		   "png" => "pngtopnm");
+		   "gif"  => "giftopnm",
+		   "png"  => "pngtopnm",
+		   "ilbm" => "ilbmtoppm",
+		   "iff"  => "ilbmtoppm");
 
     unless(($suffix) = $file =~ /.+\.(.+)/ and
        $suffix = lc $suffix and
