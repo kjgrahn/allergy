@@ -1,271 +1,142 @@
-#!/usr/bin/perl -w  # -*- perl -*-
+#!/usr/bin/env python
 #
-# $Id: allergy,v 1.14 2001-12-06 19:59:36 grahn Exp $
+# $Id: allergy,v 1.15 2004-05-31 15:12:24 grahn Exp $
 # $Name:  $
 #
-# Copyright (c) 2001 Jörgen Grahn <jgrahn@algonet.se>
+# Copyright (c) 2001, 2004 Jörgen Grahn <jgrahn@algonet.se>
 # All rights reserved.
 #
 # allergy - build thumbnails and html code to present
 # a number of photos as an 'album' or 'photo gallery'.
 # 
-use strict;
-use vars qw($opt_k);
-use Getopt::Std;
+import Image
+import glob
+import re
+import os.path
+import sys
 
-getopts("k") or die "usage: allergy [-k] file ...\n";
-$opt_k = 0 unless defined($opt_k);
+def dimensions(file):
+    """Return (width, height) of the image in 'file'
+    -- or throw IOError."""
+    return Image.open(file).size
 
-while(<>) {
-    if(/^\s*\\begin{gallery}\s*$/) {
-	gallery();
-    }
-    else {
-	print;
-    }
-}
+def make(a, b):
+    """Return true iff file 'a' needs to be regenerated
+    from 'b', i.e. if it doesn't exist or is older than 'b'."""
+    return 1
 
-sub gallery {
-    my ($columns, $class, $quality, $dx, $dy, $texpr) =
-	(4,
-	 "",
-	 30,
-	 140, 100,
-	 "s/(.+)\\..+/_\$1.jpg/");
-    my @files = ();
-    my $style = "GRID";
-    my $multiline = "";
+def thumbnail(img, bbox=(140,100)):
+    """Return a copy of 'img', scaled down to fit
+    inside 'bbox'."""
+    pass
 
-    while(<>) {
-	chomp;
+def thumbname(path):
+    """Return the thumbnail file name corresponding
+    to an image name, i.e. prepend an underscore and
+    append a .jpg suffix."""
+    head, tail = os.path.split(path)
+    tail = '_%s.jpg' % tail
+    return os.path.join(head, tail)
 
-	# hack to support continuation lines;
-	# from the switch and down, $_ is the most recent multi-line,
-	# i.e. the most recent group of lines where the first starts
-	# with a non-blank and the rest do not.
-	if(/^\s+(.+)/) {
-	    $multiline .= "\n$1";
-	    next;
-	}
-	else {
-	    my $tmp = $multiline;
-	    $multiline = $_;
-	    $_ = $tmp;
-	}
-
-      SWITCH: {
-	  /^\s*$/ and last SWITCH;
-	  /^\s*\#/ and last SWITCH;
-	  /\\grid{(\d+).+}/ and $style="GRID", $columns = $1, last SWITCH;
-	  /\\list{}/ and $style="LIST", last SWITCH;
-	  /\\class{(.+?)}/ and $class = $1, last SWITCH;
-	  /\\quality{(\d+)}/ and $quality = $1, last SWITCH;
-	  /\\bounded{(\d+),(\d+)}/ and ($dx,$dy) = ($1,$2), last SWITCH;
-	  /\\thumb{(.+)}/ and $texpr = $1, last SWITCH;
-	  /^\\/ and last SWITCH;
-
-	  @files = (@files, explode($_));
-	}
-
-	last if $multiline =~ /^\s*\\end{gallery}\s*$/;
-    }
-
-    @files = normalize(@files);
-
-    if($style =~ /GRID/) {
-	table($columns, $class, $quality, $dx, $dy, $texpr, @files);
-    }
-    elsif($style =~ /LIST/) {
-	list($class, $quality, $dx, $dy, $texpr, @files);
-    }
-}
-
-sub explode {
-    my $s = shift;
-    my ($pat, $templ);
-
-
-    if($s =~ /\s*(.+?)\s*:\s*(.+)/s) {
-	($pat, $templ) = ($1, $2);
-    }
-    elsif($s =~ /\s*(\S+)\s*/s) {
-	($pat, $templ) = ($1, "");
-    }
-    else {
-	die "malformed line\n";
-    }
-
-    map {"$_ : $templ"} glob $pat;
-}
-
-sub normalize {
-    my @names = @_;
-    my ($i, $j);
-
-    # remove duplicates, keeping the first
-    # yes, this is *ugly*...
-    for($i=0; $i<@names; $i++) {
-	for($j=$i+1; $j<@names; $j++) {
-	    my ($in) = $names[$i] =~ /(.+?)\s:/;
-	    my ($jn) = $names[$j] =~ /(.+?)\s:/;
-	    $names[$j] = "dead :" if $in eq $jn;
-	}
-    }
-    @names = grep !/^dead :$/, @names;
-
-    # names beginning with underscore are assumed to
-    # be thumbnails, skip them
-    grep !/^_/, @names;
-}
-
-sub table {
-    my $columns = shift;
-    my $class = shift;
-    my $quality = shift;
-    my $dx = shift;
-    my $dy = shift;
-    my $texpr = shift;
-    my @files = @_;
+class Gallery:
+    """Main parser and gallery generator. After fed the lines
+    contained within a begin/end{gallery}, do() generates
+    thumbnails and corresponding HTML."""
+    gridre = re.compile(r'\\grid{\s*(\d+)\s*,\s*n}')
+    listre = re.compile(r'\\list{}')
+    classre = re.compile(r'\\class{\s*(.+?)\s*}')
+    boundedre = re.compile(r'\\bounded{(\d+),(\d+)}')
+    qualityre = re.compile(r'\\quality{(\d+)}')
+    commentre = re.compile(r'\s*(#.+)?$')
+    annotre = re.compile(r'(.+?)\s*:\s*(.+)')
+    def __init__(self, thumbnailing=1):
+        self.thumbnailing = thumbnailing
+        self.columns = 4
+        self.cls = None
+        self.quality = 30
+        self.bbox = (140, 100)
+        self.images = []
+    def add(self, line):
+        m = self.commentre.match(line)
+        if m: return
+        m = self.gridre.match(line)
+        if m:
+            self.columns = int(m.group(1))
+            return
+        m = self.listre.match(line)
+        if m:
+            self.columns = None
+            return
+        m = self.classre.match(line)
+        if m:
+            self.cls = m.group(1)
+            return
+        m = self.boundedre.match(line)
+        if m:
+            self.bbox = tuple(map(int, m.groups()))
+            return
+        m = self.qualityre.match(line)
+        if m:
+            self.quality = int(m.group(1))
+            return
+        m = self.annotre.match(line)
+        if m:
+            (pat, caption) = m.groups()
+            self.images.append((pat, [caption]))
+            return
+        if not line[0].isspace():
+            self.images.append((line.strip(), []))
+        else:
+            self.images[-1][1].append(line)
+            return
+    def do(self):
+        images = []
+        for pat, caption in self.images:
+            for image in glob.glob(pat):
+                if image[0] != '_' and not image in images:
+                    images.append(image)
+        for f in images:
+            tf = thumbname(f)
+            if make(tf, f):
+                i = Image.open(f)
+                i.thumbnail(self.bbox)
+                print >>sys.stderr, '%s -> %s bbox %s' % (f, i.size, self.bbox)
+                i.save(thumbname(f), 'JPEG', quality=self.quality)
+            else:
+                i = Image.open(tf)
+        return '\n'.join(images)
 
 
-    if(defined $class and ! $class eq "") {
-	print "<table class=\"$class\">\n";
-    }
-    else  {
-	print "<table>\n";
-    }
+if __name__ == "__main__":
+    import getopt
 
-    my $i = 0;
+    usage = 'usage: allergy [-k] file'
 
-    foreach (@files) {
-	my ($name, $text) = /(.+?)\s:\s(.*)/s;
+    try:
+        opts, files = getopt.getopt(sys.argv[1:], '-k')
+    except getopt.GetoptError, s:
+        print s
+        print usage
+        sys.exit(1)
+    if not len(files)==1:
+        print usage
+        sys.exit(1)
+    thumbnailing = len(opts)==0
+    file = files[0]
 
-	print "<tr>\n" unless $i % $columns;
-	print "<td>";
+    ingallery = 0
 
-	image($quality, $dx, $dy, $texpr, $name);
-
-	my $dimension = "";
-	my $size = "";
-	print eval("\"<br>$text\\n\"")
-	    unless $text eq "";
-
-	$i++;
-    }
-
-    print "</table>\n";
-}
-
-sub list {
-    my $class = shift;
-    my $quality = shift;
-    my $dx = shift;
-    my $dy = shift;
-    my $texpr = shift;
-    my @files = @_;
-
-
-    if(defined $class and ! $class eq "") {
-	print "<div class=\"$class\">\n";
-    }
-    else  {
-	print "<div>\n";
-    }
-
-    foreach (@files) {
-	my ($name, $text) = /(.+?)\s:\s(.*)/s;
-
-	print "<p>\n";
-
-	image($quality, $dx, $dy, $texpr, $name);
-
-	my $dimension = "";
-	my $size = "";
-	print eval("\"$text\\n\"")
-	    unless $text eq "";
-
-	print "<br clear=left>\n";
-    }
-
-    print "</div>\n";
-}
-
-sub image {
-    my $quality = shift;
-    my $dx = shift;
-    my $dy = shift;
-    my $texpr = shift;
-    my $file = shift;
-    $_ = $file;
-
-    eval("$texpr");
-    my $tfile = $_;
-
-    my ($ddx, $ddy) = thumb($quality, $dx, $dy, $tfile, $file);
-
-    if($ddx && $ddy) {
-	print "<a href=\"$file\">\n",
-	"  <img src=\"$tfile\" alt=\"[$file]\"\n",
-	"  width=\"$ddx\" height=\"$ddy\"></a>\n";
-    }
-    else {
-	print "<a href=\"$file\">\n",
-	"  $file\n",
-	"  </a>\n";
-    }
-}
-
-sub thumb {
-    my $quality = shift;
-    my $dx = shift;
-    my $dy = shift;
-    my $tfile = shift;
-    my $file = shift;
-    my $suffix;
-
-    my %decoder = ("jpg"  => "djpeg",
-		   "jpeg" => "djpeg",
-		   "gif"  => "giftopnm",
-		   "png"  => "pngtopnm",
-		   "ilbm" => "ilbmtoppm",
-		   "iff"  => "ilbmtoppm");
-
-    unless(($suffix) = $file =~ /.+\.(.+)/ and
-       $suffix = lc $suffix and
-       defined $decoder{$suffix}) {
-
-	print STDERR "$file cannot be thumbnailed, skipping\n";
-
-	return (0,0);
-    }
-
-    if(! -f $file) {
-	print STDERR "$file does not exist, skipping\n";
-	return (0,0);
-    }
-    elsif(-f $tfile and (-M $tfile < -M $file or $opt_k)) {
-	print STDERR "$file\n";
-    }
-    else {
-	($suffix) = $file =~ /.+\.(.+)/;
-	$suffix = lc $suffix;
-
-	# decode to PNM, let pnmscale do bounding-box scaling,
-	# and encode to JPEG.
-	#
-	print STDERR "$file: thumbnailing... ";
-	system "<\"$file\" $decoder{$suffix} | " .
-	    "pnmscale -xysize $dx $dy | " .
-	    "cjpeg -quality $quality > \"$tfile\"";
-	print STDERR "$tfile\n";
-    }
-
-    # return dimensions of thumbnail
-    #
-    open SIZE, "$decoder{jpg} <\"$tfile\" | pnmfile |" or die;
-    <SIZE> =~ /(\d+) by (\d+)/ and
-	my ($ddx, $ddy) = ($1, $2);
-    close SIZE;
-
-    return ($ddx, $ddy);
-}
+    f = open(file, 'rb')
+    for line in f.xreadlines():
+        if ingallery:
+            if line.count(r'\end{gallery}'):
+                print gallery.do()
+                ingallery = 0
+            else:
+                gallery.add(line)
+        else:
+            if line.count(r'\begin{gallery}'):
+                ingallery = 1
+                gallery = Gallery()
+            else:
+                print line[:-1]
