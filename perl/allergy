@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w  # -*- perl -*-
 #
-# $Id: allergy,v 1.5 2001-07-28 12:24:41 grahn Exp $
+# $Id: allergy,v 1.6 2001-07-29 11:59:01 grahn Exp $
+# $Name:  $
 #
 # Copyright (c) 2001 Jörgen Grahn <jgrahn@algonet.se>
 # All rights reserved.
@@ -9,6 +10,9 @@
 # a number of photos as an 'album' or 'photo gallery'.
 # 
 use strict;
+
+# thumbnail JPEG quality
+my $quality = 30;
 
 while(<>) {
     if(/^\s*\\begin{gallery}\s*$/) {
@@ -20,7 +24,7 @@ while(<>) {
 }
 
 sub gallery {
-    my ($columns, $class, $dx, $dy, $texpr) = (4, "", 140, 100, "s/(.+)\..+/_\$1.jpg/");
+    my ($columns, $class, $dx, $dy, $texpr) = (4, "", 140, 100, "s/(.+)\\..+/_\$1.jpg/");
     my @files = ();
 
     while(<>) {
@@ -51,7 +55,7 @@ sub explode {
     if($s =~ /\s*(.+?)\s*:\s*(.+)/) {
 	($pat, $templ) = ($1, $2);
     }
-    elsif($s =~ /\s*(.+?)\s*/) {
+    elsif($s =~ /\s*(\S+)\s*/) {
 	($pat, $templ) = ($1, "");
     }
     else {
@@ -102,6 +106,7 @@ sub table {
     foreach (@files) {
 	print "<tr>\n" unless $i % $columns;
 	print "<td>";
+
 	image($dx, $dy, $texpr, $_);
 
 	$i++;
@@ -114,18 +119,24 @@ sub image {
     my $dx = shift;
     my $dy = shift;
     my $texpr = shift;
-    my ($file, $text) = shift =~ /(.+?)\s:\s(.+)/;
+    my ($file, $text) = shift =~ /(.+?)\s:\s(.*)/;
     $_ = $file;
+
     eval("$texpr");
     my $tfile = $_;
 
     my ($ddx, $ddy) = thumb($dx, $dy, $tfile, $file);
 
-    print "<a href=\"$file\">\n",
-    "  <img src=\"$tfile\" alt=\"[$tfile]\"\n",
-    "  width=\"$ddx\", height=\"$ddy\"></a>",
-
-#    print "$tfile\n";
+    if($ddx && $ddy) {
+	print "<a href=\"$file\">\n",
+	"  <img src=\"$tfile\" alt=\"[$file]\"\n",
+	"  width=\"$ddx\", height=\"$ddy\"></a>";
+    }
+    else {
+	print "<a href=\"$file\">\n",
+	"  $file\n",
+	"  </a>";
+    }
 }
 
 sub thumb {
@@ -133,18 +144,31 @@ sub thumb {
     my $dy = shift;
     my $tfile = shift;
     my $file = shift;
+    my $suffix;
 
     my %decoder = ("jpg" => "djpeg",
 		   "jpeg" => "djpeg",
 		   "gif" => "giftopnm",
 		   "png" => "pngtopnm");
-    my $quality = 30;
 
-    if(-f $tfile and -M $tfile < -M $file) {
+    unless(($suffix) = $file =~ /.+\.(.+)/ and
+       $suffix = lc $suffix and
+       defined $decoder{$suffix}) {
+
+	print STDERR "$file cannot be thumbnailed, skipping\n";
+
+	return (0,0);
+    }
+
+    if(! -f $file) {
+	print STDERR "$file does not exist, skipping\n";
+	return (0,0);
+    }
+    elsif(-f $tfile and -M $tfile < -M $file) {
 	print STDERR "$file\n";
     }
     else {
-	my ($suffix) = $file =~ /.+\.(.+)/;
+	($suffix) = $file =~ /.+\.(.+)/;
 	$suffix = lc $suffix;
 
 	# decode to PNM, let pnmscale do bounding-box scaling,
@@ -164,5 +188,5 @@ sub thumb {
 	my ($ddx, $ddy) = ($1, $2);
     close SIZE;
 
-    ($ddx, $ddy);
+    return ($ddx, $ddy);
 }
