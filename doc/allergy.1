@@ -1,8 +1,8 @@
-.\" $Id: allergy.1,v 1.15 2004-05-31 21:37:51 grahn Exp $
+.\" $Id: allergy.1,v 1.16 2004-06-15 22:22:17 grahn Exp $
 .\" $Name:  $
 .\" 
 .\"
-.TH allergy 1 "MAY 2004" "Allergy" "User Manuals"
+.TH allergy 1 "JUNE 2004" "Allergy" "User Manuals"
 .SH "NAME"
 allergy \- thumbnail and HTML picture gallery creator
 .SH "SYNOPSIS"
@@ -20,7 +20,7 @@ for displaying thumbnail images
 and writes the result to standard output.
 .
 .SH "OPTIONS"
-.IP -k
+.IP \-k
 (keep) Never regenerate existing thumbnails, even if they are
 newer than the source image.
 This is useful if you
@@ -37,9 +37,9 @@ bracketed as follows:
 .IP
 .ft CW
 .nf
-\\begin{gallery}
+\(rsbegin{gallery}
 \&...
-\\end{gallery}
+\(rsend{gallery}
 .fi
 .LP
 The gallery description consists of optional definitions lines
@@ -59,7 +59,7 @@ This is useful when you write long caption texts.
 The following definitions are recognized:
 .IP
 .ft CW
-\\grid{\fIcols\fP, n}
+\(rsgrid{\fIcols\fP, n}
 .LP
 Layout of the gallery \(em generates a HTML
 .B <table>
@@ -72,7 +72,7 @@ attribute of the thumbnail image.
 This is the default gallery layout.
 .IP
 .ft CW
-\\list{}
+\(rslist{}
 .LP
 Alternate layout strategy \(em generates a
 .B <div>
@@ -84,7 +84,7 @@ is more useful than
 when you have a lot to say about each picture.
 .IP
 .ft CW
-\\class{\fIname\fP}
+\(rsclass{\fIname\fP}
 .LP
 Sets the
 .B class
@@ -97,7 +97,7 @@ This is useful for controlling rendering of the page using CSS.
 Default: not set.
 .IP 
 .ft CW
-\\bounded{\fIwidth\fP, \fIheight\fP}
+\(rsbounded{\fIwidth\fP, \fIheight\fP}
 .LP
 Specifies the dimensions of the thumbnail image. Images will be scaled
 so that they fit in a rectangle of the given size,
@@ -105,7 +105,7 @@ while preserving the aspect ratio.
 Default: (140,100).
 .IP
 .ft CW
-\\quality{\fIn\fP}
+\(rsquality{\fIn\fP}
 .LP
 Quality of the generated JPEG thumbnails, from 0 (worst) to 100 (best).
 Default: 30.
@@ -133,14 +133,12 @@ The filename expansion is implemented by
 and
 .B []
 are supported.
-\" needs {a,b} as well
 .LP
 The patterns never match a file name starting with an underscore \(em
 those are reserved for thumbnail file names.
 .LP
 Images are laid out in the order of appearance in the input file.
 Patterns expand to a sorted list of all matching file names.
-\" wrong ...
 For each gallery definition, duplicate image definitions are removed
 by removing all but the first one in the list. This makes it possible
 to move important images to near the top and let the others appear in
@@ -162,7 +160,10 @@ you have installed.
 .LP
 The caption text may be any piece of valid HTML if you intend to
 format the gallery as a list.
-If you use the grid layout, it must be plain text.
+If you use the grid layout, it must be plain text in your source
+character set, since it ends up as a
+.B title
+attribute, not normal HTML text.
 .
 .SH "GENERATED HTML CODE"
 The general idea is to generate strictly conforming code, and let
@@ -178,6 +179,35 @@ containing the caption text.
 .LP
 Thumbnail pictures are named as the originals, but with an underscore
 character as prefix.
+.LP
+When the list layout strategy is used rather than the table layout,
+each entry ends with a \fI<br>\fP.
+To get a reasonable layout with the images stacked vertically and the
+caption text to the right, this would really need to be
+\fI<br clear="left">\fP,
+but HTML strict requires you to use CSS to get that effect.
+.
+.SH "CHANGES FROM ALLERGY 1.4"
+A complete rewrite in Python took place after allergy 1.4,
+which used perl and a wealth of external utilities.
+This caused some functionality loss, namely:
+.IP \(bu
+Globbing in image definitions: perl's \fIglob()\fP supports the
+.B {}
+syntax; Python apparently does not.
+.IP \(bu
+The
+.B \(rsthumb{}
+construct for controlling the thumbnail images' names is no
+longer supported. It was probably never a good idea anyway.
+.IP \(bu
+The string \fI$name\fP is no longer interpolated to the image's
+name in caption texts.
+.IP \(bu
+Support for some image formats (specifically, IFF ILBM)
+may have been lost.
+On the flip side, you are no longer dependent on file name extensions
+to detect the format.
 .
 .SH "BUGS"
 .IP \(bu
@@ -189,30 +219,15 @@ When using generated tables, are they browser-friendly,
 or do they delay rendering
 unnecessarily over slow connections?
 .IP \(bu
-Conformance to W3C standards has not been verified.
-.IP \(bu
 The input syntax is messy, brittle and restrictive.
 .IP \(bu
 Error handling and error reporting is probably unsatisfactory.
 .
 .SH "DEPENDENCIES"
 .BR allergy (1)
-depends on external utilities for converting and scaling thumbnail images.
-These are
-.BR pmnfile ,
-.BR pmnscale
-and
-various format converters (e.g.
-.BR pngtopnm )
-from the
-.B netpbm
-toolkit, and
-.BR cjpeg 
-and
-.BR djpeg
-from the
-.B libjpeg
-distribution.
+depends on the \fIPython Imaging Library\fP (also known as \fIPIL\fP)
+for scaling down images in various formats and for finding image
+dimensions.
 .
 .SH "AUTHOR"
 J\(:orgen Grahn <jgrahn@algonet.se>
