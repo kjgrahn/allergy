@@ -1,4 +1,4 @@
-.\" $Id: allergy.1,v 1.16 2004-06-15 22:22:17 grahn Exp $
+.\" $Id: allergy.1,v 1.17 2004-06-15 22:43:08 grahn Exp $
 .\" $Name:  $
 .\" 
 .\"
@@ -181,13 +181,9 @@ Thumbnail pictures are named as the originals, but with an underscore
 character as prefix.
 .LP
 When the list layout strategy is used rather than the table layout,
-each entry ends with a \fI<br>\fP.
-To get a reasonable layout with the images stacked vertically and the
-caption text to the right, this would really need to be
-\fI<br clear="left">\fP,
-but HTML strict requires you to use CSS to get that effect.
+each entry is a paragraph, ending with a \fI<br>\fP.
 .
-.SH "CHANGES FROM ALLERGY 1.4"
+.SH "INCOMPATIBILITY WITH ALLERGY 1.4"
 A complete rewrite in Python took place after allergy 1.4,
 which used perl and a wealth of external utilities.
 This caused some functionality loss, namely:
@@ -208,6 +204,11 @@ Support for some image formats (specifically, IFF ILBM)
 may have been lost.
 On the flip side, you are no longer dependent on file name extensions
 to detect the format.
+.IP \(bu
+For list layouts, each entry used to end with a \fI<br clear="left">\fP;
+it now ends with a simple \fI<br>\fP, so that it can be part of a
+conforming HTML 4.01 strict document.
+Use a style sheet to get the desired effect.
 .
 .SH "BUGS"
 .IP \(bu
