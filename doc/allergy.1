@@ -1,4 +1,4 @@
-.\" $Id: allergy.1,v 1.14 2004-05-31 14:57:03 grahn Exp $
+.\" $Id: allergy.1,v 1.15 2004-05-31 21:37:51 grahn Exp $
 .\" $Name:  $
 .\" 
 .\"
@@ -126,19 +126,21 @@ The images can be specified one at a time, using filename expansion, or
 using a combination of the two.
 The filename expansion is implemented by
 \(lqglobbing\(rq, which expands patterns in the manner of
-.BR csh (1)
+.BR sh (1)
 \(em things like
 .BR * ,
 .BR ? ,
 and
 .B []
 are supported.
+\" needs {a,b} as well
 .LP
 The patterns never match a file name starting with an underscore \(em
 those are reserved for thumbnail file names.
 .LP
 Images are laid out in the order of appearance in the input file.
-Patterns expand to a sorted (usually) list of all matching file names.
+Patterns expand to a sorted list of all matching file names.
+\" wrong ...
 For each gallery definition, duplicate image definitions are removed
 by removing all but the first one in the list. This makes it possible
 to move important images to near the top and let the others appear in
