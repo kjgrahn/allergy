@@ -4,6 +4,10 @@ Major changes (with focus on user-visible changes) to allergy, per version.
 
 _________________________________________
 
+	- Bug fix: the -k flag broke when a thumbnail we expected to
+	  exist didn't.  Of course, it should have been generated in
+	  this case.
+
 allergy 2.1 (2004-06-20):
 	- Bug fix: thumbnailing palette-based images now works.
 	- Now defaults to silent mode rather than printing the name
@@ -47,5 +51,5 @@ allergy 1.0 (2001-07-28):
 	- First public version.
 
 _________________________________________
-$Id: NEWS,v 1.9 2004-06-20 07:20:17 grahn Exp $
+$Id: NEWS,v 1.10 2005-02-20 18:19:00 grahn Exp $
 $Name:  $
