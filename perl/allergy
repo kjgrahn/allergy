@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: allergy,v 1.19 2004-06-15 21:05:24 grahn Exp $
+# $Id: allergy,v 1.20 2004-06-15 21:08:53 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004 Jörgen Grahn <jgrahn@algonet.se>
@@ -165,11 +165,11 @@ if __name__ == "__main__":
     try:
         opts, files = getopt.getopt(sys.argv[1:], '-k')
     except getopt.GetoptError, s:
-        print s
-        print usage
+        print >>sys.stderr, s
+        print >>sys.stderr, usage
         sys.exit(1)
     if not len(files)==1:
-        print usage
+        print >>sys.stderr, usage
         sys.exit(1)
     thumbnailing = len(opts)==0
     file = files[0]
