@@ -1,4 +1,4 @@
-.\" $Id: allergy.1,v 1.20 2005-06-11 09:55:10 grahn Exp $
+.\" $Id: allergy.1,v 1.21 2005-06-11 10:03:45 grahn Exp $
 .\" $Name:  $
 .\" 
 .\"
@@ -205,6 +205,17 @@ Second line is the creation time, on the format
 .BR hh:mm .
 .IP \(bu
 Following lines, if present, is a description of the image.
+.LP
+An entry could look like this:
+.IP 
+.ft CW
+.nf
+030701_24.jpg
+08:56
+mountains covered in show,
+ on the border towards Norway,
+ from R\(:odfj\(:allet
+.fi
 .
 .SH "GENERATED HTML CODE"
 The general idea is to generate strictly conforming code, and let
@@ -224,33 +235,6 @@ character as prefix.
 When the list layout strategy is used rather than the table layout,
 each entry is a paragraph, ending with a \fI<br>\fP.
 .
-.SH "INCOMPATIBILITY WITH ALLERGY 1.4"
-A complete rewrite in Python took place after allergy 1.4,
-which used perl and a wealth of external utilities.
-This caused some functionality loss, namely:
-.IP \(bu
-Globbing in image definitions: perl's \fIglob()\fP supports the
-.B {}
-syntax; Python apparently does not.
-.IP \(bu
-The
-.B \(rsthumb{}
-construct for controlling the thumbnail images' names is no
-longer supported. It was probably never a good idea anyway.
-.IP \(bu
-The string \fI$name\fP is no longer interpolated to the image's
-name in caption texts.
-.IP \(bu
-Support for some image formats (specifically, IFF ILBM)
-may have been lost.
-On the flip side, you are no longer dependent on file name extensions
-to detect the format.
-.IP \(bu
-For list layouts, each entry used to end with a \fI<br clear="left">\fP;
-it now ends with a simple \fI<br>\fP, so that it can be part of a
-conforming HTML 4.01 strict document.
-Use a style sheet to get the desired effect.
-.
 .SH "BUGS"
 .IP \(bu 2m
 All names of thumbnail images are expected to begin
@@ -262,6 +246,10 @@ or do they delay rendering
 unnecessarily over slow connections?
 .IP \(bu
 The input syntax is messy, brittle and restrictive.
+.IP \(bu
+There is no support for pulling
+.I EXIF
+information from the images.
 .IP \(bu
 The picture description file format is way too restrictive.
 For example, it requires file names which encode the date of creation.
