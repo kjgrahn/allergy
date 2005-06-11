@@ -4,6 +4,11 @@ Major changes (with focus on user-visible changes) to allergy, per version.
 
 _________________________________________
 
+	- New option -f for picking dates and image descriptions from
+	  a separate file so you don't have to enter these as caption
+	  texts. This is useful if you already keep track of images
+	  from your digital camera, or whatever.
+
 allergy 2.3 (2005-03-28):
 	- Bug fix: Never generate empty tables when there are no
 	  images to show (e.g. theres a *.jpg gallery definition, but
@@ -59,5 +64,5 @@ allergy 1.0 (2001-07-28):
 	- First public version.
 
 _________________________________________
-$Id: NEWS,v 1.12 2005-03-28 21:51:55 grahn Exp $
+$Id: NEWS,v 1.13 2005-06-11 09:55:10 grahn Exp $
 $Name:  $

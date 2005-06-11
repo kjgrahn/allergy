@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy,v 1.27 2005-03-28 21:51:55 grahn Exp $
+# $Id: allergy,v 1.28 2005-06-11 09:55:10 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004, 2005 Jörgen Grahn <jgrahn@algonet.se>
@@ -45,6 +45,61 @@ class Feedback:
     def nop(self, s):
         pass
 
+class Photobase:
+    """Parsing the text/photos file.
+    I can't be bothered to write its format down just now.
+    """
+    class ParseError(Exception):
+        pass
+    emptyre = re.compile(r'^\s*$')
+    commentre = re.compile(r'^#')
+    filere = re.compile(r'^(\d{2}[01]\d[0123]\d)_(.+)\.jpg$')
+    timere = re.compile(r'^[012]\d:[0-5]\d$')
+    def __init__(self, path):
+        self.things = {}
+        state = 0
+        line = 0
+        f = open(path, 'r')
+        for s in f.xreadlines():
+            s = s.rstrip()
+            line += 1
+            if state==0:
+                if self.emptyre.match(s) or self.commentre.match(s):
+                    continue
+                if self.filere.match(s):
+                    filename = s
+                    text = []
+                    state = 1
+                    continue
+                raise self.ParseError, line
+            if state==1:
+                if self.timere.match(s):
+                    state = 2
+                    time = s
+                    continue
+                raise self.ParseError, line
+            if state==2:
+                s = s.strip()
+                if s:
+                    text.append(s)
+                    continue
+                state = 0
+                self.things[filename] = (filename, time, ' '.join(text))
+        if state==2:
+            self.things[filename] = (filename, time, ' '.join(text))
+        elif state!=0:
+            raise self.ParseError, line
+    def has(self, file):
+        "Do we have info on the image file 'file'?"
+        return self.things.has_key(file)
+    def title(self, file):
+        "A suitable title for the image file 'file'."
+        filename, time, text = self.things[file]
+        year = 2000 + int(filename[0:2])
+        month = int(filename[2:4])
+        day = int(filename[4:6])
+        return '%d.%d.%d. %s' % (day, month, year, text.replace('"', "'"))
+
 def make(a, b, clobber=1):
     """Return true iff file 'a' needs to be regenerated
     from 'b', i.e. if it doesn't exist or is older than 'b'.
@@ -73,10 +128,10 @@ def gridentry(href, thumbnail, caption):
     with an existing thumbnail image and describing text."""
     html = []
     html.append('<td><a href="%s">' % href)
-    html.append('  <img src="%s"' % thumbnail)
-    html.append('      alt="[%s]"' % thumbnail)
+    html.append('   <img src="%s"' % thumbnail)
+    html.append('        alt="[%s]"' % thumbnail)
     if caption:
-        html.append('  title="%s"' % caption)
+        html.append('      title="%s"' % caption)
     html.append('  width="%d" height="%d"></a>' % Image.open(thumbnail).size)
     return '\n'.join(html)
 
@@ -104,7 +159,8 @@ class Gallery:
     qualityre = re.compile(r'\\quality{(\d+)}')
     commentre = re.compile(r'\s*(#.+)?$')
     annotre = re.compile(r'(.+?)\s*:\s*(.+)')
-    def __init__(self, feedback, clobber=1):
+    def __init__(self, feedback, descdb=None, clobber=1):
+        self.descdb = descdb
         self.clobber = clobber
         self.feedback = feedback
         self.columns = 4
@@ -182,6 +238,8 @@ class Gallery:
                 i = Image.open(tf)
             if self.columns and n % self.columns == 0:
                 html.append('<tr>')
+            if self.descdb and self.descdb.has(f) and not caption:
+                caption = self.descdb.title(f)
             html.append(self.formatter(f, tf, caption))
             n += 1
         if self.columns:
@@ -196,17 +254,19 @@ if __name__ == "__main__":
     import getopt
     import fileinput
 
-    usage = 'usage: allergy [-k] [-v | -V] file'
+    usage = 'usage: allergy [-f file] [-k] [-v | -V] file'
 
     try:
-        opts, files = getopt.getopt(sys.argv[1:], 'kvV')
+        opts, files = getopt.getopt(sys.argv[1:], 'f:kvV')
     except getopt.GetoptError, s:
         print >>sys.stderr, s
         print >>sys.stderr, usage
         sys.exit(1)
     clobber = 1
     verbosity = 0
+    descdb = None
     for option, value in opts:
+        if option == '-f': descdb = Photobase(value)
         if option == '-k': clobber = 0
         if option == '-v': verbosity = 2
         if option == '-V': verbosity = 1
@@ -223,6 +283,6 @@ if __name__ == "__main__":
         else:
             if line.count(r'\begin{gallery}'):
                 ingallery = 1
-                gallery = Gallery(Feedback(verbosity), clobber)
+                gallery = Gallery(Feedback(verbosity), descdb, clobber)
             else:
                 print line[:-1]

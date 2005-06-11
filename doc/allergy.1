@@ -1,12 +1,15 @@
-.\" $Id: allergy.1,v 1.19 2005-02-20 18:22:57 grahn Exp $
+.\" $Id: allergy.1,v 1.20 2005-06-11 09:55:10 grahn Exp $
 .\" $Name:  $
 .\" 
 .\"
-.TH allergy 1 "FEB 2004" "Allergy" "User Manuals"
+.TH allergy 1 "JUN 2005" "Allergy" "User Manuals"
 .SH "NAME"
 allergy \- thumbnail and HTML picture gallery creator
 .SH "SYNOPSIS"
-.B allergy [\-k] [\-v | \-V]
+.B allergy
+.RB [ \-f \ file ]
+.RB [ \-k ]
+.RB [ \-v | \-V ]
 .I file
 .B ...
 .
@@ -20,6 +23,11 @@ for displaying thumbnail images
 and writes the result to standard output.
 .
 .SH "OPTIONS"
+.IP \-f\ \fIfile
+Use the text file
+.I file
+as an extra source of information about the pictures
+(date and time, descriptions).
 .IP \-k
 (keep) Never regenerate existing thumbnails, even if they are
 newer than the source image.
@@ -169,6 +177,34 @@ If you use the grid layout, it must be plain text in your source
 character set, since it ends up as a
 .B title
 attribute, not normal HTML text.
+.LP
+If you provide no caption text but have a file describing the photos
+(see the
+.B \-f
+command-line option)
+the date and description from that file is used instead.
+This only works for
+.BR title ,
+i.e. in the grid layout.
+.
+.SH "PICTURE INFORMATION FILE FORMAT"
+If you provide a file with additional information about the pictures
+using the
+.B \-f
+option, it has to be on the following format:
+.IP \(bu 2m
+A series of image entries, separated by blank lines.
+.IP \(bu
+Comment lines start with a
+.BR # .
+.IP \(bu
+First line in an entry is the file name, which must be on the format
+.BR yymmdd_ ... .jpg .
+.IP \(bu
+Second line is the creation time, on the format
+.BR hh:mm .
+.IP \(bu
+Following lines, if present, is a description of the image.
 .
 .SH "GENERATED HTML CODE"
 The general idea is to generate strictly conforming code, and let
@@ -216,7 +252,7 @@ conforming HTML 4.01 strict document.
 Use a style sheet to get the desired effect.
 .
 .SH "BUGS"
-.IP \(bu
+.IP \(bu 2m
 All names of thumbnail images are expected to begin
 with an underscore ('_'). Thumbnails are never generated
 for these files, even if the input explicitly requests it.
@@ -226,6 +262,11 @@ or do they delay rendering
 unnecessarily over slow connections?
 .IP \(bu
 The input syntax is messy, brittle and restrictive.
+.IP \(bu
+The picture description file format is way too restrictive.
+For example, it requires file names which encode the date of creation.
+The truth is that I just needed this feature for myself
+and my own system for keeping track of my photos looked like this ...
 .IP \(bu
 Error handling and error reporting is probably unsatisfactory.
 .
