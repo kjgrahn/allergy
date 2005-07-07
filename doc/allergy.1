@@ -1,8 +1,8 @@
-.\" $Id: allergy.1,v 1.21 2005-06-11 10:03:45 grahn Exp $
+.\" $Id: allergy.1,v 1.22 2005-07-07 12:21:22 grahn Exp $
 .\" $Name:  $
 .\" 
 .\"
-.TH allergy 1 "JUN 2005" "Allergy" "User Manuals"
+.TH allergy 1 "JUL 2005" "Allergy" "User Manuals"
 .SH "NAME"
 allergy \- thumbnail and HTML picture gallery creator
 .SH "SYNOPSIS"
@@ -26,8 +26,7 @@ and writes the result to standard output.
 .IP \-f\ \fIfile
 Use the text file
 .I file
-as an extra source of information about the pictures
-(date and time, descriptions).
+as a source of picture descriptions.
 .IP \-k
 (keep) Never regenerate existing thumbnails, even if they are
 newer than the source image.
@@ -182,10 +181,18 @@ If you provide no caption text but have a file describing the photos
 (see the
 .B \-f
 command-line option)
-the date and description from that file is used instead.
+the description from that file is used instead,
+if available.
 This only works for
 .BR title ,
 i.e. in the grid layout.
+.LP
+Additionally, if you provide no caption text
+but your images contain an EXIF date,
+that is also added to the description.
+(For this to work, you need the
+.I EXIF
+python module.)
 .
 .SH "PICTURE INFORMATION FILE FORMAT"
 If you provide a file with additional information about the pictures
@@ -198,11 +205,14 @@ A series of image entries, separated by blank lines.
 Comment lines start with a
 .BR # .
 .IP \(bu
-First line in an entry is the file name, which must be on the format
-.BR yymmdd_ ... .jpg .
+First line in an entry is the file name, without path.
 .IP \(bu
-Second line is the creation time, on the format
-.BR hh:mm .
+Second line is the creation time.
+This is ignored by
+.B allergy
+in favor of the
+.I EXIF
+information which hopefully exists.
 .IP \(bu
 Following lines, if present, is a description of the image.
 .LP
@@ -247,14 +257,9 @@ unnecessarily over slow connections?
 .IP \(bu
 The input syntax is messy, brittle and restrictive.
 .IP \(bu
-There is no support for pulling
-.I EXIF
-information from the images.
-.IP \(bu
-The picture description file format is way too restrictive.
-For example, it requires file names which encode the date of creation.
-The truth is that I just needed this feature for myself
-and my own system for keeping track of my photos looked like this ...
+The picture description file format might not suit everybody.
+The truth is that I just needed this feature for myself,
+and the system I use for keeping track of photos looks like this ...
 .IP \(bu
 Error handling and error reporting is probably unsatisfactory.
 .
@@ -263,6 +268,11 @@ Error handling and error reporting is probably unsatisfactory.
 depends on the \fIPython Imaging Library\fP (also known as \fIPIL\fP)
 for scaling down images in various formats and for finding image
 dimensions.
+.LP
+Gene Cash's
+.I EXIF
+python module is needed for finding the creation date
+of digital camera photos.
 .
 .SH "AUTHOR"
 J\(:orgen Grahn <jgrahn@algonet.se>

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy,v 1.28 2005-06-11 09:55:10 grahn Exp $
+# $Id: allergy,v 1.29 2005-07-07 12:21:22 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004, 2005 Jörgen Grahn <jgrahn@algonet.se>
@@ -23,6 +23,9 @@ class Any:
 ANY = Any()
 
 class Feedback:
+    """Configurable feedback generator; prints to stderr
+    when called.
+    """
     def __init__(self, verbosity=2):
         if verbosity==0:
             self.__call__ = self.nop
@@ -47,14 +50,13 @@ class Feedback:
 
 class Photobase:
     """Parsing the text/photos file.
-    I can't be bothered to write its format down just now.
+    I can't be bothered to write its format down just now; see
+    allergy(1) for the quick version.
     """
     class ParseError(Exception):
         pass
     emptyre = re.compile(r'^\s*$')
     commentre = re.compile(r'^#')
-    filere = re.compile(r'^(\d{2}[01]\d[0123]\d)_(.+)\.jpg$')
-    timere = re.compile(r'^[012]\d:[0-5]\d$')
     def __init__(self, path):
         self.things = {}
         state = 0
@@ -66,18 +68,14 @@ class Photobase:
             if state==0:
                 if self.emptyre.match(s) or self.commentre.match(s):
                     continue
-                if self.filere.match(s):
-                    filename = s
-                    text = []
-                    state = 1
-                    continue
-                raise self.ParseError, line
+                filename = s
+                text = []
+                state = 1
+                continue
             if state==1:
-                if self.timere.match(s):
-                    state = 2
-                    time = s
-                    continue
-                raise self.ParseError, line
+                state = 2
+                time = s
+                continue
             if state==2:
                 s = s.strip()
                 if s:
@@ -92,13 +90,61 @@ class Photobase:
     def has(self, file):
         "Do we have info on the image file 'file'?"
         return self.things.has_key(file)
-    def title(self, file):
-        "A suitable title for the image file 'file'."
+    def text(self, file):
+        "The descriptive text for the image file 'file'."
         filename, time, text = self.things[file]
-        year = 2000 + int(filename[0:2])
-        month = int(filename[2:4])
-        day = int(filename[4:6])
-        return '%d.%d.%d. %s' % (day, month, year, text.replace('"', "'"))
+        return text.replace('"', "'")
+
+class ExifTime:
+    """Pulling the time a photo was taken from
+    the EXIF information it contains, if at all possible.
+    """
+    def __call__(self, f):
+        """Return the generation time embedded in image file 'f' as a
+        tuple ('yyyy-mm-dd', 'hh:mm') or, for all kinds of errors and
+        subnormal conditions, None.
+
+        We prefer 'Image Generated' attributes to other time stamps,
+        because it's supposed to be the one closest to the actual
+        snapshot moment.
+        """
+        try:
+            tags = self.EXIF.process_file(open(f, 'rb'))
+            for id in ('EXIF DateTimeGenerated',
+                       'EXIF DateTimeDigitized',
+                       'Image DateTime'):
+                if tags.has_key(id):
+                    date, time = str(tags[id]).split()
+                    # I like my dates in the semi-formal sv_SE form 7.7.2005
+                    date = map(int, date.split(':'))
+                    date.reverse()
+                    date = '%d.%d.%d' % tuple(date)
+                    return (date, time[:5])
+        except:
+            pass
+        return None
+
+    import EXIF
+
+class DescriptionDb:
+    """Container for all sources of image information, except
+    that in the allergy source itself. This means, in practice,
+    the text/photos file and EXIF information embedded in the
+    images themselves. Both of these may be absent.
+    """
+    def __init__(self, photobase = None):
+        self.photobase = photobase
+        self.exiftime = ExifTime()
+    def title(self, file):
+        "A suitable title for the image file 'file', or the empty string."
+        t = []
+        datetime = self.exiftime(file)
+        if datetime:
+            date, time = datetime
+            t.append(date)
+        if self.photobase and self.photobase.has(file):
+            t.append(self.photobase.text(file))
+        return '. '.join(t)
 
 def make(a, b, clobber=1):
     """Return true iff file 'a' needs to be regenerated
@@ -238,7 +284,7 @@ class Gallery:
                 i = Image.open(tf)
             if self.columns and n % self.columns == 0:
                 html.append('<tr>')
-            if self.descdb and self.descdb.has(f) and not caption:
+            if not caption:
                 caption = self.descdb.title(f)
             html.append(self.formatter(f, tf, caption))
             n += 1
@@ -264,13 +310,14 @@ if __name__ == "__main__":
         sys.exit(1)
     clobber = 1
     verbosity = 0
-    descdb = None
+    photobase = None
     for option, value in opts:
-        if option == '-f': descdb = Photobase(value)
+        if option == '-f': photobase = Photobase(value)
         if option == '-k': clobber = 0
         if option == '-v': verbosity = 2
         if option == '-V': verbosity = 1
 
+    descdb = DescriptionDb(photobase)
     ingallery = 0
 
     for line in fileinput.input(files):
