@@ -4,7 +4,7 @@ Major changes (with focus on user-visible changes) to allergy, per version.
 
 _________________________________________
 
-allergy 3.0 (2005-07-07):
+allergy 3.0 (2005-07-08):
 	- New option -f for picking image descriptions from
 	  a separate file so you don't have to enter these as caption
 	  texts. This is useful if you already keep track of images
@@ -68,5 +68,5 @@ allergy 1.0 (2001-07-28):
 	- First public version.
 
 _________________________________________
-$Id: NEWS,v 1.15 2005-07-07 20:40:43 grahn Exp $
+$Id: NEWS,v 1.16 2005-07-07 20:41:03 grahn Exp $
 $Name:  $
