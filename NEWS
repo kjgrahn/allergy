@@ -4,13 +4,14 @@ Major changes (with focus on user-visible changes) to allergy, per version.
 
 _________________________________________
 
+allergy 3.0 (2005-07-07):
 	- New option -f for picking image descriptions from
 	  a separate file so you don't have to enter these as caption
 	  texts. This is useful if you already keep track of images
 	  from your digital camera, or whatever.
 
-	- Picks and displays the time a photo was taken based on the
-	  EXIF information in the image file, if available.
+	- Can now pick and display the time a photo was taken based on
+	  the EXIF information in the image file, if available.
 
 allergy 2.3 (2005-03-28):
 	- Bug fix: Never generate empty tables when there are no
@@ -67,5 +68,5 @@ allergy 1.0 (2001-07-28):
 	- First public version.
 
 _________________________________________
-$Id: NEWS,v 1.14 2005-07-07 12:21:22 grahn Exp $
+$Id: NEWS,v 1.15 2005-07-07 20:40:43 grahn Exp $
 $Name:  $

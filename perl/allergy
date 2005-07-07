@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy,v 1.31 2005-07-07 12:27:22 grahn Exp $
+# $Id: allergy,v 1.32 2005-07-07 20:40:43 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004, 2005 Jörgen Grahn <jgrahn@algonet.se>
@@ -48,6 +48,14 @@ class Feedback:
     def nop(self, s):
         pass
 
+def reversedate(s):
+    """Transform a standard 'yyyy-mm-dd' date string
+    to the less formal 'd.m.yyyy' format popular in Sweden.
+    """
+    date = map(int, s.split('-'))
+    date.reverse()
+    return '%d.%d.%d' % tuple(date)
+
 class Photobase:
     """Parsing the text/photos file.
     I can't be bothered to write its format down just now; see
@@ -57,6 +65,7 @@ class Photobase:
         pass
     emptyre = re.compile(r'^\s*$')
     commentre = re.compile(r'^#')
+    datetimere = re.compile(r'^(20\d{2})-(\d{2})-(\d{2})\s+([012]\d:[0-5]\d)$')
     def __init__(self, path):
         self.things = {}
         state = 0
@@ -73,16 +82,18 @@ class Photobase:
                 state = 1
                 continue
             if state==1:
-                state = 2
-                time = s
-                continue
+                if self.datetimere.match(s):
+                    state = 2
+                    datetime = s
+                    continue
+                raise self.ParseError, line
             if state==2:
                 s = s.strip()
                 if s:
                     text.append(s)
                     continue
                 state = 0
-                self.things[filename] = (filename, time, ' '.join(text))
+                self.things[filename] = (filename, datetime, ' '.join(text))
         if state==2:
             self.things[filename] = (filename, time, ' '.join(text))
         elif state!=0:
@@ -92,16 +103,23 @@ class Photobase:
         return self.things.has_key(file)
     def text(self, file):
         "The descriptive text for the image file 'file'."
-        filename, time, text = self.things[file]
+        filename, datetime, text = self.things[file]
         return text.replace('"', "'")
+    def time(self, file):
+        """The creation date and time for the image file 'file' as a
+        tuple ('d.m.yyyy', 'hh:mm').
+        """
+        filename, datetime, text = self.things[file]
+        date, time = datetime.split()
+        return (reversedate(date), time)
 
 class ExifTime:
     """Pulling the time a photo was taken from
     the EXIF information it contains, if at all possible.
     """
-    def __call__(self, f):
+    def time(self, f):
         """Return the generation time embedded in image file 'f' as a
-        tuple ('yyyy-mm-dd', 'hh:mm') or, for all kinds of errors and
+        tuple ('d.m.yyyy', 'hh:mm') or, for all kinds of errors and
         subnormal conditions, None.
 
         We prefer 'Image Generated' attributes to other time stamps,
@@ -115,12 +133,9 @@ class ExifTime:
                        'Image DateTime'):
                 if tags.has_key(id):
                     date, time = str(tags[id]).split()
-                    # I like my dates in the semi-formal sv_SE form 7.7.2005
-                    date = map(int, date.split(':'))
-                    date.reverse()
-                    date = '%d.%d.%d' % tuple(date)
-                    return (date, time[:5])
-        except:
+                    return (reversedate(date.replace(':', '-')),
+                            time[:5])
+        except (AttributeError, IOError):
             pass
         return None
 
@@ -133,19 +148,24 @@ class DescriptionDb:
     """Container for all sources of image information, except
     that in the allergy source itself. This means, in practice,
     the text/photos file and EXIF information embedded in the
-    images themselves. Both of these may be absent.
+    images themselves. Either or both of these may be absent.
     """
-    def __init__(self, photobase = None):
+    def __init__(self, photobase=None, exiftime=None):
         self.photobase = photobase
-        self.exiftime = ExifTime()
+        self.exiftime = exiftime
     def title(self, file):
         "A suitable title for the image file 'file', or the empty string."
         t = []
-        datetime = self.exiftime(file)
-        if datetime:
-            date, time = datetime
+        in_base = self.photobase and self.photobase.has(file)
+        if self.exiftime:
+            datetime = self.exiftime.time(file)
+            if datetime:
+                date, time = datetime
+                t.append(date)
+        elif in_base:
+            date, time = self.photobase.time(file)
             t.append(date)
-        if self.photobase and self.photobase.has(file):
+        if in_base:
             t.append(self.photobase.text(file))
         return '. '.join(t)
 
@@ -303,10 +323,10 @@ if __name__ == "__main__":
     import getopt
     import fileinput
 
-    usage = 'usage: allergy [-f file] [-k] [-v | -V] file ...'
+    usage = 'usage: allergy [-f file] [-e] [-k] [-v | -V] file ...'
 
     try:
-        opts, files = getopt.getopt(sys.argv[1:], 'f:kvV')
+        opts, files = getopt.getopt(sys.argv[1:], 'f:ekvV')
     except getopt.GetoptError, s:
         print >>sys.stderr, s
         print >>sys.stderr, usage
@@ -314,13 +334,15 @@ if __name__ == "__main__":
     clobber = 1
     verbosity = 0
     photobase = None
+    exiftime = None
     for option, value in opts:
         if option == '-f': photobase = Photobase(value)
+        if option == '-e': exiftime = ExifTime()
         if option == '-k': clobber = 0
         if option == '-v': verbosity = 2
         if option == '-V': verbosity = 1
 
-    descdb = DescriptionDb(photobase)
+    descdb = DescriptionDb(photobase, exiftime)
     ingallery = 0
 
     for line in fileinput.input(files):

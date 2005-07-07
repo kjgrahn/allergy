@@ -1,4 +1,4 @@
-.\" $Id: allergy.1,v 1.22 2005-07-07 12:21:22 grahn Exp $
+.\" $Id: allergy.1,v 1.23 2005-07-07 20:40:43 grahn Exp $
 .\" $Name:  $
 .\" 
 .\"
@@ -8,6 +8,7 @@ allergy \- thumbnail and HTML picture gallery creator
 .SH "SYNOPSIS"
 .B allergy
 .RB [ \-f \ file ]
+.RB [ \-e ]
 .RB [ \-k ]
 .RB [ \-v | \-V ]
 .I file
@@ -27,6 +28,11 @@ and writes the result to standard output.
 Use the text file
 .I file
 as a source of picture descriptions.
+.IP \-e
+Pull the date and time from the image's EXIF information,
+and ignore the information contained in the
+.B \-f
+file.
 .IP \-k
 (keep) Never regenerate existing thumbnails, even if they are
 newer than the source image.
@@ -181,15 +187,17 @@ If you provide no caption text but have a file describing the photos
 (see the
 .B \-f
 command-line option)
-the description from that file is used instead,
+the date, time and description from that file is used instead,
 if available.
 This only works for
 .BR title ,
 i.e. in the grid layout.
 .LP
-Additionally, if you provide no caption text
-but your images contain an EXIF date,
-that is also added to the description.
+Additionally, if you provide the
+.B \-e
+command-line option and no caption text,
+images containing a EXIF date
+will be annotated with that date.
 (For this to work, you need the
 .I EXIF
 python module.)
@@ -207,12 +215,12 @@ Comment lines start with a
 .IP \(bu
 First line in an entry is the file name, without path.
 .IP \(bu
-Second line is the creation time.
-This is ignored by
-.B allergy
-in favor of the
-.I EXIF
-information which hopefully exists.
+Second line is the creation time, on the format
+.IR yyyy-mm-dd\ hh:mm .
+Unless the
+.B \-e
+command-line option was given,
+this may be used in image titles.
 .IP \(bu
 Following lines, if present, is a description of the image.
 .LP
@@ -221,7 +229,7 @@ An entry could look like this:
 .ft CW
 .nf
 030701_24.jpg
-08:56
+2003-07-01 08:56
 mountains covered in show,
  on the border towards Norway,
  from R\(:odfj\(:allet
