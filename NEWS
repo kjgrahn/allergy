@@ -4,6 +4,10 @@ Major changes (with focus on user-visible changes) to allergy, per version.
 
 _________________________________________
 
+allergy 3.1 (2005-07-18):
+	- Fixed a silly bug in the -f file parser; crash if the
+	  file didn't end in an empty line.
+
 allergy 3.0 (2005-07-08):
 	- New option -f for picking image descriptions from
 	  a separate file so you don't have to enter these as caption
@@ -68,5 +72,5 @@ allergy 1.0 (2001-07-28):
 	- First public version.
 
 _________________________________________
-$Id: NEWS,v 1.16 2005-07-07 20:41:03 grahn Exp $
+$Id: NEWS,v 1.17 2005-07-18 18:41:23 grahn Exp $
 $Name:  $
