@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy,v 1.39 2008-07-17 22:48:50 grahn Exp $
+# $Id: allergy,v 1.40 2008-07-17 22:59:48 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004, 2005, 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -275,7 +275,7 @@ if __name__ == "__main__":
     import getopt
     import fileinput
 
-    usage = 'usage: allergy [-f file] [-e] [-k] [-v | -V] file ...'
+    usage = 'usage: allergy [-f file] ... [-e] [-k] [-v | -V] file ...'
 
     try:
         opts, files = getopt.getopt(sys.argv[1:], 'f:ekvV',
