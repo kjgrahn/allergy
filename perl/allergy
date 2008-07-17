@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy,v 1.36 2008-07-17 22:11:39 grahn Exp $
+# $Id: allergy,v 1.37 2008-07-17 22:29:51 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004, 2005, 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -287,10 +287,10 @@ if __name__ == "__main__":
         sys.exit(1)
     clobber = 1
     verbosity = 0
-    photobase = None
+    descriptions = []
     exiftime = None
     for option, value in opts:
-        if option == '-f': photobase = Photobase([value])
+        if option == '-f': descriptions.append(value)
         if option == '-e': exiftime = ExifTime()
         if option == '-k': clobber = 0
         if option == '-v': verbosity = 2
@@ -302,6 +302,11 @@ if __name__ == "__main__":
             print '%s, version %s' % cvs_says()
             print 'Copyright (c) 2001, 2004, 2005, 2008 Jörgen Grahn.'
             sys.exit(0)
+
+    if descriptions:
+        photobase = Photobase(descriptions)
+    else:
+        photobase = None
 
     descdb = DescriptionDb(photobase, exiftime)
     ingallery = 0
