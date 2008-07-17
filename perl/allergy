@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy,v 1.38 2008-07-17 22:48:11 grahn Exp $
+# $Id: allergy,v 1.39 2008-07-17 22:48:50 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004, 2005, 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -108,7 +108,7 @@ class DescriptionDb:
                 date, time = datetime
                 t.append(date)
         elif in_base:
-            date, time = self.photobase.time(file)
+            date, time = self.photobase.time(file).split()
             t.append(reversedate(date))
         if in_base:
             t.append(self.photobase.text(file))
