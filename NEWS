@@ -4,6 +4,13 @@ Major changes (with focus on user-visible changes) to allergy, per version.
 
 _________________________________________
 
+allergy 4.0 (2008-07-18):
+	- Exactly three years later.
+	- Split the -f file parser into Python module 'photobase', and
+	  extended the file format to contain two kinds of key phrases
+	  ("tags" in current lingo), useful for building indicies of
+	  photos per topic.
+
 allergy 3.1 (2005-07-18):
 	- Fixed a silly bug in the -f file parser; crash if the
 	  file didn't end in an empty line.
@@ -72,5 +79,5 @@ allergy 1.0 (2001-07-28):
 	- First public version.
 
 _________________________________________
-$Id: NEWS,v 1.17 2005-07-18 18:41:23 grahn Exp $
+$Id: NEWS,v 1.18 2008-07-17 22:58:14 grahn Exp $
 $Name:  $
