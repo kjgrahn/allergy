@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy,v 1.33 2005-07-18 18:41:23 grahn Exp $
+# $Id: allergy,v 1.34 2008-07-17 11:11:28 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004, 2005 Jörgen Grahn <jgrahn@algonet.se>
@@ -16,6 +16,8 @@ import re
 import os.path
 import os
 import sys
+
+from Photobase import Photobase
 
 class Any:
     "The wildcard object."
@@ -55,63 +57,6 @@ def reversedate(s):
     date = map(int, s.split('-'))
     date.reverse()
     return '%d.%d.%d' % tuple(date)
-
-class Photobase:
-    """Parsing the text/photos file.
-    I can't be bothered to write its format down just now; see
-    allergy(1) for the quick version.
-    """
-    class ParseError(Exception):
-        pass
-    emptyre = re.compile(r'^\s*$')
-    commentre = re.compile(r'^#')
-    datetimere = re.compile(r'^(20\d{2})-(\d{2})-(\d{2})\s+([012]\d:[0-5]\d)$')
-    def __init__(self, path):
-        self.things = {}
-        state = 0
-        line = 0
-        f = open(path, 'r')
-        for s in f.xreadlines():
-            s = s.rstrip()
-            line += 1
-            if state==0:
-                if self.emptyre.match(s) or self.commentre.match(s):
-                    continue
-                filename = s
-                text = []
-                state = 1
-                continue
-            if state==1:
-                if self.datetimere.match(s):
-                    state = 2
-                    datetime = s
-                    continue
-                raise self.ParseError, line
-            if state==2:
-                s = s.strip()
-                if s:
-                    text.append(s)
-                    continue
-                state = 0
-                self.things[filename] = (filename, datetime, ' '.join(text))
-        if state==2:
-            self.things[filename] = (filename, datetime, ' '.join(text))
-        elif state!=0:
-            raise self.ParseError, line
-    def has(self, file):
-        "Do we have info on the image file 'file'?"
-        return self.things.has_key(file)
-    def text(self, file):
-        "The descriptive text for the image file 'file'."
-        filename, datetime, text = self.things[file]
-        return text.replace('"', "'")
-    def time(self, file):
-        """The creation date and time for the image file 'file' as a
-        tuple ('d.m.yyyy', 'hh:mm').
-        """
-        filename, datetime, text = self.things[file]
-        date, time = datetime.split()
-        return (reversedate(date), time)
 
 class ExifTime:
     """Pulling the time a photo was taken from
@@ -163,7 +108,7 @@ class DescriptionDb:
                 date, time = datetime
                 t.append(date)
         elif in_base:
-            date, time = self.photobase.time(file)
+            date, time = reversedate(self.photobase.time(file))
             t.append(date)
         if in_base:
             t.append(self.photobase.text(file))
@@ -336,7 +281,7 @@ if __name__ == "__main__":
     photobase = None
     exiftime = None
     for option, value in opts:
-        if option == '-f': photobase = Photobase(value)
+        if option == '-f': photobase = Photobase([value])
         if option == '-e': exiftime = ExifTime()
         if option == '-k': clobber = 0
         if option == '-v': verbosity = 2

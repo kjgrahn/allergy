@@ -37,7 +37,7 @@ LICENSE
 
 Allergy is available under the Modified BSD license.
 
-Copyright (c) 2004, 2005 Jörgen Grahn <jgrahn@algonet.se>
+Copyright (c) 2004, 2005, 2008 Jörgen Grahn
 All rights reserved.
 
 1. Redistributions of source code must retain the above copyright
@@ -64,7 +64,7 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
 IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 
-		-- Jörgen Grahn <jgrahn@algonet.se>
+		-- Jörgen Grahn <grahn+src@snipabacken.se>
 
 [1] Photoaddict <URL:http://photoaddict.sourceforge.net/> looks kind of
     promising, but I found out about it too late.
@@ -73,5 +73,5 @@ POSSIBILITY OF SUCH DAMAGE.
 [2] The EXIF module is available from
     http://home.cfl.rr.com/genecash/digital_camera.html
 
-$Id: README,v 1.10 2005-07-07 12:21:22 grahn Exp $
+$Id: README,v 1.11 2008-07-17 11:11:28 grahn Exp $
 $Name:  $
