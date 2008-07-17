@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy,v 1.35 2008-07-17 22:08:36 grahn Exp $
+# $Id: allergy,v 1.36 2008-07-17 22:11:39 grahn Exp $
 # $Name:  $
 #
-# Copyright (c) 2001, 2004, 2005 Jörgen Grahn <grahn+src@snipabacken.se>
+# Copyright (c) 2001, 2004, 2005, 2008 Jörgen Grahn <grahn+src@snipabacken.se>
 # All rights reserved.
 #
 """allergy - build thumbnails and html code to present
@@ -17,7 +17,7 @@ import os.path
 import os
 import sys
 
-from Photobase import Photobase
+from photobase import Photobase
 
 class Any:
     "The wildcard object."
@@ -264,6 +264,13 @@ class Gallery:
         return '\n'.join(html)
 
 
+def cvs_says(dollarname='$Name:  $'):
+    import re
+    m = re.match(r'\$'r'Name:\s+(.+?)-(\d+(-\d+)*)\D', dollarname)
+    if not m: return ('allergy', 'unknown')
+    return m.group(1), m.group(2).replace('-', '.')
+
+
 if __name__ == "__main__":
     import getopt
     import fileinput
@@ -271,7 +278,9 @@ if __name__ == "__main__":
     usage = 'usage: allergy [-f file] [-e] [-k] [-v | -V] file ...'
 
     try:
-        opts, files = getopt.getopt(sys.argv[1:], 'f:ekvV')
+        opts, files = getopt.getopt(sys.argv[1:], 'f:ekvV',
+                                    ['help',
+                                     'version'])
     except getopt.GetoptError, s:
         print >>sys.stderr, s
         print >>sys.stderr, usage
@@ -286,6 +295,13 @@ if __name__ == "__main__":
         if option == '-k': clobber = 0
         if option == '-v': verbosity = 2
         if option == '-V': verbosity = 1
+        if option == '--help':
+            print usage
+            sys.exit(0)
+        if option == '--version':
+            print '%s, version %s' % cvs_says()
+            print 'Copyright (c) 2001, 2004, 2005, 2008 Jörgen Grahn.'
+            sys.exit(0)
 
     descdb = DescriptionDb(photobase, exiftime)
     ingallery = 0
