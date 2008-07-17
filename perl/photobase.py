@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: photobase.py,v 1.1 2008-07-17 11:11:28 grahn Exp $
+# $Id: photobase.py,v 1.2 2008-07-17 22:32:26 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004, 2005, 2008 Jörgen Grahn
@@ -120,7 +120,7 @@ class Photobase:
         """The creation date and time for the image file 'file' as a
         string 'yyyy-mm-dd hh:mm'.
         """
-        return self.file[file].datetime
+        return self.files[file].datetime
 
 
 if __name__ == "__main__":
