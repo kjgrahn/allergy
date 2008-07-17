@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: setup.py,v 1.1 2008-07-17 11:11:28 grahn Exp $
+# $Id: setup.py,v 1.2 2008-07-17 21:44:59 grahn Exp $
 #
 from distutils.core import setup
 
@@ -22,4 +22,6 @@ setup(name = name,
       license = 'GPL',
       url = 'http://snipabacken.se/~grahn/comp/',
 
-      py_modules = ['perl/photobase.py'])
+      package_dir = {'': 'perl'},
+      py_modules = ['photobase'],
+      scripts = ['perl/allergy'])
