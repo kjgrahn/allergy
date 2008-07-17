@@ -1,4 +1,4 @@
-.\" $Id: allergy.1,v 1.26 2008-07-17 22:11:57 grahn Exp $
+.\" $Id: allergy.1,v 1.27 2008-07-17 22:27:01 grahn Exp $
 .\" $Name:  $
 .\" 
 .\"
@@ -227,7 +227,18 @@ Unless the
 command-line option was given,
 this may be used in image titles.
 .IP \(bu
-Following lines, if present, is a description of the image.
+Following lines, if present, describe the image.
+Line breaks and spacing is irrelevant.
+.IP \(bu
+Straight [brackets] mark keywords or key phrases in the description.
+These nest, so the phrase
+.B "foo [bar [baz]]"
+contains two key phrases,
+.B "bar"
+and
+.BR "bar baz" .
+.IP \(bu
+Curly {brackets} also mark keywords, but are not shown as part of the description.
 .LP
 An entry could look like this:
 .IP 
@@ -235,9 +246,9 @@ An entry could look like this:
 .nf
 030701_24.jpg
 2003-07-01 08:56
-mountains covered in show,
- on the border towards Norway,
- from R\(:odfj\(:allet
+mountains covered in snow,
+on the border towards [Norway], from [R\(:odfj\(:allet]
+{landscape}
 .fi
 .
 .SH "GENERATED HTML CODE"
@@ -288,7 +299,7 @@ Python module is needed for finding the creation date
 of digital camera photos.
 .
 .SH "AUTHOR"
-J\(:orgen Grahn <grahn+src@snipabacken.se>
+J\(:orgen Grahn \[fo]grahn+src@snipabacken.se\[fc]
 .
 .SH "LICENSE"
 The Modified BSD license.
