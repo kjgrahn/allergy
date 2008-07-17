@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: setup.py,v 1.2 2008-07-17 21:44:59 grahn Exp $
+# $Id: setup.py,v 1.3 2008-07-17 22:12:10 grahn Exp $
 #
 from distutils.core import setup
 
@@ -24,4 +24,6 @@ setup(name = name,
 
       package_dir = {'': 'perl'},
       py_modules = ['photobase'],
-      scripts = ['perl/allergy'])
+      # A real Makefile will install the program ...
+      # scripts = ['perl/allergy'],
+      )
