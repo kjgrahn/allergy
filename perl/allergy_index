@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.1 2008-07-18 19:45:46 grahn Exp $
+# $Id: allergy_index,v 1.2 2008-07-18 20:14:50 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -24,28 +24,45 @@ def reversedate(s):
     date.reverse()
     return '%d.%d.%d' % tuple(date)
 
+
 class Generator(object):
+
     def __init__(self, photobase):
         self._pb = photobase
         self._by_date = self._pb.files.values()
         self._by_date.sort(key = lambda x: x.datetime, reverse = True)
         
-    def generate(self, f):
+    def _generate_timeline(self, f):
         w = f.write
-        py = pym = None
+        py = pym = pdate = pdesc = None
         for p in self._by_date:
+            date, time = p.datetime.split(None, 2)
             y, m, _ = p.datetime.split('-', 2)
+            desc = p.description
             if py != y:
                 w('%s\n' % y)
+                py = y
             if pym != (y, m):
                 w('  %s\n' % m)
-            py = y
-            pym = y, m
-            w('    %s -- %s\n' % (p.datetime,
-                                  p.description))
+                pym = y, m
+            if pdate != date:
+                pdate = date
+            else:
+                date = ''
+            if pdesc != desc:
+                pdesc = desc
+            else:
+                desc = ''
+            w('    %10s %5s -- %s\n' % (date, time,
+                                        desc))
+
+    def generate(self, f):
+        self._generate_timeline(f)
+
 
 def generate(pb, f):
     Generator(pb).generate(f)
+
 
 def cvs_says(dollarname='$Name:  $'):
     import re
