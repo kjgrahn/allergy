@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: photobase.py,v 1.2 2008-07-17 22:32:26 grahn Exp $
+# $Id: photobase.py,v 1.3 2008-07-18 09:14:37 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004, 2005, 2008 Jörgen Grahn
@@ -14,6 +14,7 @@ import sys
 
 
 _bracketsub = re.compile(r'[\[\]]').sub
+_squeezewhitesub = re.compile(r'\s{2,}').sub
 _angledre = re.compile(r'\{(.+?)\}')
 
 def extract_keys(s):
@@ -30,14 +31,16 @@ def extract_keys(s):
     except AttributeError:
         pass
     stack = []
-    for i, ch in zip(xrange(len(s)), s):
+    i = 0
+    for ch in s:
         if ch=='[':
             stack.append(i)
         elif ch==']':
             k = stack.pop()
             keys.append(s[k+1: i])
-    s = ' '.join(_bracketsub('', s).split())
-    keys = [ ' '.join(_bracketsub('', x).split()) for x in keys ]
+        i += 1
+    s = _squeezewhitesub(' ', _bracketsub('', s))
+    keys = [ _squeezewhitesub(' ', _bracketsub('', x)) for x in keys ]
     keymap = {}
     for k in keys:
         keymap[k] = None
