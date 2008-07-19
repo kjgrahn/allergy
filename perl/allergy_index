@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.4 2008-07-19 08:49:29 grahn Exp $
+# $Id: allergy_index,v 1.5 2008-07-19 10:00:02 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -24,6 +24,11 @@ def reversedate(s):
     date.reverse()
     return '%d.%d.%d' % tuple(date)
 
+def escape(s):
+    s = s.replace('<', '&lt;')
+    s = s.replace('>', '&gt;')
+    s = s.replace('&', '&amp;')
+    return s
 
 class Generator(object):
 
@@ -31,25 +36,63 @@ class Generator(object):
         self._pb = photobase
         self._by_date = self._pb.files.values()
         self._by_date.sort(key = lambda x: x.datetime, reverse = True)
-        
+
+    _months = {1: 'januari', 2: 'februari', 3: 'mars',
+               4: 'april', 5: 'maj', 6: 'juni',
+               7: 'juli', 8: 'augusti', 9: 'september',
+               10: 'oktober', 11: 'november', 12: 'december'}
+
     def _generate_toc(self, f):
         w = f.write
-        w('efter datum\n'
-          'index till nyckelord\n'
-          'efter nyckelord\n')
+        w('<h1>Innehåll</h1>\n'
+          '\n'
+          '<ul>\n'
+          '<li><a href="#by_date">Foton efter datum</a> (senaste först)\n'
+          '<li><a href="#key_index">Index till nyckelord</a>\n'
+          '<li><a href="#by_keyword">Foton efter nyckelord</a>\n'
+          '</ul>\n'
+          '\n')
+
+    def _generate_timeindex(self, f):
+        w = f.write
+        months = {}
+        for p in self._by_date:
+            y, m, _ = p.datetime.split('-', 2)
+            ym = (int(y), int(m))
+            months[ym] = None
+        months = months.keys()
+        months.sort(reverse=True)
+        firstyear, _ = months[0]
+        lastyear, _ = months[-1]
+        w('<ul>\n')
+        for y in xrange(firstyear, lastyear-1, -1):
+            w('<li>%04d:'% y)
+            for m in range(1, 13):
+                if (y, m) in months:
+                    w(' <a href="#%04d-%02d">%s</a>' % (y, m, self._months[m]))
+                else:
+                    w(' %s' % self._months[m])
+            w('\n')
+        w('</ul>\n')
+        
+            
 
     def _generate_timeline(self, f):
         w = f.write
-        py = pym = pdate = pdesc = None
+        w('<h1><a name="by_date">Foton efter datum</a></h1>\n'
+          '\n')
+        self._generate_timeindex(f)
+        w('\n')
+        pym = pdate = pdesc = None
         for p in self._by_date:
             date, time = p.datetime.split(None, 2)
             y, m, _ = p.datetime.split('-', 2)
             desc = p.description
-            if py != y:
-                w('%s\n' % y)
-                py = y
             if pym != (y, m):
-                w('  %s\n' % m)
+                if pym is not None:
+                    w('</ul>\n')
+                w('<h2><a name="%s-%s">%s %s</a></h2>\n' % (y, m, self._months[int(m)], y))
+                w('<ul>\n')
                 pym = y, m
             if pdate != date:
                 pdate = date
@@ -59,18 +102,25 @@ class Generator(object):
                 pdesc = desc
             else:
                 desc = ''
-            w('    %10s %5s -- %s\n' % (date, time,
-                                        desc))
+            w('<li><tt>%10s %5s</tt> &mdash; %s\n' % (date, time,
+                                                      escape(desc)))
+        w('</ul>\n')
 
     def _generate_index_index(self, f):
         w = f.write
+        w('<h1><a name="key_index">Index till nyckelord</a></h1>\n'
+          '\n'
+          '<p>\n')
         kk = self._pb.keys.keys()
         kk.sort(key = str.lower)
-        w(' -- '.join(kk))
+        w(' &mdash; '.join(kk))
         w('\n')
 
     def _generate_index(self, f):
         w = f.write
+        w('<h1><a name="by_keyword">Foton efter nyckelord</a></h1>\n'
+          '\n'
+          '<p>\n')
         kk = self._pb.keys.keys()
         kk.sort(key = str.lower)
         for k in kk:
@@ -90,18 +140,34 @@ class Generator(object):
                 else:
                     desc = ''
                 w('    %10s %5s -- %s\n' % (date, time,
-                                            desc))
+                                            escape(desc)))
 
 
     def generate(self, f):
+        w = f.write
+        w('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">\n'
+          '<html>\n'
+          '\n'
+          '<head>\n'
+          '<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">\n'
+          '<meta http-equiv="Content-Language" content="sv">\n'
+          '<link rel="stylesheet" href="../plain.css" type="text/css" title="plain">\n'
+          '<link rev="made" href="mailto:grahn+home@snipabacken.se">\n'
+          '<title>Photo gallery: index</title>\n'
+          '</head>\n'
+          '\n'
+          '<body>\n'
+          '\n')
         self._generate_toc(f)
-        f.write('\n')
+        w('\n')
         self._generate_timeline(f)
-        f.write('\n')
+        w('\n')
         self._generate_index_index(f)
-        f.write('\n')
+        w('\n')
         self._generate_index(f)
-
+        w('\n'
+          '</body>\n'
+          '</html>\n')
 
 def generate(pb, f):
     Generator(pb).generate(f)
