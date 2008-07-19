@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.2 2008-07-18 20:14:50 grahn Exp $
+# $Id: allergy_index,v 1.3 2008-07-19 07:40:48 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -56,8 +56,36 @@ class Generator(object):
             w('    %10s %5s -- %s\n' % (date, time,
                                         desc))
 
+    def _generate_index(self, f):
+        w = f.write
+        kk = self._pb.keys.keys()
+        kk.sort(key = str.lower)
+        for k in kk:
+            w('%s\n' % k)
+            pb = self._pb.keys[k][:]
+            pb.sort(key = lambda x: x.datetime, reverse = False)
+            pdate = pdesc = None
+            for p in pb:
+                date, time = p.datetime.split(None, 2)
+                desc = p.description
+                if pdate != date:
+                    pdate = date
+                else:
+                    date = ''
+                if pdesc != desc:
+                    pdesc = desc
+                else:
+                    desc = ''
+                w('    %10s %5s -- %s\n' % (date, time,
+                                            desc))
+
+
     def generate(self, f):
         self._generate_timeline(f)
+        f.write('\n'
+                '---'
+                '\n')
+        self._generate_index(f)
 
 
 def generate(pb, f):
