@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.3 2008-07-19 07:40:48 grahn Exp $
+# $Id: allergy_index,v 1.4 2008-07-19 08:49:29 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -32,6 +32,12 @@ class Generator(object):
         self._by_date = self._pb.files.values()
         self._by_date.sort(key = lambda x: x.datetime, reverse = True)
         
+    def _generate_toc(self, f):
+        w = f.write
+        w('efter datum\n'
+          'index till nyckelord\n'
+          'efter nyckelord\n')
+
     def _generate_timeline(self, f):
         w = f.write
         py = pym = pdate = pdesc = None
@@ -55,6 +61,13 @@ class Generator(object):
                 desc = ''
             w('    %10s %5s -- %s\n' % (date, time,
                                         desc))
+
+    def _generate_index_index(self, f):
+        w = f.write
+        kk = self._pb.keys.keys()
+        kk.sort(key = str.lower)
+        w(' -- '.join(kk))
+        w('\n')
 
     def _generate_index(self, f):
         w = f.write
@@ -81,10 +94,12 @@ class Generator(object):
 
 
     def generate(self, f):
+        self._generate_toc(f)
+        f.write('\n')
         self._generate_timeline(f)
-        f.write('\n'
-                '---'
-                '\n')
+        f.write('\n')
+        self._generate_index_index(f)
+        f.write('\n')
         self._generate_index(f)
 
 
