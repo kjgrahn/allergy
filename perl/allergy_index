@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.5 2008-07-19 10:00:02 grahn Exp $
+# $Id: allergy_index,v 1.6 2008-07-21 09:19:05 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -113,6 +113,7 @@ class Generator(object):
           '<p>\n')
         kk = self._pb.keys.keys()
         kk.sort(key = str.lower)
+        kk = [ '<a href="#%s">%s</a>' % (k, escape(k)) for k in kk ]
         w(' &mdash; '.join(kk))
         w('\n')
 
@@ -124,7 +125,8 @@ class Generator(object):
         kk = self._pb.keys.keys()
         kk.sort(key = str.lower)
         for k in kk:
-            w('%s\n' % k)
+            w('<h2><a name="%s">%s</a></h2>\n' % (k, k))
+            w('<ul>\n')
             pb = self._pb.keys[k][:]
             pb.sort(key = lambda x: x.datetime, reverse = False)
             pdate = pdesc = None
@@ -139,8 +141,9 @@ class Generator(object):
                     pdesc = desc
                 else:
                     desc = ''
-                w('    %10s %5s -- %s\n' % (date, time,
-                                            escape(desc)))
+                w('<li>%10s %5s &mdash; %s\n' % (date, time,
+                                                 escape(desc)))
+            w('</ul>\n')
 
 
     def generate(self, f):
