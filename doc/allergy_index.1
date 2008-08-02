@@ -1,5 +1,5 @@
 .ig
-$Id: allergy_index.1,v 1.2 2008-08-02 12:28:57 grahn Exp $
+$Id: allergy_index.1,v 1.3 2008-08-02 12:56:25 grahn Exp $
 $Name:  $
 ..
 .
@@ -11,7 +11,7 @@ $Name:  $
 .
 .
 .SH "NAME"
-allergy_index \- serve picture gallery indices over HTTP
+allergy_index \- serve photo gallery indices over HTTP
 .
 .
 .SH "SYNOPSIS"
@@ -20,11 +20,10 @@ allergy_index \- serve picture gallery indices over HTTP
 .I descriptions-file
 \&...
 .B \-b
-.I picture-url
+.I photo-url
 .B \-p
-.I picture-path
-.BI http:// hostname
-.RI [ \fB:\fPport ]
+.I photo-path
+.BI http:// hostname : port
 .br
 .B "allergy_index --help"
 .br
@@ -33,11 +32,11 @@ allergy_index \- serve picture gallery indices over HTTP
 .
 .SH "DESCRIPTION"
 .B Allergy_index
-takes a set of pictures (usually photos) and files describing the pictures,
+takes a set of digital photos (or other pictures) and files describing them,
 and presents a series of indices of them over HTTP (i.e. it acts as a web server).
-The pictures are indexed by date, by category, by keyword and so on.
+The photos are indexed by date, by category, by keyword and so on.
 .PP
-Actual pictures are assumed to be server by a real web server;
+Actual photos are assumed to be server by a real web server;
 this utility only serves link pages pointing to the real image files.
 .IP
 It could simply have generated static index pages for serving by the
@@ -48,15 +47,15 @@ or thousands of tiny ones, due to the keyword indexing.
 .SH "OPTIONS"
 .
 .BP "\-f \fIdescriptions-file"
-A file with picture names, dates, descriptions and keywords,
+A file with photo names, dates, descriptions and keywords,
 as documented in
 .BR allergy (1).
 You may specify several of these.
 .
-.BP "\-b \fIpicture-url"
+.BP "\-b \fIphoto-url"
 The base URL for the actual photos.
 .
-.BP "\-p \fIpicture-path"
+.BP "\-p \fIphoto-path"
 The base path for the actual photos.
 This must correspond to the base URL given using the
 .B \-b
@@ -65,15 +64,24 @@ For example, if the directory
 .I ~bar/public_html/photos/
 on host
 .I foo
-is full of pictures and is served to the world using the URL
+is full of photos and is served to the world using the URL
 .IR http://foo/~bar/photos/ ,
 then those two names should be passed together, as
 .B \-p
 and
 .BR \-b .
 .
-.BP "http://\fIhostname, \fPhttp://\fIhostname\fP:\fIport"
-XXX
+.BP "http://\fIhostname\fP:\fIport"
+The URL where
+.B allergy_index
+will appear. The standard HTTP port will typically be occupied by a real
+web server, so you have to provide it explicitly here.
+To listen on all interfaces, specify
+.B *
+as
+.IR hostname ,
+for example
+.IR http://*:8001 .
 .
 .
 .SH "URLs"
@@ -82,35 +90,35 @@ The web interface of
 .B allergy_index
 looks as follows:
 .
-.IP "\fB/\fP, \fB/index.html\fP"
+.IP "\fB/\fP, \fB/index.html"
 The front page.
 .
-.IP "\fB/species\fP, \fB/species/\fP"
-The list of species.
+.IP "\fB/all"
+All photos, by reverse date.
 .
-.IP "\fB/species/\fIname"
-The page for a certain plant, with
-the field lists where it is included.
+.IP "\fB/\fIcategory"
+All photos in category
+.IR category ,
+by reverse date.
+A category is just a fancy name for the directory the photo resides in,
+relative to the base path.
 .
-.IP "\fB/list\fP, \fB/list/\fP"
-The list of field lists.
-This is a
-.I huge
-document.
+.IP "\fB/\fIyear"
+All photos from a certain year (given as
+.IR yyyy ),
+by reverse date.
 .
-.IP "\fB/list/\fIid"
-The page for the field list with numerical ID
-.IR id .
+.IP "\fB/\fIyear\fB\-\fPmonth"
+Like
+.BR /\fIyear\fP ,
+but narrowed down further to a specific month.
 .
-.IP "\fB/socken\fP, \fB/socken/\fP"
-The list of
-.IR socken s
-or (in English)
-.IR parishes .
+.IP "\fB/keywords\fP, \fB/key\fP, \fB/key/\fP"
+All keywords, in alphabetical order.
 .
-.IP "\fB/socken/\fIname"
-The list of field lists for a certain
-.IR socken .
+.IP "\fB/key/\fIkeyword"
+All photos matching the key
+.IR keyword .
 .
 .IP "\fB/css"
 The style sheet applied to all pages.
@@ -119,7 +127,7 @@ The style sheet applied to all pages.
 The
 .I "robots exclusion standard"
 document,
-preventing mirroring or indexing of the flora.
+preventing mirroring or indexing of the descriptions and photos.
 .
 .
 .
