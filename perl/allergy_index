@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.7 2008-08-02 19:33:49 grahn Exp $
+# $Id: allergy_index,v 1.8 2008-08-02 20:04:16 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -10,9 +10,10 @@
 """build a html photo index
 """
 import re
-import os.path
 import os
-import sys
+import BaseHTTPServer
+import time
+import gzip
 
 from photobase import Photobase
 
@@ -176,16 +177,108 @@ def generate(pb, f):
     Generator(pb).generate(f)
 
 
-def cvs_says(dollarname='$Name:  $'):
+def _cvs_says(dollarname='$Name:  $'):
     m = re.match(r'\$'r'Name:\s+(.+?)-(\d+(-\d+)*)\D', dollarname)
     if not m: return ('allergy', 'unknown')
     return m.group(1), m.group(2).replace('-', '.')
 
 
+def _date_time_string(epochtime):
+    """Return 'epochtime' formatted for a message header,
+    i.e. as a rfc1123-date. Stolen from BaseHTTPServer.
+    """
+    weekdayname = ('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun')
+    monthname = (None,
+                 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec')
+    year, month, day, hh, mm, ss, wd, y, z = time.gmtime(epochtime)
+    s = "%s, %02d %3s %4d %02d:%02d:%02d GMT" % (
+            weekdayname[wd],
+            day, monthname[month], year,
+            hh, mm, ss)
+    return s
+
+
+class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
+    """Handler for one request. Except for the inherited stuff
+    and the domain-specific stuff, it supports generating
+    an Expires: header and transparent 'gzip' Transfer-Encoding.
+    """
+    server_version = '%s/%s' % _cvs_says()
+
+    def do_GET(self):
+        p = self.path
+        server = self.server
+        self.gzfile = None
+        if p in ('/', '/index.html'):
+            server.static.get_index(self)
+        elif p in ('/species/', '/species'):
+            server.spl.get(self)
+        elif p.startswith('/species/'):
+            server.sp.get(self, p)
+        elif p in ('/list/', '/list'):
+            server.flistlist.get(self)
+        elif p=='/karta':
+            server.flistlist.get_image(self)
+        elif p.startswith('/list/'):
+            server.flist.get(self, p)
+        elif p in ('/socken/', '/socken'):
+            server.sockenlist.get(self)
+        elif p.startswith('/socken/'):
+            server.socken.get(self, p)
+        elif p=='/css':
+            server.static.get_css(self)
+        elif p=='/robots.txt':
+            server.static.get_robots(self)
+        else:
+            server.static.get_404(self)
+
+    def end_headers(self, try_gzip=True):
+        """Except from the base end_headers(), also optionally prepare the
+        response for Content-Encoding:gzip, if the client is prepared
+        for it. Modifies what the write() and close() calls will
+        do. Ugly, but then so is BaseHTTPServer ...
+        """
+        z = try_gzip and self.accepts_gzip_te()
+        if z:
+            self.send_header('Content-Encoding', 'gzip')
+        BaseHTTPServer.BaseHTTPRequestHandler.end_headers(self)
+        if z:
+            self.gzfile = gzip.GzipFile(mode='ab',
+                                        fileobj=self.wfile)
+
+    def send_expires_header(self, n=7):
+        """Send an 'Expires' header, set to 'n' days from now.
+        """
+        self.send_header('Expires', _date_time_string(time.time() + n*24*60*60))
+    def accepts_gzip_te(self):
+        """True iff the client accepts 'gzip' transfer encoding.
+        XXX Possibly only defined from within do_FOO.
+        """
+        te = self.headers.get('Accept-Encoding', '')
+        return 'gzip' in [s.strip() for s in te.split(',')]
+    def write(self, s):
+        if self.gzfile:
+            self.gzfile.write(s)
+        else:
+            self.wfile.write(s)
+    def close(self):
+        """Logically close the output file (something we only do to
+        the gzip stream; someone else owns the socket lifetime).
+        """
+        if self.gzfile:
+            self.gzfile.close()        
+
+
+class Server(BaseHTTPServer.HTTPServer):
+    def __init__(self, address, photobase):
+        BaseHTTPServer.HTTPServer.__init__(self, address, Handler)
+        self._photobase = photobase
+
+
 if __name__ == "__main__":
     import getopt
-    import fileinput
-    import os
+    import sys
 
     prog = os.path.basename(sys.argv[0])
 
@@ -209,23 +302,23 @@ if __name__ == "__main__":
                 sys.exit(0)
             if option == '--version':
                 print prog
-                print '%s, version %s' % cvs_says()
+                print '%s, version %s' % _cvs_says()
                 print 'Copyright (c) 2008 Jörgen Grahn.'
                 sys.exit(0)
         if len(descriptions)==0 or len(baseurl)!=1 or not pbasepath or not pbaseurl:
             raise ValueError('required argument missing')
-        m = re.match(r'http://(\w*?):(\w+)', baseurl[0])
-        host, port = m.groups()
+        m = re.match(r'http://(\w*?):(\d+)', baseurl[0])
         if not m:
             raise ValueError('incorrect base URL')
+        host, port = m.groups(); port = int(port)
+
     except (ValueError, getopt.GetoptError), s:
         print >>sys.stderr, 'error:', s
         print >>sys.stderr, usage
         sys.exit(1)
 
-    if descriptions:
+    try:
         photobase = Photobase(descriptions)
-    else:
-        photobase = None
-
-    generate(photobase, sys.stdout)
+        Server((host, port), photobase).serve_forever()
+    except KeyboardInterrupt:
+        pass
