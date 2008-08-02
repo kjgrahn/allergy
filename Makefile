@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.3 2008-07-17 22:12:10 grahn Exp $
+# $Id: Makefile,v 1.4 2008-08-02 21:45:17 grahn Exp $
 #
 # Makefile
 #
@@ -12,10 +12,12 @@ INSTALLBASE = /usr/local
 
 all:
 
-install: perl/allergy doc/allergy.1
+install:
 	python ./setup.py install --prefix $(INSTALLBASE) --force
 	install -m755 perl/allergy $(INSTALLBASE)/bin/
+	install -m755 perl/allergy_index $(INSTALLBASE)/bin/
 	install -m644 doc/allergy.1 $(INSTALLBASE)/man/man1/
+	install -m644 doc/allergy_index.1 $(INSTALLBASE)/man/man1/
 
 clean:
 	python ./setup.py clean
