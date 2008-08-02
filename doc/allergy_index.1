@@ -1,0 +1,128 @@
+.ig
+$Id: allergy_index.1,v 1.1 2008-08-02 12:28:25 grahn Exp $
+$Name:  $
+..
+.
+.de BP
+.IP "\\fB\\$*"
+..
+.
+.TH allergy_index 1 "AUG 2008" "Allergy" "User Manuals"
+.SH "NAME"
+allergy_index \- serve picture gallery indices over HTTP
+.SH "SYNOPSIS"
+.B allergy_index
+.B \-f
+.I descriptions-file
+\&...
+.B \-b
+.I picture-url
+.B \-p
+.I picture-path
+.BI http:// hostname
+.RI [ \fB:\fPport ]
+.br
+.B "allergy_index --help"
+.br
+.B "allergy_index --version"
+.
+.
+.SH "DESCRIPTION"
+.B Allergy_index
+takes a set of pictures (usually photos) and files describing the pictures,
+and presents a series of indices of them over HTTP (i.e. it acts as a web server).
+The pictures are indexed by date, by category, by keyword and so on.
+.PP
+Actual pictures are assumed to be server by a real web server;
+this utility only serves link pages pointing to the real image files.
+.IP
+It could simply have generated static index pages for serving by the
+main server, but that would have ended up as a few huge pages,
+or thousands of tiny ones, due to the keyword indexing.
+.
+.SH "OPTIONS"
+.
+.BP "\-f \fIdescriptions-file"
+A file with picture names, dates, descriptions and keywords,
+as documented in
+.BR allergy (1).
+You may specify several of these.
+.
+.BP "\-b \fIpicture-url"
+The base URL for the actual photos.
+.
+.BP "\-p \fIpicture-path"
+The base path for the actual photos.
+This must correspond to the base URL given using the
+.B \-b
+option.
+For example, if the directory
+.I ~bar/public_html/photos/
+on host
+.I foo
+is full of pictures and is served to the world using the URL
+.IR http://foo/~bar/photos/ ,
+then those two names should be passed together, as
+.B \-p
+and
+.BR \-b .
+.
+.BP "http://\fIhostname, \fPhttp://\fIhostname\fP:\fIport"
+XXX
+.
+.
+.SH "URLs"
+.
+The web interface of
+.B allergy_index
+looks as follows:
+.
+.IP "\fB/\fP, \fB/index.html\fP"
+The front page.
+.
+.IP "\fB/species\fP, \fB/species/\fP"
+The list of species.
+.
+.IP "\fB/species/\fIname"
+The page for a certain plant, with
+the field lists where it is included.
+.
+.IP "\fB/list\fP, \fB/list/\fP"
+The list of field lists.
+This is a
+.I huge
+document.
+.
+.IP "\fB/list/\fIid"
+The page for the field list with numerical ID
+.IR id .
+.
+.IP "\fB/socken\fP, \fB/socken/\fP"
+The list of
+.IR socken s
+or (in English)
+.IR parishes .
+.
+.IP "\fB/socken/\fIname"
+The list of field lists for a certain
+.IR socken .
+.
+.IP "\fB/css"
+The style sheet applied to all pages.
+.
+.IP "\fB/robots.txt"
+The
+.I "robots exclusion standard"
+document,
+preventing mirroring or indexing of the flora.
+.
+.
+.
+.SH "SEE ALSO"
+.BR allergy (1).
+.
+.SH "AUTHOR"
+J\(:orgen Grahn \[fo]grahn+src@snipabacken.se\[fc]
+.
+.SH "LICENSE"
+The Modified BSD license.
