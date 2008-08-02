@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: photobase.py,v 1.3 2008-07-18 09:14:37 grahn Exp $
+# $Id: photobase.py,v 1.4 2008-08-02 19:50:51 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004, 2005, 2008 Jörgen Grahn
@@ -52,6 +52,12 @@ class ParseError(Exception):
 
 
 class Photo:
+    """Just a collection of attributes describing the photo:
+    'filename'    - path-less file name
+    'datetime'    - creation date and time as a string (e.g. '2002-10-26 14:58')
+    'description' - textual description
+    'keys'        - a list of key strings
+    """
 
     datetimere = re.compile(r'^(\d{4})-(\d{2})-(\d{2})'
                             '\s+([012]\d:[0-5]\d)$')
@@ -71,6 +77,11 @@ class Photo:
             self.description, self.keys = extract_keys(s)
 
 class Photobase:
+    """A collection of photos. Public attributes:
+    'photos' - the list of Photo instances
+    'files'  - the mapping file name -> Photo instance
+    'keys'   - the mapping keyword string -> list of Photo instances
+    """
 
     emptyre = re.compile(r'^\s*$')
     commentre = re.compile(r'^#')
