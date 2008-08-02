@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.8 2008-08-02 20:04:16 grahn Exp $
+# $Id: allergy_index,v 1.9 2008-08-02 21:42:36 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -211,27 +211,71 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         server = self.server
         self.gzfile = None
         if p in ('/', '/index.html'):
-            server.static.get_index(self)
-        elif p in ('/species/', '/species'):
-            server.spl.get(self)
-        elif p.startswith('/species/'):
-            server.sp.get(self, p)
-        elif p in ('/list/', '/list'):
-            server.flistlist.get(self)
-        elif p=='/karta':
-            server.flistlist.get_image(self)
-        elif p.startswith('/list/'):
-            server.flist.get(self, p)
-        elif p in ('/socken/', '/socken'):
-            server.sockenlist.get(self)
-        elif p.startswith('/socken/'):
-            server.socken.get(self, p)
+            self.get_index()
         elif p=='/css':
-            server.static.get_css(self)
+            self.get_css()
         elif p=='/robots.txt':
-            server.static.get_robots(self)
+            self.get_robots()
         else:
-            server.static.get_404(self)
+            self.get_404('not found')
+
+    def get_index(self):
+        server = self.server
+        self.send_response(200)
+        self.send_header('Content-Type', 'text/html; charset=ISO-8859-1')
+        self.send_expires_header()
+        self.end_headers()
+        w = self.write
+        w('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"\n'
+          '"http://www.w3.org/TR/html4/strict.dtd">\n'
+          '<html>\n'
+          '\n'
+          '<head>\n'
+          '<meta http-equiv="Content-Language" content="sv">\n'
+          '<link rel="stylesheet" href="/css" type="text/css" title="plain">\n'
+          '<title>Foton: index</title>\n'
+          '</head>\n'
+          '\n'
+          '<body>\n')
+        w('<p>Foo.')
+        w('</body>\n'
+          '</html>\n')
+        self.close()
+
+    def get_robots(self):
+        self.send_response(200)
+        self.send_header('Content-Type', 'text/plain; charset=ISO-8859-1')
+        self.send_expires_header()
+        self.end_headers()
+        self.write('User-agent: *\n'
+                   'Disallow: /\n')
+        self.close()
+
+    def get_css(self):
+        self.send_response(200)
+        self.send_header('Content-Type', 'text/css')
+        self.send_expires_header()
+        self.end_headers()
+        w = self.write
+        w('BODY {\n'
+          '	background-color: rgb(255,224,160);\n'
+          '	color: black\n'
+          '}\n')
+        w('*.latin {\n'
+          '	font-style: italic\n'
+          '}\n')
+        w('ul { list-style-type: none }\n')
+        w('a { text-decoration: none }\n')
+        w('a:hover { text-decoration: underline }\n')
+        self.close()
+
+    def get_404(self, s):
+        self.send_response(404)
+        self.send_header('Content-Type', 'text/plain; charset=ISO-8859-1')
+        self.send_expires_header()
+        self.end_headers()
+        self.write(s)
+        self.close()
 
     def end_headers(self, try_gzip=True):
         """Except from the base end_headers(), also optionally prepare the
@@ -247,21 +291,24 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.gzfile = gzip.GzipFile(mode='ab',
                                         fileobj=self.wfile)
 
-    def send_expires_header(self, n=7):
-        """Send an 'Expires' header, set to 'n' days from now.
+    def send_expires_header(self, n=3*60):
+        """Send an 'Expires' header, set to 'n' seconds from now.
         """
-        self.send_header('Expires', _date_time_string(time.time() + n*24*60*60))
+        self.send_header('Expires', _date_time_string(time.time() + n))
+
     def accepts_gzip_te(self):
         """True iff the client accepts 'gzip' transfer encoding.
         XXX Possibly only defined from within do_FOO.
         """
         te = self.headers.get('Accept-Encoding', '')
         return 'gzip' in [s.strip() for s in te.split(',')]
+
     def write(self, s):
         if self.gzfile:
             self.gzfile.write(s)
         else:
             self.wfile.write(s)
+
     def close(self):
         """Logically close the output file (something we only do to
         the gzip stream; someone else owns the socket lifetime).
@@ -273,7 +320,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 class Server(BaseHTTPServer.HTTPServer):
     def __init__(self, address, photobase):
         BaseHTTPServer.HTTPServer.__init__(self, address, Handler)
-        self._photobase = photobase
+        self.photobase = photobase
 
 
 if __name__ == "__main__":
