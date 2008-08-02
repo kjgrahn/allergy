@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.9 2008-08-02 21:42:36 grahn Exp $
+# $Id: allergy_index,v 1.10 2008-08-02 22:28:58 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -45,14 +45,6 @@ class Generator(object):
 
     def _generate_toc(self, f):
         w = f.write
-        w('<h1>Innehåll</h1>\n'
-          '\n'
-          '<ul>\n'
-          '<li><a href="#by_date">Foton efter datum</a> (senaste först)\n'
-          '<li><a href="#key_index">Index till nyckelord</a>\n'
-          '<li><a href="#by_keyword">Foton efter nyckelord</a>\n'
-          '</ul>\n'
-          '\n')
 
     def _generate_timeindex(self, f):
         w = f.write
@@ -221,26 +213,17 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     def get_index(self):
         server = self.server
-        self.send_response(200)
-        self.send_header('Content-Type', 'text/html; charset=ISO-8859-1')
-        self.send_expires_header()
-        self.end_headers()
+        self.preamble('Foton: index', contents=None)
         w = self.write
-        w('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"\n'
-          '"http://www.w3.org/TR/html4/strict.dtd">\n'
-          '<html>\n'
+        w('<h1>Innehåll</h1>\n'
           '\n'
-          '<head>\n'
-          '<meta http-equiv="Content-Language" content="sv">\n'
-          '<link rel="stylesheet" href="/css" type="text/css" title="plain">\n'
-          '<title>Foton: index</title>\n'
-          '</head>\n'
-          '\n'
-          '<body>\n')
-        w('<p>Foo.')
-        w('</body>\n'
-          '</html>\n')
-        self.close()
+          '<ul>\n'
+          '<li><a href="/by-date">Foton efter datum</a> (senaste först)\n'
+          '<li><a href="/by-keyword">Foton efter nyckelord</a>\n'
+          '<li><a href="/keywords">Index till nyckelord</a>\n'
+          '</ul>\n'
+          '\n')
+        self.postamble()
 
     def get_robots(self):
         self.send_response(200)
@@ -275,6 +258,41 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.send_expires_header()
         self.end_headers()
         self.write(s)
+        self.close()
+
+    def preamble(self, title,
+                 contents='/', up=None,
+                 start=None, prev=None, next=None):
+        """write HTTP headers for a successful HTML GET,
+        plus everything to the HTML body.
+        """
+        self.send_response(200)
+        self.send_header('Content-Type', 'text/html; charset=ISO-8859-1')
+        self.send_expires_header()
+        self.end_headers()
+        w = self.write
+        w('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"\n'
+          '"http://www.w3.org/TR/html4/strict.dtd">\n'
+          '<html>\n'
+          '\n'
+          '<head>\n'
+          '<meta http-equiv="Content-Language" content="sv">\n'
+          '<link rel="stylesheet" href="/css" type="text/css" title="plain">\n')
+        for type, uri in (('contents', contents),
+                          ('up', up),
+                          ('start', start),
+                          ('prev', prev),
+                          ('next', next)):
+            if uri:
+                w('<link rel="%s" href="%s">' % (type, uri))
+        w('<title>%s</title>\n' % title)
+        w('</head>\n'
+          '\n'
+          '<body>\n')
+
+    def postamble(self):
+        self.write('</body>\n'
+                   '</html>\n')
         self.close()
 
     def end_headers(self, try_gzip=True):
