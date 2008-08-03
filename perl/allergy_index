@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.11 2008-08-03 14:45:58 grahn Exp $
+# $Id: allergy_index,v 1.12 2008-08-03 15:07:12 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -195,22 +195,28 @@ def _huge_alpha_index(things, href, w):
     'href' is a function which creates an URI for a thing.
     The index gets sorted in alphabetical order.
     """
+    def _one_letter(title, things, href, w):
+        if not things:
+            return
+        w('<h2>%s</h2>\n' % title)
+        w('<p>')
+        acc = []
+        for t in things:
+            name = _escape(t)
+            ref = href(t)
+            acc.append('<a href="%s">%s</a>' % (ref, name))
+        w(' &mdash; '.join(acc))
+        w('\n')
     things = things[:]
     things.sort()
-    letters = 'abcdefghijklmnopqrstuvwxyzåäö'
+    letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ'
     for initial in letters:
-        t = [ x for x in things if x[0].lower() == initial ]
-        if t:
-            w('<h2>%s</h2>\n' % initial)
-            w('<p>')
-            w(' &mdash; '.join([ _escape(x) for x in t ]))
-            w('\n')
-    t = [ x for x in things if x[0].lower() not in letters ]
-    if t:
-        w('<h2>...</h2>\n')
-        w('<p>')
-        w(' &mdash; '.join([ _escape(x) for x in t ]))
-        w('\n')
+        _one_letter(initial,
+                    [ x for x in things if x[0].upper() == initial ],
+                    href, w)
+    _one_letter('...',
+                [ x for x in things if x[0].upper() not in letters ],
+                href, w)
 
 class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
     """Handler for one request. Except for the inherited stuff
@@ -254,7 +260,9 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         w = self.write
         w('<h1>Index till nyckelord</h1>\n')
         keys = server.photobase.keys.keys()
-        _huge_alpha_index(keys, None, w)
+        def href(key):
+            return '/key/' + key
+        _huge_alpha_index(keys, href, w)
         self.postamble()
 
     def get_robots(self):
