@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.13 2008-08-03 15:26:09 grahn Exp $
+# $Id: allergy_index,v 1.14 2008-08-03 16:48:23 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -56,29 +56,6 @@ class Generator(object):
         w('<h1><a name="by_date">Foton efter datum</a></h1>\n'
           '\n')
         self._generate_timeindex(f)
-        w('\n')
-        pym = pdate = pdesc = None
-        for p in self._by_date:
-            date, time = p.datetime.split(None, 2)
-            y, m, _ = p.datetime.split('-', 2)
-            desc = p.description
-            if pym != (y, m):
-                if pym is not None:
-                    w('</ul>\n')
-                w('<h2><a name="%s-%s">%s %s</a></h2>\n' % (y, m, self._months[int(m)], y))
-                w('<ul>\n')
-                pym = y, m
-            if pdate != date:
-                pdate = date
-            else:
-                date = ''
-            if pdesc != desc:
-                pdesc = desc
-            else:
-                desc = ''
-            w('<li><tt>%10s %5s</tt> &mdash; %s\n' % (date, time,
-                                                      escape(desc)))
-        w('</ul>\n')
 
     def _generate_index(self, f):
         w = f.write
@@ -157,6 +134,43 @@ def _date_time_string(epochtime):
             hh, mm, ss)
     return s
 
+_months = {1: 'januari', 2: 'februari', 3: 'mars',
+           4: 'april', 5: 'maj', 6: 'juni',
+           7: 'juli', 8: 'augusti', 9: 'september',
+           10: 'oktober', 11: 'november', 12: 'december'}
+
+def _year_month_index(photobase, href, w):
+    """An index over years and months.
+    """
+    # XXX We mess with the original ...
+    by_date = photobase.photos
+    by_date.sort(key = lambda x: x.datetime, reverse = True)
+    months = {}
+    for p in by_date:
+        y, m, _ = p.datetime.split('-', 2)
+        ym = (int(y), int(m))
+        months[ym] = None
+    months = months.keys()
+    months.sort(reverse=True)
+    firstyear, _ = months[0]
+    lastyear, _ = months[-1]
+    w('<ul>\n')
+    for y in xrange(firstyear, lastyear-1, -1):
+        ref = href(y)
+        if ref:
+            w('<li><a href="%s">%04d</a>:'% (ref, y))
+        else:
+            w('<li>%04d:'% y)
+        for m in range(1, 13):
+            if (y, m) in months:
+                ref = href(y, m)
+                w(' <a href="%s">%s</a>' % (ref, _months[m]))
+            else:
+                w(' %s' % _months[m])
+        w('\n')
+    w('</ul>\n')
+
+
 def _huge_alpha_index(things, href, w):
     """Render a HTML index for string sequence 'things' by writing through 'w'.
     'href' is a function which creates an URI for a thing.
@@ -216,8 +230,14 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         w('<h1>Innehåll</h1>\n'
           '\n'
           '<ul>\n'
-          '<li><a href="/by-date">Foton efter datum</a> (senaste först)\n'
-          '<li><a href="/by-keyword">Foton efter nyckelord</a>\n'
+          '<li><a href="/by-date">Foton efter datum</a> (senaste först)\n')
+        w('<li>Foton för ett år, eller en månad:\n')
+        def ympages(y, m=None):
+            if not m:
+                return '/%04d' % y
+            return '/%04d-%02d' % (y, m)
+        _year_month_index(server.photobase, ympages, w)
+        w('<li><a href="/by-keyword">Foton efter nyckelord</a>\n'
           '<li><a href="/keywords">Index till nyckelord</a>\n'
           '</ul>\n'
           '\n')
@@ -239,32 +259,41 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.preamble('Alla foton, efter datum', up='/')
         w = self.write
         w('<h1>Alla foton, efter datum</h1>\n')
+
+        def href(y, m=None):
+            if not m:
+                return None
+            return '#%04d-%02d' % (y, m)
+
+        _year_month_index(server.photobase, href, w)
+
         # XXX We mess with the original ...
-        by_date = server.photobase.photos
+        by_date = photobase.photos
         by_date.sort(key = lambda x: x.datetime, reverse = True)
-        _months = {1: 'januari', 2: 'februari', 3: 'mars',
-                   4: 'april', 5: 'maj', 6: 'juni',
-                   7: 'juli', 8: 'augusti', 9: 'september',
-                   10: 'oktober', 11: 'november', 12: 'december'}
-        months = {}
+
+        pym = pdate = pdesc = None
         for p in by_date:
+            date, time = p.datetime.split(None, 2)
             y, m, _ = p.datetime.split('-', 2)
-            ym = (int(y), int(m))
-            months[ym] = None
-        months = months.keys()
-        months.sort(reverse=True)
-        firstyear, _ = months[0]
-        lastyear, _ = months[-1]
-        w('<ul>\n')
-        for y in xrange(firstyear, lastyear-1, -1):
-            w('<li>%04d:'% y)
-            for m in range(1, 13):
-                if (y, m) in months:
-                    w(' <a href="#%04d-%02d">%s</a>' % (y, m, _months[m]))
-                else:
-                    w(' %s' % _months[m])
-            w('\n')
+            desc = p.description
+            if pym != (y, m):
+                if pym is not None:
+                    w('</ul>\n')
+                w('<h2><a name="%s-%s">%s %s</a></h2>\n' % (y, m, _months[int(m)], y))
+                w('<ul>\n')
+                pym = y, m
+            if pdate != date:
+                pdate = date
+            else:
+                date = ''
+            if pdesc != desc:
+                pdesc = desc
+            else:
+                desc = ''
+            w('<li><tt>%10s %5s</tt> &mdash; %s\n' % (date, time,
+                                                      _escape(desc)))
         w('</ul>\n')
+
         self.postamble()
 
     def get_robots(self):
