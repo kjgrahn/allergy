@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.10 2008-08-02 22:28:58 grahn Exp $
+# $Id: allergy_index,v 1.11 2008-08-03 14:45:58 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -25,7 +25,7 @@ def reversedate(s):
     date.reverse()
     return '%d.%d.%d' % tuple(date)
 
-def escape(s):
+def _escape(s):
     s = s.replace('<', '&lt;')
     s = s.replace('>', '&gt;')
     s = s.replace('&', '&amp;')
@@ -190,6 +190,27 @@ def _date_time_string(epochtime):
             hh, mm, ss)
     return s
 
+def _huge_alpha_index(things, href, w):
+    """Render a HTML index for string sequence 'things' by writing through 'w'.
+    'href' is a function which creates an URI for a thing.
+    The index gets sorted in alphabetical order.
+    """
+    things = things[:]
+    things.sort()
+    letters = 'abcdefghijklmnopqrstuvwxyzåäö'
+    for initial in letters:
+        t = [ x for x in things if x[0].lower() == initial ]
+        if t:
+            w('<h2>%s</h2>\n' % initial)
+            w('<p>')
+            w(' &mdash; '.join([ _escape(x) for x in t ]))
+            w('\n')
+    t = [ x for x in things if x[0].lower() not in letters ]
+    if t:
+        w('<h2>...</h2>\n')
+        w('<p>')
+        w(' &mdash; '.join([ _escape(x) for x in t ]))
+        w('\n')
 
 class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
     """Handler for one request. Except for the inherited stuff
@@ -204,6 +225,8 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.gzfile = None
         if p in ('/', '/index.html'):
             self.get_index()
+        elif p in ('/keywords', '/key', '/key/'):
+            self.get_keywords()
         elif p=='/css':
             self.get_css()
         elif p=='/robots.txt':
@@ -223,6 +246,15 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
           '<li><a href="/keywords">Index till nyckelord</a>\n'
           '</ul>\n'
           '\n')
+        self.postamble()
+
+    def get_keywords(self):
+        server = self.server
+        self.preamble('Index till nyckelord', up='/')
+        w = self.write
+        w('<h1>Index till nyckelord</h1>\n')
+        keys = server.photobase.keys.keys()
+        _huge_alpha_index(keys, None, w)
         self.postamble()
 
     def get_robots(self):
