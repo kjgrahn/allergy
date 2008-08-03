@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.14 2008-08-03 16:48:23 grahn Exp $
+# $Id: allergy_index,v 1.15 2008-08-03 22:43:32 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -214,6 +214,8 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.get_index()
         elif p in ('/keywords', '/key', '/key/'):
             self.get_keywords()
+        elif p.startswith('/key/'):
+            self.get_key(p[5:])
         elif p=='/by-date':
             self.get_by_date()
         elif p=='/css':
@@ -237,8 +239,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
                 return '/%04d' % y
             return '/%04d-%02d' % (y, m)
         _year_month_index(server.photobase, ympages, w)
-        w('<li><a href="/by-keyword">Foton efter nyckelord</a>\n'
-          '<li><a href="/keywords">Index till nyckelord</a>\n'
+        w('<li><a href="/keywords">Index till nyckelord</a>\n'
           '</ul>\n'
           '\n')
         self.postamble()
@@ -252,6 +253,37 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         def href(key):
             return '/key/' + key
         _huge_alpha_index(keys, href, w)
+        self.postamble()
+
+    def get_key(self, key):
+        photobase = self.server.photobase
+        try:
+            pp = photobase.keys[key]
+        except KeyError:
+            return self.get_404('Inga foton finns för nyckelord "%s".' % key)
+        pp.sort(key = lambda x: x.datetime, reverse = True)
+        self.preamble('Foton för %s' % key, up='/keywords')
+        w = self.write
+        w('<h1>Foton för <cite>%s</cite></h1>\n' % key)
+
+        w('<ul>\n')
+        pdate = pdesc = None
+        for p in pp:
+            date, time = p.datetime.split(None, 2)
+            y, m, _ = p.datetime.split('-', 2)
+            desc = p.description
+            if pdate != date:
+                pdate = date
+            else:
+                date = ''
+            if pdesc != desc:
+                pdesc = desc
+            else:
+                desc = ''
+            w('<li><tt>%10s %5s</tt> &mdash; %s\n' % (date, time,
+                                                      _escape(desc)))
+        w('</ul>\n')
+
         self.postamble()
 
     def get_by_date(self):
