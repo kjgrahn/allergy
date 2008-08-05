@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.17 2008-08-05 21:33:07 grahn Exp $
+# $Id: allergy_index,v 1.18 2008-08-05 21:47:44 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -148,6 +148,31 @@ def _huge_alpha_index(things, href, w):
                 [ x for x in things if x[0].upper() not in letters ],
                 href, w)
 
+def _dated_photo_list(photos, w):
+    pym = pdate = pdesc = None
+    for p in photos:
+        date, time = p.datetime.split(None, 2)
+        y, m, _ = p.datetime.split('-', 2)
+        desc = p.description
+        if pym != (y, m):
+            if pym is not None:
+                w('</ul>\n')
+            w('<h2><a name="%s-%s">%s %s</a></h2>\n' % (y, m, _months[int(m)], y))
+            w('<ul>\n')
+            pym = y, m
+        if pdate != date:
+            pdate = date
+        else:
+            date = ''
+        if pdesc != desc:
+            pdesc = desc
+        else:
+            desc = ''
+        w('<li><tt>%10s %5s</tt> &mdash; %s\n' % (date, time,
+                                                  _escape(desc)))
+    w('</ul>\n')
+
+
 class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
     """Handler for one request. Except for the inherited stuff
     and the domain-specific stuff, it supports generating
@@ -260,29 +285,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         by_date = photobase.photos
         by_date.sort(key = lambda x: x.datetime, reverse = True)
 
-        pym = pdate = pdesc = None
-        for p in by_date:
-            date, time = p.datetime.split(None, 2)
-            y, m, _ = p.datetime.split('-', 2)
-            desc = p.description
-            if pym != (y, m):
-                if pym is not None:
-                    w('</ul>\n')
-                w('<h2><a name="%s-%s">%s %s</a></h2>\n' % (y, m, _months[int(m)], y))
-                w('<ul>\n')
-                pym = y, m
-            if pdate != date:
-                pdate = date
-            else:
-                date = ''
-            if pdesc != desc:
-                pdesc = desc
-            else:
-                desc = ''
-            w('<li><tt>%10s %5s</tt> &mdash; %s\n' % (date, time,
-                                                      _escape(desc)))
-        w('</ul>\n')
-
+        _dated_photo_list(by_date, w)
         self.postamble()
 
     def get_by_year(self, y):
@@ -301,29 +304,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         w = self.write
         w('<h1>%s</h1>\n' % title)
 
-        pym = pdate = pdesc = None
-        for p in pp:
-            date, time = p.datetime.split(None, 2)
-            y, m, _ = p.datetime.split('-', 2)
-            desc = p.description
-            if pym != (y, m):
-                if pym is not None:
-                    w('</ul>\n')
-                w('<h2><a name="%s-%s">%s %s</a></h2>\n' % (y, m, _months[int(m)], y))
-                w('<ul>\n')
-                pym = y, m
-            if pdate != date:
-                pdate = date
-            else:
-                date = ''
-            if pdesc != desc:
-                pdesc = desc
-            else:
-                desc = ''
-            w('<li><tt>%10s %5s</tt> &mdash; %s\n' % (date, time,
-                                                      _escape(desc)))
-        w('</ul>\n')
-
+        _dated_photo_list(pp, w)
         self.postamble()
 
     def get_by_month(self, y, m):
@@ -348,29 +329,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         w = self.write
         w('<h1>%s</h1>\n' % title)
 
-        pym = pdate = pdesc = None
-        for p in pp:
-            date, time = p.datetime.split(None, 2)
-            y, m, _ = p.datetime.split('-', 2)
-            desc = p.description
-            if pym != (y, m):
-                if pym is not None:
-                    w('</ul>\n')
-                w('<h2><a name="%s-%s">%s %s</a></h2>\n' % (y, m, _months[int(m)], y))
-                w('<ul>\n')
-                pym = y, m
-            if pdate != date:
-                pdate = date
-            else:
-                date = ''
-            if pdesc != desc:
-                pdesc = desc
-            else:
-                desc = ''
-            w('<li><tt>%10s %5s</tt> &mdash; %s\n' % (date, time,
-                                                      _escape(desc)))
-        w('</ul>\n')
-
+        _dated_photo_list(pp, w)
         self.postamble()
 
     def get_robots(self):
