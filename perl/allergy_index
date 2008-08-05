@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.16 2008-08-05 20:14:49 grahn Exp $
+# $Id: allergy_index,v 1.17 2008-08-05 21:33:07 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -154,6 +154,8 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
     an Expires: header and transparent 'gzip' Transfer-Encoding.
     """
     server_version = '%s/%s' % _cvs_says()
+    yearre = re.compile(r'/\d{4}$')
+    monthre = re.compile(r'/\d{4}-\d{2}$')
 
     def do_GET(self):
         p = self.path
@@ -167,6 +169,12 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.get_key(p[5:])
         elif p=='/by-date':
             self.get_by_date()
+        elif self.yearre.match(p):
+            y = int(p[1:])
+            self.get_by_year(y)
+        elif self.monthre.match(p):
+            y, m = [ int(x) for x in p[1:].split('-') ]
+            self.get_by_month(y, m)
         elif p=='/css':
             self.get_css()
         elif p=='/robots.txt':
@@ -254,6 +262,94 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
         pym = pdate = pdesc = None
         for p in by_date:
+            date, time = p.datetime.split(None, 2)
+            y, m, _ = p.datetime.split('-', 2)
+            desc = p.description
+            if pym != (y, m):
+                if pym is not None:
+                    w('</ul>\n')
+                w('<h2><a name="%s-%s">%s %s</a></h2>\n' % (y, m, _months[int(m)], y))
+                w('<ul>\n')
+                pym = y, m
+            if pdate != date:
+                pdate = date
+            else:
+                date = ''
+            if pdesc != desc:
+                pdesc = desc
+            else:
+                desc = ''
+            w('<li><tt>%10s %5s</tt> &mdash; %s\n' % (date, time,
+                                                      _escape(desc)))
+        w('</ul>\n')
+
+        self.postamble()
+
+    def get_by_year(self, y):
+        photobase = self.server.photobase
+
+        pp = [ x for x in photobase.photos if x.datetime.startswith('%04d-' % y) ]
+        pp.sort(key = lambda x: x.datetime)
+        if not pp:
+            return self.get_404('Inga foton finns från %d.' % y)
+
+        title = 'Alla foton %d' % y
+        self.preamble(title,
+                      up='/',
+                      prev = '%04d' % (y-1),
+                      next = '%04d' % (y+1))
+        w = self.write
+        w('<h1>%s</h1>\n' % title)
+
+        pym = pdate = pdesc = None
+        for p in pp:
+            date, time = p.datetime.split(None, 2)
+            y, m, _ = p.datetime.split('-', 2)
+            desc = p.description
+            if pym != (y, m):
+                if pym is not None:
+                    w('</ul>\n')
+                w('<h2><a name="%s-%s">%s %s</a></h2>\n' % (y, m, _months[int(m)], y))
+                w('<ul>\n')
+                pym = y, m
+            if pdate != date:
+                pdate = date
+            else:
+                date = ''
+            if pdesc != desc:
+                pdesc = desc
+            else:
+                desc = ''
+            w('<li><tt>%10s %5s</tt> &mdash; %s\n' % (date, time,
+                                                      _escape(desc)))
+        w('</ul>\n')
+
+        self.postamble()
+
+    def get_by_month(self, y, m):
+        photobase = self.server.photobase
+
+        pp = [ x for x in photobase.photos if x.datetime.startswith('%04d-%02d-' % (y, m)) ]
+        pp.sort(key = lambda x: x.datetime)
+        if not pp:
+            return self.get_404('Inga foton finns från %s %d.' % (_months[m], y))
+
+        title = 'Alla foton %s %d' % (_months[m], y)
+        prev = '/%04d-%02d' % (y, m-1)
+        next = '/%04d-%02d' % (y, m+1)
+        if m==1:
+            prev = '/%04d-%02d' % (y-1, 12)
+        elif m==12:
+            next = '/%04d-%02d' % (y+1, 1)
+        self.preamble(title,
+                      up='/',
+                      prev = prev,
+                      next = next)
+        w = self.write
+        w('<h1>%s</h1>\n' % title)
+
+        pym = pdate = pdesc = None
+        for p in pp:
             date, time = p.datetime.split(None, 2)
             y, m, _ = p.datetime.split('-', 2)
             desc = p.description
