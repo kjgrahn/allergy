@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.19 2008-08-06 21:07:43 grahn Exp $
+# $Id: allergy_index,v 1.20 2008-08-06 21:20:26 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -148,8 +148,8 @@ def _huge_alpha_index(things, href, w):
                 [ x for x in things if x[0].upper() not in letters ],
                 href, w)
 
+
 def _dated_photo_list(photos, w):
-    pym = pdate = None
     w('<table>\n'
       '<colgroup>\n'
       ' <col class="date">\n'
@@ -157,6 +157,7 @@ def _dated_photo_list(photos, w):
       ' <col class="description">\n'
       '</colgroup>\n'
       '<tbody>\n')
+    pym = pdate = None
     for p in photos:
         date, time = p.datetime.split(None, 2)
         y, m, _ = p.datetime.split('-', 2)
@@ -166,6 +167,27 @@ def _dated_photo_list(photos, w):
             w('<tr><th scope="rowgroup" colspan="3">'
               '<a name="%s-%s">%s %s</a>\n' % (y, m, _months[int(m)], y))
             pym = y, m
+        if pdate != date:
+            pdate = date
+        else:
+            date = ''
+        w('<tr><td>%s<td>%s<td>%s\n' % (date, time,
+                                        _escape(p.description)))
+    w('</table>\n')
+
+
+def _undated_photo_list(photos, w):
+    w('<table>\n'
+      '<colgroup>\n'
+      ' <col class="date">\n'
+      ' <col class="time">\n'
+      ' <col class="description">\n'
+      '</colgroup>\n'
+      '<tbody>\n')
+    pdate = None
+    for p in photos:
+        date, time = p.datetime.split(None, 2)
+        y, m, _ = p.datetime.split('-', 2)
         if pdate != date:
             pdate = date
         else:
@@ -250,24 +272,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         w = self.write
         w('<h1>Foton för <cite>%s</cite></h1>\n' % key)
 
-        w('<ul>\n')
-        pdate = pdesc = None
-        for p in pp:
-            date, time = p.datetime.split(None, 2)
-            y, m, _ = p.datetime.split('-', 2)
-            desc = p.description
-            if pdate != date:
-                pdate = date
-            else:
-                date = ''
-            if pdesc != desc:
-                pdesc = desc
-            else:
-                desc = ''
-            w('<li><tt>%10s %5s</tt> &mdash; %s\n' % (date, time,
-                                                      _escape(desc)))
-        w('</ul>\n')
-
+        _undated_photo_list(pp, w)
         self.postamble()
 
     def get_by_date(self):
