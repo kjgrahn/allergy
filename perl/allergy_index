@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.18 2008-08-05 21:47:44 grahn Exp $
+# $Id: allergy_index,v 1.19 2008-08-06 21:07:43 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -149,28 +149,30 @@ def _huge_alpha_index(things, href, w):
                 href, w)
 
 def _dated_photo_list(photos, w):
-    pym = pdate = pdesc = None
+    pym = pdate = None
+    w('<table>\n'
+      '<colgroup>\n'
+      ' <col class="date">\n'
+      ' <col class="time">\n'
+      ' <col class="description">\n'
+      '</colgroup>\n'
+      '<tbody>\n')
     for p in photos:
         date, time = p.datetime.split(None, 2)
         y, m, _ = p.datetime.split('-', 2)
-        desc = p.description
         if pym != (y, m):
             if pym is not None:
-                w('</ul>\n')
-            w('<h2><a name="%s-%s">%s %s</a></h2>\n' % (y, m, _months[int(m)], y))
-            w('<ul>\n')
+                w('<tbody>\n')
+            w('<tr><th scope="rowgroup" colspan="3">'
+              '<a name="%s-%s">%s %s</a>\n' % (y, m, _months[int(m)], y))
             pym = y, m
         if pdate != date:
             pdate = date
         else:
             date = ''
-        if pdesc != desc:
-            pdesc = desc
-        else:
-            desc = ''
-        w('<li><tt>%10s %5s</tt> &mdash; %s\n' % (date, time,
-                                                  _escape(desc)))
-    w('</ul>\n')
+        w('<tr><td>%s<td>%s<td>%s\n' % (date, time,
+                                        _escape(p.description)))
+    w('</table>\n')
 
 
 class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
