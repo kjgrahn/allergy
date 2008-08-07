@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.22 2008-08-07 18:51:29 grahn Exp $
+# $Id: allergy_index,v 1.23 2008-08-07 21:17:00 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -171,8 +171,9 @@ def _dated_photo_list(photos, w):
             pdate = date
         else:
             date = ''
-        w('<tr><td>%s<td>%s<td>%s\n' % (date, time,
-                                        _escape(p.description)))
+        w('<tr><td>%s<td>%s<td><a href="%s">%s</a>\n' % (date, time,
+                                                         p.url,
+                                                         _escape(p.description)))
     w('</table>\n')
 
 

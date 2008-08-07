@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: photobase.py,v 1.10 2008-08-07 20:28:26 grahn Exp $
+# $Id: photobase.py,v 1.11 2008-08-07 21:17:00 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004, 2005, 2008 Jörgen Grahn
@@ -58,6 +58,8 @@ class Photo:
     'datetime'    - creation date and time as a string (e.g. '2002-10-26 14:58')
     'description' - textual description
     'keys'        - a list of key strings
+    'category'
+    'url'
     """
 
     datetimere = re.compile(r'^(\d{4})-(\d{2})-(\d{2})'
@@ -68,6 +70,8 @@ class Photo:
             raise ParseError(`ss`)
         self.filename = ss[0]
         self.datetime = ss[1]
+        self.category = None
+        self.url = None
         if not self.datetimere.match(self.datetime):
             raise ParseError(`ss`)
         s = ' '.join(ss[2:])
@@ -144,6 +148,8 @@ class Names:
 
     'files'      - a mapping from filename to (category, url)
     'categories' - a mapping from category to filename list
+
+    XXX overworked
     """
     def __init__(self, basepath, baseurl,
                  goodnames = None):
@@ -175,6 +181,8 @@ class Superbase:
     def __init__(self, descriptions,
                  basepath, baseurl):
         self._descriptions = descriptions
+        self._basepath = basepath
+        self._baseurl = baseurl
         self._time = 0
         self.refresh()
 
@@ -193,7 +201,12 @@ class Superbase:
         self.photos = pb.photos
         self.files = pb.files
         self.keys = pb.keys
-
+        names = Names(self._basepath, self._baseurl)
+        for p in self.photos:
+            try:
+                p.category, p.url = names.files[p.filename]
+            except KeyError:
+                pass
 
 if __name__ == "__main__":
     import getopt
