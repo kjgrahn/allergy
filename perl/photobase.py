@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: photobase.py,v 1.5 2008-08-07 17:41:43 grahn Exp $
+# $Id: photobase.py,v 1.6 2008-08-07 18:11:17 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004, 2005, 2008 Jörgen Grahn
@@ -11,7 +11,8 @@
 """
 import re
 import sys
-
+import os.path
+import time
 
 _bracketsub = re.compile(r'[\[\]]').sub
 _squeezewhitesub = re.compile(r'\s{2,}').sub
@@ -141,14 +142,28 @@ class Superbase:
     """A tarted up Photobase.
     """
     def __init__(self, paths):
-        pb = Photobase(paths)
+        self._paths = paths
+        pb = Photobase(self._paths)
+        self._time = time.time()
         self._photobase = pb
         self.photos = pb.photos
         self.files = pb.files
         self.keys = pb.keys
 
     def refresh(self):
-        pass
+        now = time.time()
+        # if now < self._time + 5: return
+        for p in self._paths:
+            if os.path.getmtime(p) > self._time:
+                break
+        else:
+            return
+        pb = Photobase(self._paths)
+        self._time = time.time()
+        self._photobase = pb
+        self.photos = pb.photos
+        self.files = pb.files
+        self.keys = pb.keys
 
 
 if __name__ == "__main__":
