@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: photobase.py,v 1.9 2008-08-07 18:56:09 grahn Exp $
+# $Id: photobase.py,v 1.10 2008-08-07 20:28:26 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004, 2005, 2008 Jörgen Grahn
@@ -11,7 +11,7 @@
 """
 import re
 import sys
-import os.path
+import os
 import time
 
 _bracketsub = re.compile(r'[\[\]]').sub
@@ -137,6 +137,37 @@ class Photobase:
         """
         return self.files[file].datetime
 
+
+class Names:
+    """Images as found in the file system, and what they look like
+    as URLs.
+
+    'files'      - a mapping from filename to (category, url)
+    'categories' - a mapping from category to filename list
+    """
+    def __init__(self, basepath, baseurl,
+                 goodnames = None):
+        self.files = {}
+        self.categories = {}
+        _, f = os.popen2(('find', basepath,
+                          '-type', 'f', '-print',
+                          '-or',
+                          '-name', '.xvpics', '-prune'))
+        n = len(basepath)
+        baseurl = baseurl.rstrip('/')
+        for s in f:
+            if not s.startswith(basepath):
+                continue
+            relpath = s[n:].lstrip('/').rstrip()
+            category, filename = os.path.split(relpath)
+            if goodnames and not goodnames.has_key(filename):
+                continue
+            url = '%s/%s' % (baseurl, relpath)
+            self.files[filename] = (category, url)
+            try:
+                self.categories[category].append(filename)
+            except KeyError:
+                self.categories[category] = [filename]
 
 class Superbase:
     """A tarted up Photobase.
