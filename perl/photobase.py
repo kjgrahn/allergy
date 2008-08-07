@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: photobase.py,v 1.8 2008-08-07 18:51:29 grahn Exp $
+# $Id: photobase.py,v 1.9 2008-08-07 18:56:09 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004, 2005, 2008 Jörgen Grahn
@@ -141,26 +141,22 @@ class Photobase:
 class Superbase:
     """A tarted up Photobase.
     """
-    def __init__(self, paths,
+    def __init__(self, descriptions,
                  basepath, baseurl):
-        self._paths = paths
-        pb = Photobase(self._paths)
-        self._time = time.time()
-        self._photobase = pb
-        self.photos = pb.photos
-        self.files = pb.files
-        self.keys = pb.keys
+        self._descriptions = descriptions
+        self._time = 0
+        self.refresh()
 
     def refresh(self):
         now = time.time()
         if now < self._time + 5:
             return
-        for p in self._paths:
+        for p in self._descriptions:
             if os.path.getmtime(p) > self._time:
                 break
         else:
             return
-        pb = Photobase(self._paths)
+        pb = Photobase(self._descriptions)
         self._time = time.time()
         self._photobase = pb
         self.photos = pb.photos
