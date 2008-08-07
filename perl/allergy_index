@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.21 2008-08-07 17:41:42 grahn Exp $
+# $Id: allergy_index,v 1.22 2008-08-07 18:51:29 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -498,7 +498,8 @@ if __name__ == "__main__":
         sys.exit(1)
 
     try:
-        photobase = Superbase(descriptions)
+        photobase = Superbase(descriptions,
+                              pbasepath, pbaseurl)
         Server((host, port), photobase).serve_forever()
     except KeyboardInterrupt:
         pass

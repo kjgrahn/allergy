@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: photobase.py,v 1.7 2008-08-07 18:36:32 grahn Exp $
+# $Id: photobase.py,v 1.8 2008-08-07 18:51:29 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004, 2005, 2008 Jörgen Grahn
@@ -141,7 +141,8 @@ class Photobase:
 class Superbase:
     """A tarted up Photobase.
     """
-    def __init__(self, paths):
+    def __init__(self, paths,
+                 basepath, baseurl):
         self._paths = paths
         pb = Photobase(self._paths)
         self._time = time.time()
