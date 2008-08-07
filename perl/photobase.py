@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: photobase.py,v 1.4 2008-08-02 19:50:51 grahn Exp $
+# $Id: photobase.py,v 1.5 2008-08-07 17:41:43 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004, 2005, 2008 Jörgen Grahn
@@ -135,6 +135,20 @@ class Photobase:
         string 'yyyy-mm-dd hh:mm'.
         """
         return self.files[file].datetime
+
+
+class Superbase:
+    """A tarted up Photobase.
+    """
+    def __init__(self, paths):
+        pb = Photobase(paths)
+        self._photobase = pb
+        self.photos = pb.photos
+        self.files = pb.files
+        self.keys = pb.keys
+
+    def refresh(self):
+        pass
 
 
 if __name__ == "__main__":
