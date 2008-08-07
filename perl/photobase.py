@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: photobase.py,v 1.6 2008-08-07 18:11:17 grahn Exp $
+# $Id: photobase.py,v 1.7 2008-08-07 18:36:32 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004, 2005, 2008 Jörgen Grahn
@@ -152,7 +152,8 @@ class Superbase:
 
     def refresh(self):
         now = time.time()
-        # if now < self._time + 5: return
+        if now < self._time + 5:
+            return
         for p in self._paths:
             if os.path.getmtime(p) > self._time:
                 break
