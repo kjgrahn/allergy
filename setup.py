@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: setup.py,v 1.3 2008-07-17 22:12:10 grahn Exp $
+# $Id: setup.py,v 1.4 2008-10-20 21:11:22 grahn Exp $
 #
 from distutils.core import setup
 
@@ -20,7 +20,7 @@ setup(name = name,
       author = 'Jörgen Grahn',
       author_email = 'grahn+src@snipabacken.se',
       license = 'GPL',
-      url = 'http://snipabacken.se/~grahn/comp/',
+      url = 'http://snipabacken.se/~grahn/comp/#allergy',
 
       package_dir = {'': 'perl'},
       py_modules = ['photobase'],
