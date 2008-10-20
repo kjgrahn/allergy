@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: photobase.py,v 1.11 2008-08-07 21:17:00 grahn Exp $
+# $Id: photobase.py,v 1.12 2008-10-20 19:52:00 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004, 2005, 2008 Jörgen Grahn
@@ -207,6 +207,45 @@ class Superbase:
                 p.category, p.url = names.files[p.filename]
             except KeyError:
                 pass
+
+
+_percentSplit = re.compile(r'(%[A-Fa-f0-9]{2})').split
+
+def _utf8_to_latin1(s):
+    return unicode(s, 'utf-8').encode('latin-1')
+
+def _latin1_to_utf8(s):
+    return unicode(s, 'latin-1').encode('utf-8')
+
+def uri_decode(s):
+    """Decode an Request-URI (potentially containing %xx crap,
+    in turn hiding UTF-8 crap) into a Latin-1 string.
+    """
+    acc = _percentSplit(s)
+    for n in range(1, len(acc), 2):
+        acc[n] = chr(int(acc[n][1:], 16))
+    return _utf8_to_latin1(''.join(acc))
+
+def uri_encode(s):
+    """The rough inverse to uri_decode().
+    """
+    def _may_percent(ch):
+        """Percent-encode octets outside the unreserved set
+        """
+        if ch in 'abcdefghijklmnopqrstuvwxyz':
+            return ch
+        if ch in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+            return ch
+        if ch in '-._~0123456789':
+            return ch
+        return '%%%02X' % ord(ch)
+    s = _latin1_to_utf8(s)
+    return ''.join([_may_percent(ch) for ch in s])
+    acc = _percentSplit(s)
+    for n in range(1, len(acc), 2):
+        acc[n] = chr(int(acc[n][1:], 16))
+    return _utf8_to_latin1(''.join(acc))
+
 
 if __name__ == "__main__":
     import getopt
