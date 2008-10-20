@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.23 2008-08-07 21:17:00 grahn Exp $
+# $Id: allergy_index,v 1.24 2008-10-20 19:16:31 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -30,37 +30,6 @@ def _escape(s):
     s = s.replace('>', '&gt;')
     s = s.replace('&', '&amp;')
     return s
-
-class Generator(object):
-
-    def _generate_index(self, f):
-        w = f.write
-        w('<h1><a name="by_keyword">Foton efter nyckelord</a></h1>\n'
-          '\n'
-          '<p>\n')
-        kk = self._pb.keys.keys()
-        kk.sort(key = str.lower)
-        for k in kk:
-            w('<h2><a name="%s">%s</a></h2>\n' % (k, k))
-            w('<ul>\n')
-            pb = self._pb.keys[k][:]
-            pb.sort(key = lambda x: x.datetime, reverse = False)
-            pdate = pdesc = None
-            for p in pb:
-                date, time = p.datetime.split(None, 2)
-                desc = p.description
-                if pdate != date:
-                    pdate = date
-                else:
-                    date = ''
-                if pdesc != desc:
-                    pdesc = desc
-                else:
-                    desc = ''
-                w('<li>%10s %5s &mdash; %s\n' % (date, time,
-                                                 escape(desc)))
-            w('</ul>\n')
-
 
 def _cvs_says(dollarname='$Name:  $'):
     m = re.match(r'\$'r'Name:\s+(.+?)-(\d+(-\d+)*)\D', dollarname)
