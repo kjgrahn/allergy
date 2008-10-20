@@ -4,6 +4,17 @@ Major changes (with focus on user-visible changes) to allergy, per version.
 
 _________________________________________
 
+allergy 5.0 (2008-10-20):
+	- allergy_index - serve photo gallery indices over HTTP.
+	  This is a simple web server which generates by-date and
+	  by-keyword indices of photos, based on the photos and a text
+	  file describing them. It does not serve the actual /images/.
+
+	  What I like to do is to generate static galleries using
+	  allergy(1), and run this one on the side, for a different view.
+	  Like when you want to find all photos from a certain place
+	  or a certain month, or something.
+
 allergy 4.0 (2008-07-18):
 	- Exactly three years later.
 	- Split the -f file parser into Python module 'photobase', and
@@ -79,5 +90,5 @@ allergy 1.0 (2001-07-28):
 	- First public version.
 
 _________________________________________
-$Id: NEWS,v 1.18 2008-07-17 22:58:14 grahn Exp $
+$Id: NEWS,v 1.19 2008-10-20 21:11:49 grahn Exp $
 $Name:  $
