@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.29 2008-10-20 19:52:00 grahn Exp $
+# $Id: allergy_index,v 1.30 2008-10-20 20:11:08 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -229,11 +229,12 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         w('<h1>Index till nyckelord</h1>\n')
         keys = server.photobase.keys.keys()
         def href(key):
-            return '/key/' + key
+            return '/key/' + uri_encode(key)
         _huge_alpha_index(keys, href, w)
         self.postamble()
 
     def get_key(self, key):
+        key = uri_decode(key)
         photobase = self.server.photobase
         try:
             pp = photobase.keys[key]

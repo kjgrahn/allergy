@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: photobase.py,v 1.12 2008-10-20 19:52:00 grahn Exp $
+# $Id: photobase.py,v 1.13 2008-10-20 20:11:08 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004, 2005, 2008 Jörgen Grahn
@@ -168,7 +168,7 @@ class Names:
             category, filename = os.path.split(relpath)
             if goodnames and not goodnames.has_key(filename):
                 continue
-            url = '%s/%s' % (baseurl, relpath)
+            url = '%s/%s' % (baseurl,relpath)
             self.files[filename] = (category, url)
             try:
                 self.categories[category].append(filename)
