@@ -1,8 +1,16 @@
 ALLERGY
 
 'Allergy' (many thanks to http://www.wordsmith.org/anagram/ for the name)
-is yet another utility to generate a 'photo album' or 'image gallery' for
-presenting an overview of lots of images in a web browser.
+is two things:
+
+- allergy: yet another utility to generate a 'photo album' or 'image
+  gallery' for presenting an overview of lots of images in a web
+  browser.
+
+- allergy_index: a simple web server which generates by-date and
+  by-keyword indices of pictures, based on the pictures and a text
+  file describing them. It does not serve the actual /images/ -- those
+  need to live on a real web server somewhere.
 
 Generating and updating thumbnails and the supporting HTML by hand is
 time consuming, error-prone and boring.
@@ -15,10 +23,10 @@ I just wanted the job done, so I did it myself.
 
 INSTALLATION AND REQUIREMENTS
 
-Allergy is just a Python script and a manpage.
-Install it by hand or do
-
 # make install
+
+(There is a normal Python setup script, but it doesn't do all of the
+installation.)
 
 Allergy requires Python and the Python Imaging Library (PIL).
 I believe it is portable to any platform which can support Python and
@@ -73,5 +81,5 @@ POSSIBILITY OF SUCH DAMAGE.
 [2] The EXIF module is available from
     http://home.cfl.rr.com/genecash/digital_camera.html
 
-$Id: README,v 1.11 2008-07-17 11:11:28 grahn Exp $
+$Id: README,v 1.12 2008-10-20 21:11:43 grahn Exp $
 $Name:  $
