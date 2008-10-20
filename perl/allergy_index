@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.31 2008-10-20 20:33:40 grahn Exp $
+# $Id: allergy_index,v 1.32 2008-10-20 20:47:24 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -144,9 +144,10 @@ def _dated_photo_list(photos, w):
         w('<tr><td>%s<td>%s<td><a href="%s">%s</a>\n' % (date, time,
                                                          p.url,
                                                          _escape(p.description)))
+        w('<td class="keys">%s\n' % _keylist_except(p))
     w('</table>\n')
 
-def _keylist_except(photo, exception):
+def _keylist_except(photo, exception=None):
     """Render the keywords for a photo, except maybe for one.
     """
     keys = [ '<a href="/key/%s">%s</a>' % (uri_encode(x), x)
@@ -338,12 +339,17 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         w = self.write
         w('BODY {\n'
           '	background-color: rgb(255,224,160);\n'
-          '	color: black\n'
+          '	color: black;\n'
           '}\n')
         w('*.latin {\n'
-          '	font-style: italic\n'
+          '	font-style: italic;\n'
           '}\n')
         w('ul { list-style-type: none }\n')
+        w('td.keys {\n'
+          '	font-size: smaller;\n'
+          '	font-style: italic;\n'
+          '	padding-left: 1em;\n'
+          '}\n')
         w('a { text-decoration: none }\n')
         w('a:hover { text-decoration: underline }\n')
         self.close()
