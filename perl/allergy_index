@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.27 2008-10-20 19:43:05 grahn Exp $
+# $Id: allergy_index,v 1.28 2008-10-20 19:47:48 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -25,7 +25,7 @@ def _utf8_to_latin1(s):
 def _latin1_to_utf8(s):
     return unicode(s, 'latin-1').encode('utf-8')
 
-def _uri_decode(s):
+def uri_decode(s):
     """Decode an Request-URI (potentially containing %xx crap,
     in turn hiding UTF-8 crap) into a Latin-1 string.
     """
@@ -34,20 +34,19 @@ def _uri_decode(s):
         acc[n] = chr(int(acc[n][1:], 16))
     return _utf8_to_latin1(''.join(acc))
 
-def _may_percent(ch):
-    """Percent-encode octets outside the unreserved set
+def uri_encode(s):
+    """The rough inverse to uri_decode().
     """
-    if ch in 'abcdefghijklmnopqrstuvwxyz':
-        return ch
-    if ch in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
-        return ch
-    if ch in '-._~0123456789':
-        return ch
-    return '%%%02X' % ord(ch)
-
-def _uri_encode(s):
-    """The rough inverse to _uri_decode().
-    """
+    def _may_percent(ch):
+        """Percent-encode octets outside the unreserved set
+        """
+        if ch in 'abcdefghijklmnopqrstuvwxyz':
+            return ch
+        if ch in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+            return ch
+        if ch in '-._~0123456789':
+            return ch
+        return '%%%02X' % ord(ch)
     s = _latin1_to_utf8(s)
     return ''.join([_may_percent(ch) for ch in s])
     acc = _percentSplit(s)
