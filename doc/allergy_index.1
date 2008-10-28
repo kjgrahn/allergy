@@ -1,5 +1,5 @@
 .ig
-$Id: allergy_index.1,v 1.6 2008-10-20 21:10:49 grahn Exp $
+$Id: allergy_index.1,v 1.7 2008-10-28 22:33:01 grahn Exp $
 $Name:  $
 ..
 .
@@ -112,6 +112,12 @@ by reverse date.
 Like
 .BR /\fIyear\fP ,
 but narrowed down further to a specific month.
+.IP
+This kind contains a thumbnail gallery
+like that of
+.BR allergy (1).
+It assumes that there are pre-generated thumbnail images,
+as created by that utility.
 .
 .IP "\fB/keywords\fP, \fB/key\fP, \fB/key/\fP"
 All keywords, in alphabetical order.
@@ -119,6 +125,7 @@ All keywords, in alphabetical order.
 .IP "\fB/key/\fIkeyword"
 All photos matching the key
 .IR keyword .
+Like the by-month kind, this one includes a thumbnail gallery.
 .
 .IP "\fB/css"
 The style sheet applied to all pages.
