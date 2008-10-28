@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.32 2008-10-20 20:47:24 grahn Exp $
+# $Id: allergy_index,v 1.33 2008-10-28 21:26:53 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -340,9 +340,6 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         w('BODY {\n'
           '	background-color: rgb(255,224,160);\n'
           '	color: black;\n'
-          '}\n')
-        w('*.latin {\n'
-          '	font-style: italic;\n'
           '}\n')
         w('ul { list-style-type: none }\n')
         w('td.keys {\n'
