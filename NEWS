@@ -4,6 +4,11 @@ Major changes (with focus on user-visible changes) to allergy, per version.
 
 _________________________________________
 
+allergy 5.1 (2008-10-28):
+	- allergy_index: include image thumbnail galleries for the
+	  smaller pages (by month and by keyword) so you can see all
+	  photos of a certain thing or kind gathered on one page.
+
 allergy 5.0 (2008-10-20):
 	- allergy_index - serve photo gallery indices over HTTP.
 	  This is a simple web server which generates by-date and
@@ -90,5 +95,5 @@ allergy 1.0 (2001-07-28):
 	- First public version.
 
 _________________________________________
-$Id: NEWS,v 1.19 2008-10-20 21:11:49 grahn Exp $
+$Id: NEWS,v 1.20 2008-10-28 22:35:41 grahn Exp $
 $Name:  $
