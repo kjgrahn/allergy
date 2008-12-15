@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: photobase.py,v 1.13 2008-10-20 20:11:08 grahn Exp $
+# $Id: photobase.py,v 1.14 2008-12-15 21:29:26 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004, 2005, 2008 Jörgen Grahn
@@ -18,7 +18,7 @@ _bracketsub = re.compile(r'[\[\]]').sub
 _squeezewhitesub = re.compile(r'\s{2,}').sub
 _angledre = re.compile(r'\{(.+?)\}')
 
-def extract_keys(s):
+def _extract_keys(s):
     """From string 's', extract [[bracketed] keys, even nested
     ones]. Also extract and remove keys in {angle brackets}.
 
@@ -46,6 +46,13 @@ def extract_keys(s):
     for k in keys:
         keymap[k] = None
     return s, keymap.keys()
+
+
+def extract_keys(s):
+    try:
+        return _extract_keys(s)
+    except:
+        raise ParseError(s)
 
 
 class ParseError(Exception):
@@ -207,6 +214,16 @@ class Superbase:
                 p.category, p.url = names.files[p.filename]
             except KeyError:
                 pass
+        self.photos = [ x for x in self.photos if x.url ]
+
+        keys = {}
+        for ph in self.photos:
+            for k in ph.keys:
+                try:
+                    keys[k].append(ph)
+                except KeyError:
+                    keys[k] = [ph]
+        self.keys = keys
 
 
 _percentSplit = re.compile(r'(%[A-Fa-f0-9]{2})').split
