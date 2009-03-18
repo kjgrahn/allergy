@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: photobase.py,v 1.14 2008-12-15 21:29:26 grahn Exp $
+# $Id: photobase.py,v 1.15 2009-03-18 21:44:09 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004, 2005, 2008 Jörgen Grahn
@@ -63,6 +63,7 @@ class Photo:
     """Just a collection of attributes describing the photo:
     'filename'    - path-less file name
     'datetime'    - creation date and time as a string (e.g. '2002-10-26 14:58')
+                    or None
     'description' - textual description
     'keys'        - a list of key strings
     'category'
@@ -73,15 +74,18 @@ class Photo:
                             '\s+([012]\d:[0-5]\d)$')
 
     def __init__(self, ss, prev=None):
-        if len(ss) < 2:
+        if len(ss) < 1:
             raise ParseError(`ss`)
         self.filename = ss[0]
-        self.datetime = ss[1]
+        datetime = ss[1]
+        if self.datetimere.match(datetime):
+            self.datetime = datetime
+            s = ' '.join(ss[2:])
+        else:
+            self.datetime = None
+            s = ' '.join(ss[1:])
         self.category = None
         self.url = None
-        if not self.datetimere.match(self.datetime):
-            raise ParseError(`ss`)
-        s = ' '.join(ss[2:])
         if prev and s=='ibid':
             self.description = prev.description
             self.keys = prev.keys

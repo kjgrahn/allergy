@@ -1,8 +1,8 @@
-.\" $Id: allergy.1,v 1.30 2009-03-15 21:37:54 grahn Exp $
+.\" $Id: allergy.1,v 1.31 2009-03-18 21:44:08 grahn Exp $
 .\" $Name:  $
 .\" 
 .\"
-.TH allergy 1 "JUL 2008" "Allergy" "User Manuals"
+.TH allergy 1 "MAR 2009" "Allergy" "User Manuals"
 .SH "NAME"
 allergy \- thumbnail and HTML picture gallery creator
 .SH "SYNOPSIS"
@@ -50,7 +50,8 @@ the timestamps.
 List the image names, and whether they are being thumbnailed or not,
 as they are processed.
 .IP \-V
-Print a dot as each image is being processed, cpio-style.
+Print a dot as each image is being processed,
+.BR cpio -style.
 .
 .SH "GENERAL INPUT SYNTAX"
 Everything in the input outside the gallery descriptions
@@ -221,15 +222,18 @@ Comment lines start with a
 .IP \(bu
 First line in an entry is the file name, without path.
 .IP \(bu
-Second line is the creation time, on the format
+Second line may be the creation time, on the format
 .IR yyyy-mm-dd\ hh:mm ,
 and in local time.
 Unless the
 .B \-e
 command-line option was given,
 this may be used in image titles.
+.IP
+If this second line exists but does not match the timestamp format above,
+it is assumed to be one of the ...
 .IP \(bu
-Following lines, if present, describe the image.
+following lines which, if present, describe the image.
 Line breaks and spacing is irrelevant.
 .IP \(bu
 Straight [brackets] mark keywords or key phrases in the description.
