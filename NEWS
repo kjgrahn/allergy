@@ -9,6 +9,9 @@ allergy 5.2 (2009-03-18):
 	  dates. If you scan e.g. old photo collections, you sometimes
 	  cannot tell which /decade/ each picture is from.
 
+        - Includes allergy-mode, a Gnu Emacs mode for editing photo
+          description files.
+
 allergy 5.1 (2008-10-28):
 	- allergy_index: include image thumbnail galleries for the
 	  smaller pages (by month and by keyword) so you can see all
@@ -100,5 +103,5 @@ allergy 1.0 (2001-07-28):
 	- First public version.
 
 _________________________________________
-$Id: NEWS,v 1.21 2009-03-18 21:50:52 grahn Exp $
+$Id: NEWS,v 1.22 2009-03-18 21:56:31 grahn Exp $
 $Name:  $
