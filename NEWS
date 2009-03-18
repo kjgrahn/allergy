@@ -4,6 +4,11 @@ Major changes (with focus on user-visible changes) to allergy, per version.
 
 _________________________________________
 
+allergy 5.2 (2009-03-18):
+	- allergy: do not require photo description files to contain
+	  dates. If you scan e.g. old photo collections, you sometimes
+	  cannot tell which /decade/ each picture is from.
+
 allergy 5.1 (2008-10-28):
 	- allergy_index: include image thumbnail galleries for the
 	  smaller pages (by month and by keyword) so you can see all
@@ -95,5 +100,5 @@ allergy 1.0 (2001-07-28):
 	- First public version.
 
 _________________________________________
-$Id: NEWS,v 1.20 2008-10-28 22:35:41 grahn Exp $
+$Id: NEWS,v 1.21 2009-03-18 21:50:52 grahn Exp $
 $Name:  $
