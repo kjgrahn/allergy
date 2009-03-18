@@ -1,8 +1,8 @@
-# $Id: Makefile,v 1.4 2008-08-02 21:45:17 grahn Exp $
+# $Id: Makefile,v 1.5 2009-03-18 21:42:51 grahn Exp $
 #
 # Makefile
 #
-# Copyright (c) 2001 Jörgen Grahn <grahn+src@snipabacken.se>
+# Copyright (c) 2001, 2009 Jörgen Grahn <grahn+src@snipabacken.se>
 # All rights reserved.
 # 
 
@@ -18,6 +18,7 @@ install:
 	install -m755 perl/allergy_index $(INSTALLBASE)/bin/
 	install -m644 doc/allergy.1 $(INSTALLBASE)/man/man1/
 	install -m644 doc/allergy_index.1 $(INSTALLBASE)/man/man1/
+	install -m644 allergy-mode.el $(INSTALLBASE)/share/emacs/site-lisp/
 
 clean:
 	python ./setup.py clean
