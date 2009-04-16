@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.36 2008-10-28 22:33:02 grahn Exp $
+# $Id: allergy_index,v 1.37 2009-04-16 20:20:53 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -513,7 +513,7 @@ if __name__ == "__main__":
                 sys.exit(0)
         if len(descriptions)==0 or len(baseurl)!=1 or not pbasepath or not pbaseurl:
             raise ValueError('required argument missing')
-        m = re.match(r'http://(\w*?):(\d+)', baseurl[0])
+        m = re.match(r'http://(.*?):(\d+)', baseurl[0])
         if not m:
             raise ValueError('incorrect base URL')
         host, port = m.groups(); port = int(port)
