@@ -1,4 +1,4 @@
-.\" $Id: allergy.1,v 1.32 2009-05-03 07:50:59 grahn Exp $
+.\" $Id: allergy.1,v 1.33 2009-05-03 08:21:02 grahn Exp $
 .\" $Name:  $
 .\" 
 .\"
@@ -160,9 +160,6 @@ and
 .B []
 are supported.
 .LP
-The patterns never match a file name starting with an underscore \(em
-those are reserved for thumbnail file names.
-.LP
 Images are laid out in the order of appearance in the input file.
 Patterns expand to a sorted list of all matching file names.
 For each gallery definition, duplicate image definitions are removed
@@ -270,8 +267,11 @@ They may also be given, as described above, a
 .B title
 containing the caption text.
 .LP
-Thumbnail pictures are named as the originals, but with an underscore
-character as prefix.
+Thumbnail pictures are named as the originals, but with a
+.B .jpg
+suffix and placed in a
+.B thumb/
+subdirectory.
 .LP
 When the list layout strategy is used rather than the table layout,
 each entry is a paragraph, ending with a \fI<br>\fP.

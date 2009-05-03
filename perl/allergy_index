@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.40 2009-05-03 05:39:04 grahn Exp $
+# $Id: allergy_index,v 1.41 2009-05-03 08:21:02 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -200,7 +200,7 @@ def _gallery(photos, w):
         if not i % 5:
             w('<tr>')
         i+=1
-        thurl = re.sub(r'(.+)/(.+)', r'\1/_\2', p.url)
+        thurl = re.sub(r'(.+)/(.+)', r'\1/thumb/\2', p.url)
         alt = '[%s]' % p.filename
         title = '%s %s' % (p.datetime, p.description)
         w('<td><a href="%s"><img src="%s" alt="%s" title="%s"></a>\n' %
