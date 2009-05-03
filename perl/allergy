@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy,v 1.42 2009-05-03 08:21:02 grahn Exp $
+# $Id: allergy,v 1.43 2009-05-03 08:30:52 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004, 2005, 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -248,7 +248,15 @@ class Gallery:
                 if i.mode=='P':
                     i = i.convert('RGB')
                 self.feedback('%s, thumbnailing' % f)
-                i.save(thumbname(f), 'JPEG', quality=self.quality)
+                try:
+                    i.save(thumbname(f), 'JPEG', quality=self.quality)
+                except IOError, e:
+                    # maybe thumb/ doesn't exist.
+                    try:
+                        os.mkdir(os.path.join(os.path.dirname(f), 'thumb'))
+                    except:
+                        raise e
+                    i.save(thumbname(f), 'JPEG', quality=self.quality)
             else:
                 self.feedback(f)
                 i = Image.open(tf)
