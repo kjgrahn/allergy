@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy,v 1.43 2009-05-03 08:30:52 grahn Exp $
+# $Id: allergy,v 1.44 2009-05-03 08:37:20 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004, 2005, 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -145,7 +145,7 @@ def gridentry(href, thumbnail, caption):
     html = []
     html.append('<td><a href="%s">' % href)
     html.append('   <img src="%s"' % thumbnail)
-    html.append('        alt="[%s]"' % thumbnail)
+    html.append('        alt="[%s]"' % href)
     if caption:
         html.append('      title="%s"' % caption)
     html.append('  width="%d" height="%d"></a>' % Image.open(thumbnail).size)
@@ -157,7 +157,7 @@ def listentry(href, thumbnail, caption):
     html = []
     html.append('<p><a href="%s">' % href)
     html.append('  <img src="%s"' % thumbnail)
-    html.append('      alt="[%s]"' % thumbnail)
+    html.append('      alt="[%s]"' % href)
     html.append('  width="%d" height="%d"></a>' % Image.open(thumbnail).size)
     if caption:
         html.append(caption)
@@ -249,14 +249,14 @@ class Gallery:
                     i = i.convert('RGB')
                 self.feedback('%s, thumbnailing' % f)
                 try:
-                    i.save(thumbname(f), 'JPEG', quality=self.quality)
+                    i.save(tf, 'JPEG', quality=self.quality)
                 except IOError, e:
                     # maybe thumb/ doesn't exist.
                     try:
-                        os.mkdir(os.path.join(os.path.dirname(f), 'thumb'))
+                        os.mkdir(os.path.dirname(tf))
                     except:
                         raise e
-                    i.save(thumbname(f), 'JPEG', quality=self.quality)
+                    i.save(tf, 'JPEG', quality=self.quality)
             else:
                 self.feedback(f)
                 i = Image.open(tf)
