@@ -4,6 +4,14 @@ Major changes (with focus on user-visible changes) to allergy, per version.
 
 _________________________________________
 
+allergy 5.3 (2009-05-03):
+
+	- allergy_index: generate indices for individual dates, e.g.
+	  /2009-05-03. Also link back from all tables to the by-year,
+	  by-month and by-day indices. This is useful for navigating
+	  from a "keyworded" photo to the list of photos taken that
+	  day, and so on.
+
 allergy 5.2 (2009-03-18):
 	- allergy: do not require photo description files to contain
 	  dates. If you scan e.g. old photo collections, you sometimes
@@ -103,5 +111,5 @@ allergy 1.0 (2001-07-28):
 	- First public version.
 
 _________________________________________
-$Id: NEWS,v 1.22 2009-03-18 21:56:31 grahn Exp $
+$Id: NEWS,v 1.23 2009-05-03 05:53:44 grahn Exp $
 $Name:  $
