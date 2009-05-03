@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.37 2009-04-16 20:20:53 grahn Exp $
+# $Id: allergy_index,v 1.38 2009-05-03 05:14:56 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -204,6 +204,8 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
     server_version = '%s/%s' % _cvs_says()
     yearre = re.compile(r'/\d{4}$')
     monthre = re.compile(r'/\d{4}-\d{2}$')
+    dayre = re.compile(r'/\d{4}-\d{2}-\d{2}$')
+    yadre = re.compile(r'/\d{1,2}\.\d{1,2}\.\d{4}$')
 
     def do_GET(self):
         p = self.path
@@ -224,6 +226,12 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         elif self.monthre.match(p):
             y, m = [ int(x) for x in p[1:].split('-') ]
             self.get_by_month(y, m)
+        elif self.dayre.match(p):
+            y, m, d = [ int(x) for x in p[1:].split('-') ]
+            self.get_by_day(y, m, d)
+        elif self.yadre.match(p):
+            d, m , y = [ int(x) for x in p[1:].split('.') ]
+            self.get_by_day(y, m, d)
         elif p=='/css':
             self.get_css()
         elif p=='/robots.txt':
@@ -337,6 +345,27 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
                       up='/',
                       prev = prev,
                       next = next)
+        w = self.write
+        w('<h1>%s</h1>\n' % title)
+
+        _dated_photo_list(pp, w)
+        w('<p>\n')
+        _gallery(pp, w)
+
+        self.postamble()
+
+    def get_by_day(self, y, m, d):
+        photobase = self.server.photobase
+
+        datestr = '%04d-%02d-%02d' % (y, m, d)
+        pp = [ x for x in photobase.photos if x.datetime == datestr ]
+        if not pp:
+            return self.get_404('Inga foton finns från %s.' % datestr)
+
+        title = 'Alla foton %s' % datestr
+        up = '/%04d-%02d' % (y, m)
+        self.preamble(title,
+                      up=up)
         w = self.write
         w('<h1>%s</h1>\n' % title)
 
