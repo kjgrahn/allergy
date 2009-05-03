@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.39 2009-05-03 05:16:55 grahn Exp $
+# $Id: allergy_index,v 1.40 2009-05-03 05:39:04 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -24,6 +24,21 @@ def reversedate(s):
     date = map(int, s.split('-'))
     date.reverse()
     return '%d.%d.%d' % tuple(date)
+
+def _linkdate(dd):
+    """If dd is a 'yyyy-mm-dd' string, return a hyperlinked version
+    which links to /yyyy, /yyyy-mm and /yyyy-mm-dd. Otherwise just
+    return it.
+    """
+    try:
+        y, m, d = dd.split('-')
+        ss = []
+        ss.append('<a href="/%s">%s</a>' % (y, y))
+        ss.append('<a href="/%s-%s">%s</a>' % (y, m, m))
+        ss.append('<a href="/%s-%s-%s">%s</a>' % (y, m, d, d))
+        return '-'.join(ss)
+    except:
+        return dd
 
 def _escape(s):
     "escape reserved HTML characters <>& in 's'"
@@ -141,7 +156,7 @@ def _dated_photo_list(photos, w):
             pdate = date
         else:
             date = ''
-        w('<tr><td>%s<td>%s<td><a href="%s">%s</a>\n' % (date, time,
+        w('<tr><td>%s<td>%s<td><a href="%s">%s</a>\n' % (_linkdate(date), time,
                                                          p.url,
                                                          _escape(p.description)))
         w('<td class="keys">%s\n' % _keylist_except(p))
@@ -171,7 +186,7 @@ def _undated_photo_list(photos, w, cause):
             pdate = date
         else:
             date = ''
-        w('<tr><td>%s<td>%s<td><a href="%s">%s</a>\n' % (date, time,
+        w('<tr><td>%s<td>%s<td><a href="%s">%s</a>\n' % (_linkdate(date), time,
                                                          p.url,
                                                          _escape(p.description)))
         w('<td class="keys">%s\n' % _keylist_except(p, cause))
