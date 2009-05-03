@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: photobase.py,v 1.15 2009-03-18 21:44:09 grahn Exp $
+# $Id: photobase.py,v 1.16 2009-05-03 09:18:27 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004, 2005, 2008 Jörgen Grahn
@@ -167,9 +167,10 @@ class Names:
         self.files = {}
         self.categories = {}
         _, f = os.popen2(('find', basepath,
-                          '-type', 'f', '-print',
+                          '-name', '.xvpics', '-prune',
                           '-or',
-                          '-name', '.xvpics', '-prune'))
+                          '-name', 'thumb', '-prune',
+                          '-or', '-print'))
         n = len(basepath)
         baseurl = baseurl.rstrip('/')
         for s in f:
