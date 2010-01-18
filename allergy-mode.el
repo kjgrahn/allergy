@@ -3,7 +3,7 @@
 ;; Copyright (C) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
 ;; All right reserved.
 ;;
-;; $Id: allergy-mode.el,v 1.1 2009-03-18 21:56:31 grahn Exp $
+;; $Id: allergy-mode.el,v 1.2 2010-01-18 21:27:55 grahn Exp $
 ;; $Name:  $
 
 (defconst allergy-font-lock-keywords
@@ -11,7 +11,7 @@
     ("\\[.+?\\]" . font-lock-keyword-face)
     ("\{.+?\}" . font-lock-string-face)
     ("^ibid" . font-lock-string-face)
-    ("200.-..-.. [0-9:]+" . font-lock-variable-name-face)
+    ("20[0-9][0-9]-..-.. [0-9:]+" . font-lock-variable-name-face)
     ("XXX.*$" . font-lock-warning-face)
     )
   "Syntax highlighting for Allergy mode.")
