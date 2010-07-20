@@ -1,5 +1,5 @@
 .ig
-$Id: allergy_index.1,v 1.10 2009-05-03 05:48:38 grahn Exp $
+$Id: allergy_index.1,v 1.11 2010-07-20 15:44:40 grahn Exp $
 $Name:  $
 ..
 .
@@ -8,7 +8,7 @@ $Name:  $
 .IP "\\fB\\$*"
 ..
 .
-.TH allergy_index 1 "MAY 2009" "Allergy" "User Manuals"
+.TH allergy_index 1 "JUL 2010" "Allergy" "User Manuals"
 .
 .
 .SH "NAME"
@@ -94,19 +94,21 @@ looks as follows:
 The front page.
 .
 .IP "\fB/by-date"
-All photos, by reverse date.
+All photos, newest first.
 .
+.ig
 .IP "\fB/\fIcategory"
 All photos in category
 .IR category ,
 by reverse date.
 A category is just a fancy name for the directory the photo resides in,
 relative to the base path.
+..
 .
 .IP "\fB/\fIyear"
 All photos from a certain year (given as
 .IR yyyy ),
-by reverse date.
+oldest first.
 .
 .IP "\fB/\fIyear\fB\-\fPmonth"
 Like
@@ -129,8 +131,9 @@ All keywords, in alphabetical order.
 .
 .IP "\fB/key/\fIkeyword"
 All photos matching the key
-.IR keyword .
-Like the by-month kind, this one includes a thumbnail gallery.
+.IR keyword ,
+newest first.
+Like the by-month and by-date pages, this one includes a thumbnail gallery.
 .
 .IP "\fB/css"
 The style sheet applied to all pages.
@@ -146,10 +149,6 @@ preventing mirroring or indexing of the descriptions and photos.
 .SH "BUGS"
 .B allergy_index
 generates pages with swedish text, and swedish localization in general.
-.PP
-The
-.BI / category
-URLs are not implemented.
 .PP
 First/prev/next/last/up navigation is just partly implemented.
 .

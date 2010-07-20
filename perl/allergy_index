@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.41 2009-05-03 08:21:02 grahn Exp $
+# $Id: allergy_index,v 1.42 2010-07-20 15:44:40 grahn Exp $
 # $Name:  $
 #
-# Copyright (c) 2008 Jörgen Grahn <grahn+src@snipabacken.se>
+# Copyright (c) 2008, 2010 Jörgen Grahn <grahn+src@snipabacken.se>
 # All rights reserved.
 #
 """build a html photo index
@@ -374,6 +374,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
         datestr = '%04d-%02d-%02d' % (y, m, d)
         pp = [ x for x in photobase.photos if x.datetime.startswith(datestr) ]
+        pp.sort(key = lambda x: x.datetime)
         if not pp:
             return self.get_404('Inga foton finns från %s.' % datestr)
 
@@ -553,7 +554,7 @@ if __name__ == "__main__":
             if option == '--version':
                 print prog
                 print '%s, version %s' % _cvs_says()
-                print 'Copyright (c) 2008 Jörgen Grahn.'
+                print 'Copyright (c) 2008, 2010 Jörgen Grahn.'
                 sys.exit(0)
         if len(descriptions)==0 or len(baseurl)!=1 or not pbasepath or not pbaseurl:
             raise ValueError('required argument missing')

@@ -4,6 +4,12 @@ Major changes (with focus on user-visible changes) to allergy, per version.
 
 _________________________________________
 
+allergy 5.7 (2010-07-20):
+	- allergy_index: don't sort "photos from yyyy-mm-dd" lists
+	  newest first -- it's only natural for pages which can
+	  potentially be very long, like the full list and the by-key
+	  pages.
+
 allergy 5.6 (2010-05-14):
 	- allergy-mode.el bug fix; colorize years after 2010 properly.
 
@@ -121,5 +127,5 @@ allergy 1.0 (2001-07-28):
 	- First public version.
 
 _________________________________________
-$Id: NEWS,v 1.26 2010-05-13 22:16:05 grahn Exp $
+$Id: NEWS,v 1.27 2010-07-20 15:44:40 grahn Exp $
 $Name:  $
