@@ -32,10 +32,6 @@ Allergy requires Python and the Python Imaging Library (PIL).
 I believe it is portable to any platform which can support Python and
 PIL, but I only have access to Linux systems myself.
 
-Additionally, if Gene Cash's 'EXIF' python module[2] is installed, it
-may be used to pull creation date and time from images that happen to
-contain them.
-
 The generated HTML text will render well only in the presence of a
 suitable style sheet; `examples/darkroom.css' is included, but you
 will have to install or copy (and customize!) it manually.
@@ -45,7 +41,7 @@ LICENSE
 
 Allergy is available under the Modified BSD license.
 
-Copyright (c) 2004, 2005, 2008 Jörgen Grahn
+Copyright (c) 2004, 2005, 2008, 2010 Jörgen Grahn
 All rights reserved.
 
 1. Redistributions of source code must retain the above copyright
@@ -78,8 +74,5 @@ POSSIBILITY OF SUCH DAMAGE.
     promising, but I found out about it too late.
     'cthumb' and 'webmagick' seem to be alternatives too.
 
-[2] The EXIF module is available from
-    http://home.cfl.rr.com/genecash/digital_camera.html
-
-$Id: README,v 1.13 2010-07-20 14:44:00 grahn Exp $
+$Id: README,v 1.14 2010-07-30 15:37:30 grahn Exp $
 $Name:  $

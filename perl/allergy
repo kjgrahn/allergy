@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy,v 1.45 2010-07-30 15:25:35 grahn Exp $
+# $Id: allergy,v 1.46 2010-07-30 15:37:30 grahn Exp $
 # $Name:  $
 #
 # Copyright (c) 2001, 2004, 2005, 2008, 2010 Jörgen Grahn <grahn+src@snipabacken.se>
@@ -58,56 +58,18 @@ def reversedate(s):
     date.reverse()
     return '%d.%d.%d' % tuple(date)
 
-class ExifTime:
-    """Pulling the time a photo was taken from
-    the EXIF information it contains, if at all possible.
-    """
-    def time(self, f):
-        """Return the generation time embedded in image file 'f' as a
-        tuple ('d.m.yyyy', 'hh:mm') or, for all kinds of errors and
-        subnormal conditions, None.
-
-        We prefer 'Image Generated' attributes to other time stamps,
-        because it's supposed to be the one closest to the actual
-        snapshot moment.
-        """
-        try:
-            tags = self.EXIF.process_file(open(f, 'rb'))
-            for id in ('EXIF DateTimeGenerated',
-                       'EXIF DateTimeDigitized',
-                       'Image DateTime'):
-                if tags.has_key(id):
-                    date, time = str(tags[id]).split()
-                    return (reversedate(date.replace(':', '-')),
-                            time[:5])
-        except (AttributeError, IOError):
-            pass
-        return None
-
-    try:
-        import EXIF
-    except ImportError:
-        pass
-
 class DescriptionDb:
     """Container for all sources of image information, except
     that in the allergy source itself. This means, in practice,
-    the text/photos file and EXIF information embedded in the
-    images themselves. Either or both of these may be absent.
+    the text/photos file. It may be absent.
     """
-    def __init__(self, photobase=None, exiftime=None):
+    def __init__(self, photobase=None):
         self.photobase = photobase
-        self.exiftime = exiftime
     def title(self, file):
         "A suitable title for the image file 'file', or the empty string."
         t = []
         in_base = self.photobase and self.photobase.has(file)
-        if self.exiftime:
-            datetime = self.exiftime.time(file)
-            if datetime:
-                date, time = datetime
-                t.append(date)
-        elif in_base:
+        if in_base:
             dt = self.photobase.time(file)
             if dt:
                 date, time = dt.split()
@@ -306,10 +268,10 @@ if __name__ == "__main__":
     import getopt
     import fileinput
 
-    usage = 'usage: allergy [-f file] ... [-T] [-e] [-k] [-v | -V] file ...'
+    usage = 'usage: allergy [-f file] ... [-T] [-k] [-v | -V] file ...'
 
     try:
-        opts, files = getopt.getopt(sys.argv[1:], 'f:TekvV',
+        opts, files = getopt.getopt(sys.argv[1:], 'f:TkvV',
                                     ['help',
                                      'version'])
     except getopt.GetoptError, s:
@@ -320,11 +282,9 @@ if __name__ == "__main__":
     captiontitle = 0
     verbosity = 0
     descriptions = []
-    exiftime = None
     for option, value in opts:
         if option == '-f': descriptions.append(value)
         if option == '-T': captiontitle = 1
-        if option == '-e': exiftime = ExifTime()
         if option == '-k': clobber = 0
         if option == '-v': verbosity = 2
         if option == '-V': verbosity = 1
@@ -341,7 +301,7 @@ if __name__ == "__main__":
     else:
         photobase = None
 
-    descdb = DescriptionDb(photobase, exiftime)
+    descdb = DescriptionDb(photobase)
     ingallery = 0
 
     for line in fileinput.input(files):
