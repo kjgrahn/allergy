@@ -4,6 +4,9 @@ Major changes (with focus on user-visible changes) to allergy, per version.
 
 _________________________________________
 
+	- allergy: by default, make the images' caption texts normal
+	  HTML text, not a popup-style title attribute.
+
 allergy 5.7 (2010-07-20):
 	- allergy_index: don't sort "photos from yyyy-mm-dd" lists
 	  newest first -- it's only natural for pages which can
@@ -127,5 +130,5 @@ allergy 1.0 (2001-07-28):
 	- First public version.
 
 _________________________________________
-$Id: NEWS,v 1.27 2010-07-20 15:44:40 grahn Exp $
+$Id: NEWS,v 1.28 2010-07-30 15:25:35 grahn Exp $
 $Name:  $

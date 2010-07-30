@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy,v 1.44 2009-05-03 08:37:20 grahn Exp $
+# $Id: allergy,v 1.45 2010-07-30 15:25:35 grahn Exp $
 # $Name:  $
 #
-# Copyright (c) 2001, 2004, 2005, 2008 Jörgen Grahn <grahn+src@snipabacken.se>
+# Copyright (c) 2001, 2004, 2005, 2008, 2010 Jörgen Grahn <grahn+src@snipabacken.se>
 # All rights reserved.
 #
 """allergy - build thumbnails and html code to present
@@ -151,6 +151,18 @@ def gridentry(href, thumbnail, caption):
     html.append('  width="%d" height="%d"></a>' % Image.open(thumbnail).size)
     return '\n'.join(html)
 
+def gridparaentry(href, thumbnail, caption):
+    """Similar to gridentry, but with the caption text as a <p>
+    following the image."""
+    html = []
+    html.append('<td><a href="%s">' % href)
+    html.append('\t<img src="%s"' % thumbnail)
+    html.append('\talt="[%s]"' % href)
+    html.append('\twidth="%d" height="%d"></a>' % Image.open(thumbnail).size)
+    if caption:
+        html.append('<p>%s' % caption)
+    return '\n'.join(html)
+
 def listentry(href, thumbnail, caption):
     """Format an object (probably an image) as a list item,
     with an existing thumbnail image and describing text."""
@@ -169,18 +181,23 @@ class Gallery:
     contained within a begin/end{gallery}, do() generates
     thumbnails and corresponding HTML."""
     gridre = re.compile(r'\\grid{\s*(\d+)\s*,\s*n}')
+    gridtre = re.compile(r'\\grid{\s*(\d+)\s*,\s*n,\s*title}')
     listre = re.compile(r'\\list{}')
     classre = re.compile(r'\\class{\s*(.+?)\s*}')
     boundedre = re.compile(r'\\bounded{(\d+),\s*(\d+)}')
     qualityre = re.compile(r'\\quality{(\d+)}')
     commentre = re.compile(r'\s*(#.+)?$')
     annotre = re.compile(r'(.+?)\s*:\s*(.+)')
-    def __init__(self, feedback, descdb=None, clobber=1):
+    def __init__(self, feedback, descdb=None,
+                 captiontitle=0, clobber=1):
         self.descdb = descdb
         self.clobber = clobber
         self.feedback = feedback
         self.columns = 4
-        self.formatter = gridentry
+        if captiontitle:
+            self.formatter = gridentry
+        else:
+            self.formatter = gridparaentry
         self.cls = ''
         self.quality = 30
         self.bbox = (140, 100)
@@ -192,7 +209,11 @@ class Gallery:
         m = self.gridre.match(line)
         if m:
             self.columns = int(m.group(1))
-            self.formatter = gridentry
+            return
+        m = self.gridtre.match(line)
+        if m:
+            self.columns = int(m.group(1))
+            self.formatter = gridparaentry
             return
         m = self.listre.match(line)
         if m:
@@ -285,10 +306,10 @@ if __name__ == "__main__":
     import getopt
     import fileinput
 
-    usage = 'usage: allergy [-f file] ... [-e] [-k] [-v | -V] file ...'
+    usage = 'usage: allergy [-f file] ... [-T] [-e] [-k] [-v | -V] file ...'
 
     try:
-        opts, files = getopt.getopt(sys.argv[1:], 'f:ekvV',
+        opts, files = getopt.getopt(sys.argv[1:], 'f:TekvV',
                                     ['help',
                                      'version'])
     except getopt.GetoptError, s:
@@ -296,11 +317,13 @@ if __name__ == "__main__":
         print >>sys.stderr, usage
         sys.exit(1)
     clobber = 1
+    captiontitle = 0
     verbosity = 0
     descriptions = []
     exiftime = None
     for option, value in opts:
         if option == '-f': descriptions.append(value)
+        if option == '-T': captiontitle = 1
         if option == '-e': exiftime = ExifTime()
         if option == '-k': clobber = 0
         if option == '-v': verbosity = 2
@@ -310,7 +333,7 @@ if __name__ == "__main__":
             sys.exit(0)
         if option == '--version':
             print '%s, version %s' % cvs_says()
-            print 'Copyright (c) 2001, 2004, 2005, 2008 Jörgen Grahn.'
+            print 'Copyright (c) 2001, 2004, 2005, 2008, 2010 Jörgen Grahn.'
             sys.exit(0)
 
     if descriptions:
@@ -331,6 +354,7 @@ if __name__ == "__main__":
         else:
             if line.count(r'\begin{gallery}'):
                 ingallery = 1
-                gallery = Gallery(Feedback(verbosity), descdb, clobber)
+                gallery = Gallery(Feedback(verbosity), descdb,
+                                  captiontitle, clobber)
             else:
                 print line[:-1]
