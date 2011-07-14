@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: photobase.py,v 1.16 2009-05-03 09:18:27 grahn Exp $
+# $Id: photobase.py,v 1.17 2011-07-14 07:34:50 grahn Exp $
 # $Name:  $
 #
-# Copyright (c) 2001, 2004, 2005, 2008 Jörgen Grahn
+# Copyright (c) 2001, 2004, 2005, 2008, 2011 Jörgen Grahn
 # All rights reserved.
 #
 """parse text files describing digital photos
@@ -68,6 +68,9 @@ class Photo:
     'keys'        - a list of key strings
     'category'
     'url'
+
+    'description' and 'keys' are generated when requested, since the key parsing
+    is expensive.
     """
 
     datetimere = re.compile(r'^(\d{4})-(\d{2})-(\d{2})'
@@ -87,16 +90,24 @@ class Photo:
         self.category = None
         self.url = None
         if prev and s=='ibid':
-            self.description = prev.description
-            self.keys = prev.keys
+            self._description = prev._description
         else:
-            self.description, self.keys = extract_keys(s)
+            self._description = s
+
+    def __getattr__(self, name):
+        if name in ('description', 'keys'):
+            self.description, self.keys = extract_keys(self._description)
+            return self.__dict__[name]
+        else:
+            raise AttributeError(name)
 
 class Photobase:
     """A collection of photos. Public attributes:
     'photos' - the list of Photo instances
     'files'  - the mapping file name -> Photo instance
     'keys'   - the mapping keyword string -> list of Photo instances
+
+    'keys' is generated when first requested.
     """
 
     emptyre = re.compile(r'^\s*$')
@@ -110,6 +121,13 @@ class Photobase:
             self._append(open(p, 'r'))
         if not paths:
             self._append(sys.stdin)
+
+    def __getattr__(self, name):
+        if name=='keys':
+            self.keys = self._collect_keys()
+            return self.keys
+        else:
+            raise AttributeError(name)
 
     def _append(self, f):
         acc = []
@@ -127,15 +145,18 @@ class Photobase:
             prev = self._appendp(acc, prev)
 
     def _appendp(self, ss, prev):
-        ph = Photo(ss, prev)
-        self.photos.append(ph)
+        self.photos.append(Photo(ss, prev))
+        ph = self.photos[-1]
         self.files[ph.filename] = ph
-        for k in ph.keys:
-            try:
-                self.keys[k].append(ph)
-            except KeyError:
-                self.keys[k] = [ph]
         return ph
+
+    def _collect_keys(self):
+        for ph in self.photos:
+            for k in ph.keys:
+                try:
+                    self.keys[k].append(ph)
+                except KeyError:
+                    self.keys[k] = [ph]
 
     def has(self, file):
         "Do we have info on the image file 'file'?"

@@ -25,8 +25,8 @@ INSTALLATION AND REQUIREMENTS
 
 # make install
 
-(There is a normal Python setup script, but it doesn't do all of the
-installation.)
+(There is also a normal Python setup script, but it doesn't do all of
+the installation.)
 
 Allergy requires Python and the Python Imaging Library (PIL).
 I believe it is portable to any platform which can support Python and
@@ -41,7 +41,7 @@ LICENSE
 
 Allergy is available under the Modified BSD license.
 
-Copyright (c) 2004, 2005, 2008, 2010 Jörgen Grahn
+Copyright (c) 2004, 2005, 2008, 2010. 2011 Jörgen Grahn
 All rights reserved.
 
 1. Redistributions of source code must retain the above copyright
@@ -74,5 +74,5 @@ POSSIBILITY OF SUCH DAMAGE.
     promising, but I found out about it too late.
     'cthumb' and 'webmagick' seem to be alternatives too.
 
-$Id: README,v 1.14 2010-07-30 15:37:30 grahn Exp $
+$Id: README,v 1.15 2011-07-14 07:34:50 grahn Exp $
 $Name:  $

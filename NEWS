@@ -4,6 +4,10 @@ Major changes (with focus on user-visible changes) to allergy, per version.
 
 _________________________________________
 
+allergy 5.9 (2011-07-14):
+	- allergy: optimized to run faster when the image description
+	  file is large (mine is a megabyte and heavily tagged).
+
 allergy 5.8 (2010-07-30):
 	- allergy: by default, make the images' caption texts normal
 	  HTML text, not a popup-style title attribute.
@@ -135,5 +139,5 @@ allergy 1.0 (2001-07-28):
 	- First public version.
 
 _________________________________________
-$Id: NEWS,v 1.31 2010-09-19 21:00:59 grahn Exp $
+$Id: NEWS,v 1.32 2011-07-14 07:34:50 grahn Exp $
 $Name:  $
