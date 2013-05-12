@@ -34,6 +34,7 @@ liboutnumbered.a: sessionhistory.o
 liboutnumbered.a: textread.o
 liboutnumbered.a: requestqueue.o
 liboutnumbered.a: request.o
+liboutnumbered.a: date.o
 liboutnumbered.a: names.o
 liboutnumbered.a: filter.o
 liboutnumbered.a: deflate.o
@@ -58,6 +59,7 @@ libtest.a: test/test_log.o
 libtest.a: test/pipe.o
 libtest.a: test/test_deflate.o
 libtest.a: test/test_cache.o
+libtest.a: test/test_date.o
 	$(AR) -r $@ $^
 
 test.cc: libtest.a
@@ -98,6 +100,7 @@ love:
 
 # DO NOT DELETE
 
+date.o: date.h blob.h
 deflate.o: deflate.h blob.h error.h
 filter.o: filter.h blob.h deflate.h error.h
 httpd.o: version.h error.h server.h session.h times.h textread.h
@@ -122,6 +125,7 @@ times.o: times.h
 version.o: version.h
 test/pipe.o: test/pipe.h blob.h
 test/test_cache.o: ./headercache.h
+test/test_date.o: date.h blob.h
 test/test_deflate.o: deflate.h blob.h
 test/test_filter.o: filter.h blob.h deflate.h test/pipe.h
 test/test_log.o: log.h

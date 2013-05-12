@@ -27,8 +27,8 @@
  *   [body]
  *
  * It's implemented as a state machine, which moves forward by being
- * fed line by line until complete(), at which point it may also be
- * broken().
+ * fed line by line until 'complete', at which point it may also be
+ * 'broken'.
  *
  * Since we don't support POST, this class is optimized for fairly
  * short requests, with no extremely long message body.
