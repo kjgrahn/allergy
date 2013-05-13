@@ -10,8 +10,8 @@ CXXFLAGS=-Wall -Wextra -pedantic -std=c++98 -g -Os -Wold-style-cast
 CPPFLAGS=-I..
 
 .PHONY: all
-all: liboutnumbered.a
 all: outnumbered
+all: tests
 
 .PHONY: install
 install: outnumbered
@@ -47,10 +47,10 @@ deflate.o: CXXFLAGS+=-Wno-old-style-cast
 httpd.o: CXXFLAGS+=-Wno-old-style-cast
 
 outnumbered: httpd.o liboutnumbered.a
-	$(CXX) -o $@ httpd.o -L. -loutnumbered -lrt -lz
+	$(CXX) $(CXXFLAGS) -o $@ httpd.o -L. -loutnumbered -lrt -lz
 
 magic: magic.o liboutnumbered.a
-	$(CXX) -o $@ magic.o -L. -loutnumbered -lmagic
+	$(CXX) $(CXXFLAGS) -o $@ magic.o -L. -loutnumbered -lmagic
 
 #libtest.a: test/test_response.o
 libtest.a: test/test_request.o
@@ -66,7 +66,7 @@ test.cc: libtest.a
 	testicle -o$@ $^
 
 tests: test.o liboutnumbered.a libtest.a
-	$(CXX) -o $@ test.o -L. -ltest -loutnumbered -lz
+	$(CXX) $(CXXFLAGS) -o $@ test.o -L. -ltest -loutnumbered -lz
 
 test/%.o: CPPFLAGS+=-I.
 
