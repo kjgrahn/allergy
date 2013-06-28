@@ -4,6 +4,10 @@ Major changes (with focus on user-visible changes) to allergy, per version.
 
 _________________________________________
 
+	- IPv6 support.  'allergy_index' will now by default listen to
+	  port 8001 and all interfaces, regardless of IP protocol
+	  version.
+
 allergy 5.9 (2011-07-14):
 	- allergy: optimized to run faster when the image description
 	  file is large (mine is a megabyte and heavily tagged).

@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-1 -*-
 #
-# $Id: allergy_index,v 1.42 2010-07-20 15:44:40 grahn Exp $
-# $Name:  $
-#
-# Copyright (c) 2008, 2010 Jörgen Grahn <grahn+src@snipabacken.se>
+# Copyright (c) 2008, 2010, 2013 Jörgen Grahn <grahn+src@snipabacken.se>
 # All rights reserved.
 #
 """build a html photo index
@@ -12,6 +9,7 @@
 import re
 import os
 import BaseHTTPServer
+import socket
 import time
 import gzip
 
@@ -519,6 +517,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
 
 class Server(BaseHTTPServer.HTTPServer):
+    address_family = socket.AF_INET6
     def __init__(self, address, photobase):
         BaseHTTPServer.HTTPServer.__init__(self, address, Handler)
         self.photobase = photobase
@@ -533,18 +532,19 @@ if __name__ == "__main__":
 
     prog = os.path.basename(sys.argv[0])
 
-    usage = 'usage: %s -f descriptions-file ... -b photo-url -p photo-path http://hostname:port' % prog
+    usage = 'usage: %s [-4] -f descriptions-file ... -b photo-url -p photo-path http://hostname:port' % prog
     usage += '\n       %s --version' % prog
     usage += '\n       %s --help   ' % prog
 
     try:
-        opts, baseurl = getopt.getopt(sys.argv[1:], 'f:b:p:',
+        opts, baseurl = getopt.getopt(sys.argv[1:], '4f:b:p:',
                                       ['help',
                                        'version'])
         descriptions = []
         pbaseurl = None
         pbasepath = None
         for option, value in opts:
+            if option == '-4': Server.address_family = socket.AF_INET
             if option == '-f': descriptions.append(value)
             if option == '-b': pbaseurl = value
             if option == '-p': pbasepath = value
@@ -554,7 +554,7 @@ if __name__ == "__main__":
             if option == '--version':
                 print prog
                 print '%s, version %s' % _cvs_says()
-                print 'Copyright (c) 2008, 2010 Jörgen Grahn.'
+                print 'Copyright (c) 2008, 2010, 2013 Jörgen Grahn.'
                 sys.exit(0)
         if len(descriptions)==0 or len(baseurl)!=1 or not pbasepath or not pbaseurl:
             raise ValueError('required argument missing')
