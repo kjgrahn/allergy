@@ -562,6 +562,8 @@ if __name__ == "__main__":
         if not m:
             raise ValueError('incorrect base URL')
         host, port = m.groups(); port = int(port)
+        if host=='*':
+            host = ''
 
     except (ValueError, getopt.GetoptError), s:
         print >>sys.stderr, 'error:', s
