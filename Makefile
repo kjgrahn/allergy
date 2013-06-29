@@ -60,6 +60,7 @@ libtest.a: test/pipe.o
 libtest.a: test/test_deflate.o
 libtest.a: test/test_cache.o
 libtest.a: test/test_date.o
+libtest.a: test/test_lineparse.o
 	$(AR) -r $@ $^
 
 test.cc: libtest.a
@@ -110,7 +111,7 @@ input.o: input.h
 log.o: log.h
 magic.o: version.h
 names.o: names.h request.h blob.h
-request.o: request.h blob.h names.h
+request.o: request.h blob.h names.h lineparse.h
 requestqueue.o: requestqueue.h request.h blob.h
 response.o: response.h filter.h blob.h deflate.h input.h request.h
 responsebuf.o: responsebuf.h
@@ -128,6 +129,7 @@ test/test_cache.o: ./headercache.h
 test/test_date.o: date.h blob.h
 test/test_deflate.o: deflate.h blob.h
 test/test_filter.o: filter.h blob.h deflate.h test/pipe.h
+test/test_lineparse.o: lineparse.h
 test/test_log.o: log.h
 test/test_request.o: request.h blob.h
 test/test_response.o: response.h filter.h blob.h deflate.h input.h

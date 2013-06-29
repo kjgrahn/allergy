@@ -5,6 +5,7 @@
 #include "request.h"
 
 #include "names.h"
+#include "lineparse.h"
 
 #include <cassert>
 #include <cctype>
@@ -14,17 +15,8 @@
 
 namespace {
 
-    const char* ws(const char* a, const char* b)
-    {
-	while(a!=b && std::isspace(*a)) a++;
-	return a;
-    }
-
-    const char* non_ws(const char* a, const char* b)
-    {
-	while(a!=b && !std::isspace(*a)) a++;
-	return a;
-    }
+    using Parse::ws;
+    using Parse::non_ws;
 
     /**
      * Advance through [a, b) until a non-token [2.2] is found.
@@ -62,15 +54,7 @@ namespace {
 	return a;
     }
 
-    /**
-     * Trim whitespace to the right in [a, b), so that
-     * it's either empty or ends with non-whitespace.
-     */
-    const char* trimr(const char* a, const char* b)
-    {
-	while(a!=b && std::isspace(*(b-1))) b--;
-	return b;
-    }
+    using Parse::trimr;
 
     Names names;
 }
