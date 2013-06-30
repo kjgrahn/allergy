@@ -21,7 +21,7 @@
  * If the cache's size reaches a threshold, it's simply cleared --
  * there's no aging mechanism.
  *
- * It turns out the nginx web server used the same technique
+ * It turns out the nginx web server uses the same technique
  *   http://nginx.org/en/docs/hash.html
  * but I invented it independently.  Perhaps it's an obvious idea.
  *

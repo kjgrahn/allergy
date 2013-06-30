@@ -1,14 +1,14 @@
 
-- Implement non-blocking accept() and close().
+- Implement non-blocking accept() and close() if needed.
 
-- Fairness. Don't let one client starve the others.  Favor writing
+- Fairness. Don't let one session starve the others.  Favor writing
   before reading.  -- How to schedule when N Sessions are writable?
 
-- Can we deadlock a client by writing and not immediately read()
+- Can we deadlock a Session by writing and not immediately read()
   when there's something to read?
 
 - Should Sessions to the same endpoint be punished? Rewarded? Should
-  we care?
+  we care? We cannot reliably detect the same session.
 
 - How to balance accept() vs servicing existing Sessions?
 

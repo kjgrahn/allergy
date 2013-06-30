@@ -948,6 +948,7 @@ Table of Contents
       accepting date values that may have been sent by non-HTTP
       applications, as is sometimes the case when retrieving or posting
       messages via proxies/gateways to SMTP or NNTP.
+
    All HTTP date/time stamps MUST be represented in Greenwich Mean Time
    (GMT), without exception. For the purposes of HTTP, GMT is exactly
    equal to UTC (Coordinated Universal Time). This is indicated in the
@@ -4882,9 +4883,7 @@ Table of Contents
    Accept-Language field is the quality value of the longest language-
    range in the field that matches the language-tag. If no language-
    range in the field matches the tag, the language quality factor
-   assigned is 0. If no Accept-Language header is present in the
-   request, the server
-
+   assigned is 0. If no Accept-Language header is present in the request, the server
    SHOULD assume that all languages are equally acceptable. If an
    Accept-Language header is present, then all languages which are
    assigned a quality factor greater than 0 are acceptable.
@@ -5075,6 +5074,7 @@ Table of Contents
          | cache-extension                        ; Section 14.9.6
 
     cache-extension = token [ "=" ( token | quoted-string ) ]
+
    When a directive appears without any 1#field-name parameter, the
    directive applies to the entire request or response. When such a
    directive appears with a 1#field-name parameter, it applies only to
@@ -6065,7 +6065,6 @@ Table of Contents
    If any of the entity tags match the entity tag of the entity that
    would have been returned in the response to a similar GET request
    (without the If-Match header) on that resource, or if "*" is given
-
    and any current entity exists for that resource, then the server MAY
    perform the requested method as if the If-Match header field did not
    exist.
@@ -6541,6 +6540,7 @@ Table of Contents
    the entity returned as the result of the request:
 
       Range = "Range" ":" ranges-specifier
+
    A server MAY ignore the Range header. However, HTTP/1.1 origin
    servers and intermediate caches ought to support byte ranges when
    possible, since Range supports efficient recovery from partially
@@ -6969,7 +6969,6 @@ Table of Contents
    Warning header that it received with a message. However, if a cache
    successfully validates a cache entry, it SHOULD remove any Warning
    headers previously attached to that entry except as specified for
-
    specific Warning codes. It MUST then add any Warning headers received
    in the validating response. In other words, Warning headers are those
    that would be attached to the most recent relevant response.
