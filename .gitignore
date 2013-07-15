@@ -6,3 +6,4 @@ test.cc
 tests
 TAGS
 Makefile.bak
+gmon.out

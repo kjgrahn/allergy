@@ -1,0 +1,263 @@
+Aspects of the request affecting the response
+
+Method [5.1.1]
+
+Request-URI [5.1.2]
+
+# general
+
+Cache-Control [14.9]
+
+   ...
+
+Pragma [14.32]
+
+   Pragma: no-cache
+
+   "HTTP/1.1 caches SHOULD treat "Pragma: no-cache" as if the client
+   had sent "Cache-Control: no-cache". No new Pragma directives will
+   be defined in HTTP."
+
+Connection [14.10]
+
+   Connection: close
+
+   "HTTP/1.1 defines the "close" connection option for the sender to
+   signal that the connection will be closed after completion of the
+   response."
+
+Date [14.18]
+
+   Date: Tue, 15 Nov 1994 08:12:31 GMT
+
+   "represents the date and time at which the message was originated
+   ...  clients SHOULD only send a Date header field in messages that
+   include an entity-body, as in the case of the PUT and POST
+   requests, and even then ..."
+
+Trailer [14.40]
+
+   Trailer: field, field, ...
+
+   "An HTTP/1.1 message SHOULD include a Trailer header field in a
+   message using chunked transfer-coding with a non-empty
+   trailer. Doing so allows the recipient to know which header fields
+   to expect in the trailer.  If no Trailer header field is present,
+   the trailer SHOULD NOT include any header fields."
+
+Transfer-Encoding [14.41]
+
+   chunked, identity, gzip, compress, deflate
+
+   "... indicates what (if any) type of transformation has been
+   applied to the message body in order to safely transfer it between
+   the sender and the recipient. This differs from the content-coding
+   in that the transfer-coding is a property of the message, not of
+   the entity."
+
+Upgrade [14.42]
+
+   "... intended to provide a simple mechanism for transition from
+   HTTP/1.1 to some other, incompatible protocol. It does so by
+   allowing the client to advertise its desire to use another protocol
+   [---] only applies to switching application-layer protocols upon
+   the existing transport-layer connection. Upgrade cannot be used to
+   insist on a protocol change; its acceptance and use by the server
+   is optional."
+
+Via [14.45]
+
+   "... MUST be used by gateways and proxies to indicate the
+   intermediate protocols and recipients between the user agent and
+   the server on requests, and between the origin server and the
+   client on responses."
+
+Warning [14.46]
+
+   ...
+
+# request
+
+Accept [14.1]
+
+   "... specify certain media types which are acceptable for the
+   response."
+
+Accept-Charset [14.2]
+
+   "... indicate what character sets are acceptable for the
+   response. If no Accept-Charset header is present, the default is
+   that any character set is acceptable."
+
+Accept-Encoding [14.3]
+
+   identity, gzip, compress, deflate
+
+   "... restricts the content-codings (section 3.5) that are
+   acceptable in the response. If the Accept-Encoding field-value is
+   empty, then only the "identity" encoding is acceptable. If no
+   Accept-Encoding field is present in a request, the server MAY
+   assume that the client will accept any content coding. In this
+   case, if "identity" is one of the available content-codings, then
+   the server SHOULD use the "identity" content-coding"
+
+Accept-Language [14.4]
+
+   "... restricts the set of natural languages that are preferred as a
+   response to the request."
+
+Authorization [14.8]
+
+   "A user agent that wishes to authenticate itself with a server
+   ... does so by including an Authorization request-header field with
+   the request.  The Authorization field value consists of credentials
+   containing the authentication information of the user agent for the
+   realm of the resource being requested."
+
+Expect [14.20]
+
+   Expect: 100-continue
+
+   "The purpose of the 100 (Continue) status (see section 10.1.1) is to
+   allow a client that is sending a request message with a request body
+   to determine if the origin server is willing to accept the request
+   (based on the request headers) before the client sends the request
+   body. In some cases, it might either be inappropriate or highly
+   inefficient for the client to send the body if the server will reject
+   the message without looking at the body."
+
+From [14.22]
+
+   "an Internet e-mail address for the human user who controls the
+   requesting user agent"
+
+Host [14.23]
+
+   "... Internet host and port number of the resource being requested,
+   as obtained from the original URI given by the user or referring
+   resource. [---] All Internet-based HTTP/1.1 servers MUST respond
+   with a 400 (Bad Request) status code to any HTTP/1.1 request
+   message which lacks a Host header field."
+
+If-Match [14.24]
+
+   If-Match: etag, etag, ...
+   If-Match: *
+
+   "A client that has one or more entities previously
+   obtained from the resource can verify that one of those entities is
+   current by including a list of their associated entity tags in the
+   If-Match header field.
+
+   If none of the entity tags match, or if "*" is given and no current
+   entity exists, the server MUST NOT perform the requested method, and
+   MUST return a 412 (Precondition Failed) response. This behavior is
+   most useful when ...
+
+   If the request would, without the If-Match header field, result in
+   anything other than a 2xx or 412 status, then the If-Match header
+   MUST be ignored.
+
+   The result of a request having both an If-Match header field and
+   either an If-None-Match or an If-Modified-Since header fields is
+   undefined by this specification."
+
+If-Modified-Since [14.25]
+
+   If-Modified-Since: Sat, 29 Oct 1994 19:43:31 GMT
+
+   "... instead, a 304 (not modified) response will
+   be returned without any message-body."
+
+If-None-Match [14.26]
+
+   If-None-Match: etag, etag, ...
+   If-None-Match: *
+
+   "If any of the entity tags match the entity tag of the entity that
+   would have been returned in the response to a similar GET request
+   ... on that resource, or if "*" is given and any current entity
+   exists for that resource, then the server MUST NOT perform the
+   requested method, unless required to do so because the resource's
+   modification date fails to match that supplied in an
+   If-Modified-Since header field in the request.
+
+   Instead, if the request method was GET or HEAD, the server SHOULD
+   respond with a 304 (Not Modified) response, including the cache-
+   related header fields (particularly ETag) of one of the entities
+   that matched. For all other request methods, the server MUST
+   respond with a status of 412 (Precondition Failed)."
+
+If-Range [14.27]
+
+   If-Range: etag
+   If-Range: Sat, 29 Oct 1994 19:43:31 GMT
+
+   "if the entity is unchanged, send me the part(s) that I am missing;
+   otherwise, send me the entire new entity"
+
+If-Unmodified-Since [14.28]
+
+   If-Unmodified-Since: Sat, 29 Oct 1994 19:43:31 GMT
+
+Max-Forwards [14.31]
+
+   ...
+
+Proxy-Authenticate [14.33]
+
+   ...
+
+Range [14.35]
+
+   "HTTP retrieval requests using conditional or unconditional GET
+   methods MAY request one or more sub-ranges of the entity, instead
+   of the entire entity, using the Range request header, which applies
+   to the entity returned as the result of the request. ... the
+   response carries a status code of 206 (Partial Content) instead of
+   200 (OK)."
+
+Referer [14.36]
+
+   ...
+
+TE [14.39]
+
+   "The TE request-header field indicates what extension
+   transfer-codings it is willing to accept in the response and
+   whether or not it is willing to accept trailer fields in a chunked
+   transfer-coding. Its value may consist of the keyword "trailers"
+   and/or a comma-separated list of extension transfer-coding names
+   with optional accept parameters (as described in section 3.6).
+
+   ...  The TE header field only applies to the immediate connection.
+   Therefore, the keyword MUST be supplied within a Connection header
+   field (section 14.10) whenever TE is present in an HTTP/1.1
+   message.  ... The "chunked" transfer-coding is always acceptable."
+
+User-Agent [14.43]
+
+# entity
+
+Allow [14.7]
+Content-Encoding [14.11]
+Content-Language [14.12]
+Content-Length [14.13]
+Content-Location [14.14]
+Content-MD5 [14.15]
+Content-Range [14.16]
+Content-Type [14.17]
+Expires [14.21]
+Last-Modified [14.29]
+
+# response
+
+Accept-Ranges [14.5]
+Age [14.6]
+ETag [14.19]
+Location [14.30]
+Proxy-Authorization [14.34]
+Retry-After [14.37]
+Server [14.38]
+Vary [14.44]
+WWW-Authenticate [14.47]
