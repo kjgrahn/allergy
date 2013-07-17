@@ -11,9 +11,9 @@ def cvs_says(dollarname='$Name:  $'):
     if not m: return ('allergy', 'unknown')
     return m.group(1), m.group(2).replace('-', '.')
 
-name, version = cvs_says()
+_, version = cvs_says()
 
-setup(name = name,
+setup(name = 'allergy',
       version = version,
       description = 'thumbnail and HTML picture gallery creator',
 
@@ -22,8 +22,6 @@ setup(name = name,
       license = 'GPL',
       url = 'http://snipabacken.se/~grahn/comp/#allergy',
 
-      package_dir = {'': 'perl'},
       py_modules = ['photobase'],
-      # A real Makefile will install the program ...
-      # scripts = ['perl/allergy'],
+      # A real Makefile will install the programs ...
       )
