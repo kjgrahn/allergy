@@ -4,7 +4,7 @@
 # $Id: photobase.py,v 1.17 2011-07-14 07:34:50 grahn Exp $
 # $Name:  $
 #
-# Copyright (c) 2001, 2004, 2005, 2008, 2011 Jörgen Grahn
+# Copyright (c) 2001, 2004, 2005, 2008, 2011, 2013 Jörgen Grahn
 # All rights reserved.
 #
 """parse text files describing digital photos
@@ -207,6 +207,7 @@ class Names:
                 self.categories[category].append(filename)
             except KeyError:
                 self.categories[category] = [filename]
+        os.wait()
 
 class Superbase:
     """A tarted up Photobase.
