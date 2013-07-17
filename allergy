@@ -257,12 +257,8 @@ class Gallery:
         return '\n'.join(html)
 
 
-def cvs_says(dollarname='$Name:  $'):
-    import re
-    m = re.match(r'\$'r'Name:\s+(.+?)-(\d+(-\d+)*)\D', dollarname)
-    if not m: return ('allergy', 'unknown')
-    return m.group(1), m.group(2).replace('-', '.')
-
+def cvs_says():
+    return 'allergy', '5.10'
 
 if __name__ == "__main__":
     import getopt
@@ -293,7 +289,7 @@ if __name__ == "__main__":
             sys.exit(0)
         if option == '--version':
             print '%s, version %s' % cvs_says()
-            print 'Copyright (c) 2001, 2004, 2005, 2008, 2010 Jörgen Grahn.'
+            print 'Copyright (c) 2001, 2004, 2005, 2008, 2010, 2013 Jörgen Grahn.'
             sys.exit(0)
 
     if descriptions:

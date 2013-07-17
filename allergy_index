@@ -45,10 +45,8 @@ def _escape(s):
     s = s.replace('>', '&gt;')
     return s
 
-def _cvs_says(dollarname='$Name:  $'):
-    m = re.match(r'\$'r'Name:\s+(.+?)-(\d+(-\d+)*)\D', dollarname)
-    if not m: return ('allergy', 'unknown')
-    return m.group(1), m.group(2).replace('-', '.')
+def _cvs_says():
+    return 'allergy', '5.10'
 
 
 def _date_time_string(epochtime):

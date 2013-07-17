@@ -4,9 +4,13 @@ Major changes (with focus on user-visible changes) to allergy, per version.
 
 _________________________________________
 
+allergy 5.10 (2012-07-17):
 	- IPv6 support.  'allergy_index' will now by default listen to
 	  port 8001 and all interfaces, regardless of IP protocol
 	  version.
+
+	- Bug fix: allergy_index no longer leaves a find(1) zombie
+	  hanging around forever.
 
 allergy 5.9 (2011-07-14):
 	- allergy: optimized to run faster when the image description

@@ -5,16 +5,8 @@
 #
 from distutils.core import setup
 
-def cvs_says(dollarname='$Name:  $'):
-    import re
-    m = re.match(r'\$'r'Name:\s+(.+?)-(\d+(-\d+)*)\D', dollarname)
-    if not m: return ('allergy', 'unknown')
-    return m.group(1), m.group(2).replace('-', '.')
-
-_, version = cvs_says()
-
 setup(name = 'allergy',
-      version = version,
+      version = '5.10',
       description = 'thumbnail and HTML picture gallery creator',
 
       author = 'Jörgen Grahn',
