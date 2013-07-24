@@ -159,3 +159,18 @@ time_t DateConv::parse(const Blob& s)
     }
     return t;
 }
+
+
+#if 0
+
+i = calendar.lower_bound(t);
+delta = t - i->t;
+if(delta < 24*3600) {
+    i->str + format_time(delta);
+}
+else {
+    s = format(t);
+    calendar[t - seconds_since_midnight] = head_of(s);
+}
+
+#endif
