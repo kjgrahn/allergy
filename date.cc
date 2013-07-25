@@ -10,17 +10,21 @@
 
 namespace {
 
+    static const char weekdays[] = "Sun Mon Tue Wed Thu Fri Sat";
+    static const char months[] =
+	"Jan Feb Mar Apr May Jun "
+	"Jul Aug Sep Oct Nov Dec";
+
     /**
      * Advance past a Mon--Sun or Monday--Sunday.
      * XXX The latter missing.
      */
     const char* weekday(const char* a, const char* const b)
     {
-	static const char names[] = "Mon Tue Wed Thu Fri Sat Sun";
 	if(b-a < 3) return a;
 	int found = 0;
 	for(int i=0; i<7; i++) {
-	    found += !std::strncmp(a, names+4*i, 3);
+	    found += !std::strncmp(a, weekdays+4*i, 3);
 	}
 	if(found) a+=3;
 	return a;
@@ -33,12 +37,9 @@ namespace {
      */
     int month(const char* a)
     {
-	static const char names[] =
-	    "Jan Feb Mar Apr May Jun "
-	    "Jul Aug Sep Oct Nov Dec";
 	int n = -1;
 	for(int i=0; i<12; i++) {
-	    if(std::strncmp(a, names+4*i, 3)==0) n = i;
+	    if(std::strncmp(a, months+4*i, 3)==0) n = i;
 	}
 	return n;
     }
@@ -161,9 +162,39 @@ time_t DateConv::parse(const Blob& s)
 }
 
 
-#if 0
+namespace {
 
-i = calendar.lower_bound(t);
+    void wdd(char* p, unsigned n)
+    {
+	p[0] = '0' + n/10;
+	p[1] = '0' + n%10;
+    }
+
+    void wdddd(char* p, unsigned n)
+    {
+	wdd(p, n/100);
+	wdd(p + 2, n%100);
+    }
+}
+
+
+/**
+ * Format 't' according to RFC 1123:
+ * "Sun, 06 Nov 1994 08:49:37 GMT".
+ *
+ * Similar to strftime(..., "%a, %d %b %Y %H:%M:%S GMT")
+ * but not broken by locale settings and, in my environment,
+ * more than twice as fast.
+ */
+std::string DateConv::format(time_t t)
+{
+#if 0
+    char buf[30];
+    char* p = format(buf, t);
+    return std::string(buf, p-buf);
+#else
+
+    Cal::const_iterator i = calendar.lower_bound(t);
 delta = t - i->t;
 if(delta < 24*3600) {
     i->str + format_time(delta);
@@ -174,3 +205,31 @@ else {
 }
 
 #endif
+}
+
+
+char* DateConv::format(char* const buf, time_t t)
+{
+    struct tm tm;
+    gmtime_r(&t, &tm);
+    char* p = buf;
+
+    std::copy(weekdays + 4*tm.tm_wday,
+	      weekdays + 4*tm.tm_wday + 3, p); p += 3;
+    *p++ = ',';
+    *p++ = ' ';
+    wdd(p, tm.tm_mday); p += 2;
+    *p++ = ' ';
+    std::copy(months + 4*tm.tm_mon,
+	      months + 4*tm.tm_mon + 3, p); p += 3;
+    *p++ = ' ';
+    wdddd(p, tm.tm_year + 1900); p += 4;
+    *p++ = ' ';
+    wdd(p, tm.tm_hour); p += 2;
+    *p++ = ':';
+    wdd(p, tm.tm_min); p += 2;
+    *p++ = ':';
+    wdd(p, tm.tm_sec); p += 2;
+    std::copy(" GMT", " GMT" + 4, p); p += 4;
+    return p;
+}

@@ -8,6 +8,7 @@
 #define OUTN_DATE_H
 
 #include <string>
+#include <map>
 #include <time.h>
 
 class Blob;
@@ -41,6 +42,14 @@ class DateConv {
 public:
     time_t parse(const std::string& s);
     time_t parse(const Blob& s);
+
+    std::string format(time_t t);
+
+private:
+    typedef std::map<time_t, std::string> Cal;
+    Cal calendar;
+
+    static char* format(char* buf, time_t t);
 };
 
 #endif
