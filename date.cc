@@ -186,25 +186,38 @@ namespace {
  * but not broken by locale settings and, in my environment,
  * more than twice as fast.
  */
-std::string DateConv::format(time_t t)
+std::string DateConv::format(const time_t t)
 {
+    std::string s;
+
 #if 0
     char buf[30];
     char* p = format(buf, t);
-    return std::string(buf, p-buf);
+    s = buf;
 #else
 
     Cal::const_iterator i = calendar.lower_bound(t);
-delta = t - i->t;
-if(delta < 24*3600) {
-    i->str + format_time(delta);
-}
-else {
-    s = format(t);
-    calendar[t - seconds_since_midnight] = head_of(s);
-}
+    if(i!=calendar.end() && t - i->first < 24*3600) {
+	unsigned since_midnight = t - i->first;
+	s = i->second;
+	char* p = &s[17];
+	wdd(p, since_midnight/3600); p += 3;
+	wdd(p, (since_midnight/60) % 60); p += 3;
+	wdd(p, since_midnight % 60);
+    }
+    else {
+	struct tm tm;
+	gmtime_r(&t, &tm);
+	char buf[30];
+	format(buf, tm);
 
+	unsigned since_midnight = (tm.tm_hour*60 + tm.tm_min)*60 + tm.tm_sec;
+	s = buf;
+	calendar[t - since_midnight] = s;
+    }
 #endif
+
+    return s;
 }
 
 
@@ -212,6 +225,12 @@ char* DateConv::format(char* const buf, time_t t)
 {
     struct tm tm;
     gmtime_r(&t, &tm);
+    return format(buf, tm);
+}
+
+
+char* DateConv::format(char* buf, const struct tm& tm)
+{
     char* p = buf;
 
     std::copy(weekdays + 4*tm.tm_wday,

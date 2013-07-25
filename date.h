@@ -9,6 +9,7 @@
 
 #include <string>
 #include <map>
+#include <functional>
 #include <time.h>
 
 class Blob;
@@ -46,10 +47,11 @@ public:
     std::string format(time_t t);
 
 private:
-    typedef std::map<time_t, std::string> Cal;
+    typedef std::map<time_t, std::string, std::greater<time_t> > Cal;
     Cal calendar;
 
     static char* format(char* buf, time_t t);
+    static char* format(char* buf, const struct tm& tm);
 };
 
 #endif
