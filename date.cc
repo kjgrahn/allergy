@@ -192,8 +192,7 @@ std::string DateConv::format(const time_t t)
 
 #if 0
     char buf[30];
-    char* p = format(buf, t);
-    s = buf;
+    s.assign(buf, format(buf, t));
 #else
 
     Cal::const_iterator i = calendar.lower_bound(t);
@@ -209,10 +208,9 @@ std::string DateConv::format(const time_t t)
 	struct tm tm;
 	gmtime_r(&t, &tm);
 	char buf[30];
-	format(buf, tm);
+	s.assign(buf, format(buf, tm));
 
 	unsigned since_midnight = (tm.tm_hour*60 + tm.tm_min)*60 + tm.tm_sec;
-	s = buf;
 	calendar[t - since_midnight] = s;
     }
 #endif

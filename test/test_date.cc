@@ -77,7 +77,7 @@ namespace date {
 
 	void test_time_t_wraparound()
 	{
-	    assert_parses("Fri, 01 Mar 2048 06:02:00 GMT", 2466655320);
+	    assert_parses("Sun, 01 Mar 2048 06:02:00 GMT", 2466655320);
 	}
     }
 
@@ -109,7 +109,7 @@ namespace date {
 
 	void test_time_t_wraparound()
 	{
-	    assert_formats("Fri, 01 Mar 2048 06:02:00 GMT", 2466655320);
+	    assert_formats("Sun, 01 Mar 2048 06:02:00 GMT", 2466655320);
 	}
 
 	void test_benchmark()
