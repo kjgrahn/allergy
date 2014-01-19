@@ -34,7 +34,7 @@ namespace date {
 
     namespace parse {
 
-	void test_simple()
+	void simple(testicle::TC)
 	{
 	    DateConv dc;
 	    assert_eq(dc.parse("Thu, 09 May 2013 09:35:01 GMT"), may9);
@@ -42,7 +42,7 @@ namespace date {
 	    assert_eq(dc.parse("Thu May  9 09:35:01 2013"), may9);
 	}
 
-	void test_ignore_wd()
+	void ignore_wd(testicle::TC)
 	{
 	    DateConv dc;
 	    assert_eq(dc.parse("Mon, 09 May 2013 09:35:01 GMT"), may9);
@@ -50,14 +50,14 @@ namespace date {
 	    assert_eq(dc.parse("Mon May  9 09:35:01 2013"), may9);
 	}
 
-	void test_leading_zero_asctime()
+	void leading_zero_asctime(testicle::TC)
 	{
 	    DateConv dc;
 	    assert_eq(dc.parse("Thu May  9 09:35:01 2013"), may9);
 	    assert_eq(dc.parse("Thu May 09 09:35:01 2013"), may9);
 	}
 
-	void test_various()
+	void various(testicle::TC)
 	{
 	    assert_parses("Thu, 01 Jan 1970 00:00:00 GMT", 0);
 	    assert_parses("Thu, 01 Jan 1970 00:00:01 GMT", 1);
@@ -75,7 +75,7 @@ namespace date {
 	    assert_parses("Tue, 19 Jan 2038 03:10:00 GMT", 2147483400);
 	}
 
-	void test_time_t_wraparound()
+	void time_t_wraparound(testicle::TC)
 	{
 	    assert_parses("Sun, 01 Mar 2048 06:02:00 GMT", 2466655320);
 	}
@@ -83,13 +83,13 @@ namespace date {
 
     namespace format {
 
-	void test_simple()
+	void simple(testicle::TC)
 	{
 	    DateConv dc;
 	    assert_formats("Thu, 09 May 2013 09:35:01 GMT", may9);
 	}
 
-	void test_various()
+	void various(testicle::TC)
 	{
 	    assert_formats("Thu, 01 Jan 1970 00:00:00 GMT", 0);
 	    assert_formats("Thu, 01 Jan 1970 00:00:01 GMT", 1);
@@ -107,12 +107,12 @@ namespace date {
 	    assert_formats("Tue, 19 Jan 2038 03:10:00 GMT", 2147483400);
 	}
 
-	void test_time_t_wraparound()
+	void time_t_wraparound(testicle::TC)
 	{
 	    assert_formats("Sun, 01 Mar 2048 06:02:00 GMT", 2466655320);
 	}
 
-	void test_benchmark()
+	void benchmark(testicle::TC)
 	{
 	    DateConv dc;
 	    for(unsigned n=0; n<50; n++) {

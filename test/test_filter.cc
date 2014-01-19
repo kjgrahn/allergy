@@ -44,7 +44,7 @@ namespace filter {
 
     namespace plain {
 
-	void test_simple()
+	void simple(testicle::TC)
 	{
 	    Pipe p;
 	    Filter::P f;
@@ -59,7 +59,7 @@ namespace filter {
 	    p.assert_empty();
 	}
 
-	void test_block()
+	void block(testicle::TC)
 	{
 	    Pipe p;
 	    Filter::P f;
@@ -86,7 +86,7 @@ namespace filter {
 	    p.assert_empty();
 	}
 
-	void test_end()
+	void end(testicle::TC)
 	{
 	    Pipe p;
 	    Filter::P f;
@@ -112,7 +112,7 @@ namespace filter {
 
     namespace chunked {
 
-	void test_simple()
+	void simple(testicle::TC)
 	{
 	    Pipe p;
 	    Filter::C f;
@@ -133,7 +133,7 @@ namespace filter {
 	    p.assert_empty();
 	}
 
-	void test_block()
+	void block(testicle::TC)
 	{
 	    Pipe p;
 	    Filter::C f;
@@ -173,7 +173,7 @@ namespace filter {
 	    return s;
 	}
 
-	void test_simple()
+	void simple(testicle::TC)
 	{
 	    Pipe p;
 	    Filter::Z f;

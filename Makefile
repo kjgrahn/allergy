@@ -53,6 +53,7 @@ magic: magic.o liboutnumbered.a
 	$(CXX) $(CXXFLAGS) -o $@ magic.o -L. -loutnumbered -lmagic
 
 #libtest.a: test/test_response.o
+#libtest.a: test/test_responsebuf.o
 libtest.a: test/test_request.o
 libtest.a: test/test_filter.o
 libtest.a: test/test_log.o

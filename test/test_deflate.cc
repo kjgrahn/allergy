@@ -36,7 +36,7 @@ namespace {
 
 namespace deflate {
 
-    void test_hello()
+    void hello(testicle::TC)
     {
 	Deflate d;
 	std::vector<uint8_t> dest;
@@ -45,7 +45,7 @@ namespace deflate {
 	testicle::assert_gt(dest.size(), 0);
     }
 
-    void test_hellos()
+    void hellos(testicle::TC)
     {
 	Deflate d;
 	std::vector<uint8_t> dest;
@@ -62,7 +62,7 @@ namespace deflate {
 	testicle::assert_lt(dest.size(), .1 * 20e3*14*5);
     }
 
-    void test_compresses_well()
+    void compresses_well(testicle::TC)
     {
 	Deflate d;
 	std::vector<uint8_t> dest;
@@ -88,7 +88,7 @@ namespace deflate {
 	return s;
     }
 
-    void test_compresses_badly()
+    void compresses_badly(testicle::TC)
     {
 	Deflate d;
 	std::vector<uint8_t> dest;

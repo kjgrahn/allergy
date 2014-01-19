@@ -36,18 +36,18 @@ namespace cache {
 
     using testicle::assert_eq;
 
-    void test_construct()
+    void construct(testicle::TC)
     {
 	Cache c;
     }
 
-    void test_simple()
+    void simple(testicle::TC)
     {
 	Cache c;
 	assert_eq(c.insert("42").val, 42);
     }
 
-    void test_overflow()
+    void overflow(testicle::TC)
     {
 	Cache c;
 	for(int i=0; i<200; i++) {
