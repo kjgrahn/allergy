@@ -21,12 +21,12 @@ struct Session;
  * Part of the core of an epoll-based TCP server.
  *
  * This class is the owner of Sessions and fds (listening sockets
- * and connected ones).
+ * as well as connected ones).
  *
  */
 class Server {
 public:
-    Server();
+    Server(int timeout = -1);
     ~Server();
 
     struct Entry {
@@ -57,7 +57,7 @@ public:
     void remove(const Event& ev);
     void ctl(Event ev, unsigned state);
 
-    int wait(int timeout);
+    int wait();
     iterator begin()  { return ev; }
     iterator end()    { return ev+nend; }
     iterator lbegin() { return end(); }
@@ -70,10 +70,13 @@ private:
     Server& operator= (const Server&);
 
     std::vector<Entry> v;
+    const int timeout;
     const int epfd;
     unsigned short nlend;
     unsigned short nend;
     Event ev[20];
+
+    bool has_clients() const;
 };
 
 #endif

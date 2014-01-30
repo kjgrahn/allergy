@@ -86,8 +86,15 @@ namespace {
 }
 
 
-Server::Server()
-    : epfd(epoll_create(10))
+/**
+ * Create an empty server.  The timeout, if provided, applies to
+ * wait() when there are client sockets -- it's expected that you
+ * don't have any periodic tasks except those which relate to clients
+ * (killing slow ones, for example).
+ */
+Server::Server(int timeout)
+    : timeout(timeout),
+      epfd(epoll_create(10))
 {
     if(epfd==-1) throw FatalError();
 }
@@ -179,14 +186,16 @@ void Server::ctl(Event ev, unsigned state)
 /**
  * Like epoll_wait(..., timeout), except events become available in
  * [lbegin..lend) and [begin, end) (listening/session fds,
- * respectively).
+ * respectively).  And also the timeout is not obeyed if there are no
+ * clients at all.
  */
-int Server::wait(int timeout)
+int Server::wait()
 {
     nend = nlend = 0;
     const int max = sizeof ev / sizeof ev[0];
     epoll_event ep[max];
-    const int n = epoll_wait(epfd, ep, max, timeout);
+    const int n = epoll_wait(epfd, ep, max,
+			     has_clients()? timeout: -1);
     if(n<1) return n;
 
     unsigned listeners = 0;
@@ -231,4 +240,16 @@ void Server::reconsider(const timespec& ts)
 	    ::remove(i);
 	}
     }
+}
+
+
+/**
+ * True iff the server has clients, not just listening sockets.
+ */
+bool Server::has_clients() const
+{
+    for(std::vector<Entry>::const_iterator i = v.begin(); i!=v.end(); i++) {
+	if(i->client()) return true;
+    }
+    return false;
 }

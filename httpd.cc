@@ -118,13 +118,13 @@ namespace {
      */
     bool loop(const int lfd)
     {
-	Server server;
+	Server server(20*1000);
 	server.add(lfd);
 	timespec ts = now();
 	Periodic audit(ts, 20);
 
 	while(1) {
-	    server.wait(20*1000);
+	    server.wait();
 	    ts = now();
 
 	    for(Server::iterator i = server.lbegin(); i!=server.lend(); i++) {
