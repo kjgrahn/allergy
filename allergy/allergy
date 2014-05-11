@@ -1,0 +1,316 @@
+#!/usr/bin/env python
+# -*- coding: iso-8859-1 -*-
+#
+# $Id: allergy,v 1.46 2010-07-30 15:37:30 grahn Exp $
+# $Name:  $
+#
+# Copyright (c) 2001, 2004, 2005, 2008, 2010 Jörgen Grahn <grahn+src@snipabacken.se>
+# All rights reserved.
+#
+"""allergy - build thumbnails and html code to present
+a number of photos as an 'album' or 'photo gallery'.
+"""
+import Image
+import glob
+import re
+import os.path
+import os
+import sys
+
+from photobase import Photobase
+
+class Any:
+    "The wildcard object."
+    def __cmp__(self, other): return 0
+ANY = Any()
+
+class Feedback:
+    """Configurable feedback generator; prints to stderr
+    when called.
+    """
+    def __init__(self, verbosity=2):
+        if verbosity==0:
+            self.__call__ = self.nop
+        elif verbosity==1:
+            self.__call__ = self.dot
+        else:
+            self.__call__ = self.string
+        self.final_nl = 0
+    def close(self):
+        if self.final_nl:
+            sys.stderr.write('\n')
+            sys.stderr.flush()
+    def string(self, s):
+        print >>sys.stderr, s
+        sys.stderr.flush()
+    def dot(self, s):
+        sys.stderr.write('.')
+        sys.stderr.flush()
+        self.final_nl = 1
+    def nop(self, s):
+        pass
+
+def reversedate(s):
+    """Transform a standard 'yyyy-mm-dd' date string
+    to the less formal 'd.m.yyyy' format popular in Sweden.
+    """
+    date = map(int, s.split('-'))
+    date.reverse()
+    return '%d.%d.%d' % tuple(date)
+
+class DescriptionDb:
+    """Container for all sources of image information, except
+    that in the allergy source itself. This means, in practice,
+    the text/photos file. It may be absent.
+    """
+    def __init__(self, photobase=None):
+        self.photobase = photobase
+    def title(self, file):
+        "A suitable title for the image file 'file', or the empty string."
+        t = []
+        in_base = self.photobase and self.photobase.has(file)
+        if in_base:
+            dt = self.photobase.time(file)
+            if dt:
+                date, time = dt.split()
+                t.append(reversedate(date))
+        if in_base:
+            t.append(self.photobase.text(file))
+        return '. '.join(t)
+
+def make(a, b, clobber=1):
+    """Return true iff file 'a' needs to be regenerated
+    from 'b', i.e. if it doesn't exist or is older than 'b'.
+    If clobber is false, only non-existing 'a' need
+    (re)generation.
+    May raise os.error, aka OSError."""
+    try:
+        am = os.path.getmtime(a)
+    except os.error:
+        return 1
+    if not clobber: return 0
+    bm = os.path.getmtime(b)
+    return am <= bm
+
+def thumbname(path):
+    """Return the thumbnail file name corresponding
+    to an image name, i.e. prepend an underscore and
+    append a .jpg suffix (killing any existing suffix)."""
+    head, tail = os.path.split(path)
+    tail, ext = os.path.splitext(tail)
+    tail = '%s.jpg' % tail
+    return os.path.join(head, 'thumb', tail)
+
+def gridentry(href, thumbnail, caption):
+    """Format an object (probably an image) as a grid item,
+    with an existing thumbnail image and describing text."""
+    html = []
+    html.append('<td><a href="%s">' % href)
+    html.append('   <img src="%s"' % thumbnail)
+    html.append('        alt="[%s]"' % href)
+    if caption:
+        html.append('      title="%s"' % caption)
+    html.append('  width="%d" height="%d"></a>' % Image.open(thumbnail).size)
+    return '\n'.join(html)
+
+def gridparaentry(href, thumbnail, caption):
+    """Similar to gridentry, but with the caption text as a <p>
+    following the image."""
+    html = []
+    html.append('<td><a href="%s">' % href)
+    html.append('\t<img src="%s"' % thumbnail)
+    html.append('\talt="[%s]"' % href)
+    html.append('\twidth="%d" height="%d"></a>' % Image.open(thumbnail).size)
+    if caption:
+        html.append('<p>%s' % caption)
+    return '\n'.join(html)
+
+def listentry(href, thumbnail, caption):
+    """Format an object (probably an image) as a list item,
+    with an existing thumbnail image and describing text."""
+    html = []
+    html.append('<p><a href="%s">' % href)
+    html.append('  <img src="%s"' % thumbnail)
+    html.append('      alt="[%s]"' % href)
+    html.append('  width="%d" height="%d"></a>' % Image.open(thumbnail).size)
+    if caption:
+        html.append(caption)
+    html.append('<br>')
+    return '\n'.join(html)
+
+class Gallery:
+    """Main parser and gallery generator. After fed the lines
+    contained within a begin/end{gallery}, do() generates
+    thumbnails and corresponding HTML."""
+    gridre = re.compile(r'\\grid{\s*(\d+)\s*,\s*n}')
+    gridtre = re.compile(r'\\grid{\s*(\d+)\s*,\s*n,\s*title}')
+    listre = re.compile(r'\\list{}')
+    classre = re.compile(r'\\class{\s*(.+?)\s*}')
+    boundedre = re.compile(r'\\bounded{(\d+),\s*(\d+)}')
+    qualityre = re.compile(r'\\quality{(\d+)}')
+    commentre = re.compile(r'\s*(#.+)?$')
+    annotre = re.compile(r'(.+?)\s*:\s*(.+)')
+    def __init__(self, feedback, descdb=None,
+                 captiontitle=0, clobber=1):
+        self.descdb = descdb
+        self.clobber = clobber
+        self.feedback = feedback
+        self.columns = 4
+        if captiontitle:
+            self.formatter = gridentry
+        else:
+            self.formatter = gridparaentry
+        self.cls = ''
+        self.quality = 30
+        self.bbox = (140, 100)
+        self.images = []
+    def add(self, line):
+        "Parse a source line of the gallery definition"
+        m = self.commentre.match(line)
+        if m: return
+        m = self.gridre.match(line)
+        if m:
+            self.columns = int(m.group(1))
+            return
+        m = self.gridtre.match(line)
+        if m:
+            self.columns = int(m.group(1))
+            self.formatter = gridparaentry
+            return
+        m = self.listre.match(line)
+        if m:
+            self.columns = None
+            self.formatter = listentry
+            return
+        m = self.classre.match(line)
+        if m:
+            self.cls = ' class="%s"' % m.group(1)
+            return
+        m = self.boundedre.match(line)
+        if m:
+            self.bbox = tuple(map(int, m.groups()))
+            return
+        m = self.qualityre.match(line)
+        if m:
+            self.quality = int(m.group(1))
+            return
+        m = self.annotre.match(line)
+        if m:
+            (pat, caption) = m.groups()
+            self.images.append((pat, [caption]))
+            return
+        if not line[0].isspace():
+            self.images.append((line.strip(), []))
+        else:
+            self.images[-1][1].append(line)
+            return
+    def do(self):
+        """Execute the gallery, performing thumbnailing as
+        appropriate. Returns a string containing the HTML for this
+        gallery."""
+        images = []
+        html = []
+        for pat, caption in self.images:
+            pats = glob.glob(pat)
+            pats.sort()
+            for image in pats:
+                if image[0] != '_' and not (image, ANY) in images:
+                    images.append((image, ' '.join(caption)))
+        if not images:
+            return ''
+        if self.columns:
+            html.append('<table%s>' % self.cls)
+        else:
+            html.append('<div%s>' % self.cls)
+        n = 0
+        for f, caption in images:
+            tf = thumbname(f)
+            if make(tf, f, self.clobber):
+                i = Image.open(f)
+                i.thumbnail(self.bbox)
+                if i.mode=='P':
+                    i = i.convert('RGB')
+                self.feedback('%s, thumbnailing' % f)
+                try:
+                    i.save(tf, 'JPEG', quality=self.quality)
+                except IOError, e:
+                    # maybe thumb/ doesn't exist.
+                    try:
+                        os.mkdir(os.path.dirname(tf))
+                    except:
+                        raise e
+                    i.save(tf, 'JPEG', quality=self.quality)
+            else:
+                self.feedback(f)
+                i = Image.open(tf)
+            if self.columns and n % self.columns == 0:
+                html.append('<tr>')
+            if not caption:
+                caption = self.descdb.title(f)
+            html.append(self.formatter(f, tf, caption))
+            n += 1
+        if self.columns:
+            html.append('</table>')
+        else:
+            html.append('</div>')
+        self.feedback.close()
+        return '\n'.join(html)
+
+
+def cvs_says():
+    return 'allergy', '5.10'
+
+if __name__ == "__main__":
+    import getopt
+    import fileinput
+
+    usage = 'usage: allergy [-f file] ... [-T] [-k] [-v | -V] file ...'
+
+    try:
+        opts, files = getopt.getopt(sys.argv[1:], 'f:TkvV',
+                                    ['help',
+                                     'version'])
+    except getopt.GetoptError, s:
+        print >>sys.stderr, s
+        print >>sys.stderr, usage
+        sys.exit(1)
+    clobber = 1
+    captiontitle = 0
+    verbosity = 0
+    descriptions = []
+    for option, value in opts:
+        if option == '-f': descriptions.append(value)
+        if option == '-T': captiontitle = 1
+        if option == '-k': clobber = 0
+        if option == '-v': verbosity = 2
+        if option == '-V': verbosity = 1
+        if option == '--help':
+            print usage
+            sys.exit(0)
+        if option == '--version':
+            print '%s, version %s' % cvs_says()
+            print 'Copyright (c) 2001, 2004, 2005, 2008, 2010, 2013 Jörgen Grahn.'
+            sys.exit(0)
+
+    if descriptions:
+        photobase = Photobase(descriptions)
+    else:
+        photobase = None
+
+    descdb = DescriptionDb(photobase)
+    ingallery = 0
+
+    for line in fileinput.input(files):
+        if ingallery:
+            if line.count(r'\end{gallery}'):
+                print gallery.do()
+                ingallery = 0
+            else:
+                gallery.add(line)
+        else:
+            if line.count(r'\begin{gallery}'):
+                ingallery = 1
+                gallery = Gallery(Feedback(verbosity), descdb,
+                                  captiontitle, clobber)
+            else:
+                print line[:-1]

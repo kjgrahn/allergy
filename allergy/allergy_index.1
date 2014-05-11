@@ -1,0 +1,174 @@
+.ig
+$Id: allergy_index.1,v 1.12 2011-07-14 07:34:50 grahn Exp $
+$Name:  $
+..
+.
+.ss 12 0
+.de BP
+.IP "\\fB\\$*"
+..
+.
+.TH allergy_index 1 "JUN 2013" "Allergy" "User Manuals"
+.
+.
+.SH "NAME"
+allergy_index \- serve photo gallery indices over HTTP
+.
+.
+.SH "SYNOPSIS"
+.B allergy_index
+.RB [ \-4 ]
+.B \-f
+.I descriptions-file
+\&...
+.B \-b
+.I photo-url
+.B \-p
+.I photo-path
+.BI http:// hostname : port
+.br
+.B "allergy_index --help"
+.br
+.B "allergy_index --version"
+.
+.
+.SH "DESCRIPTION"
+.B Allergy_index
+takes a set of digital photos (or other pictures) and files describing them,
+and presents a series of indices of them over HTTP (i.e. it acts as a web server).
+The photos are indexed by date, by category, by keyword and so on.
+.PP
+Actual photos are assumed to be served by a real web server;
+this utility only serves link pages pointing to the real image files.
+.
+.
+.SH "OPTIONS"
+.
+.BP "\-4"
+Use IPv4.  Default is to prefer IPv6.
+.
+.BP "\-f \fIdescriptions-file"
+A file with photo names, dates, descriptions and keywords,
+as documented in
+.BR allergy (1).
+You may specify several of these.
+Note that the entries
+.I need
+to contain dates, since the indices are arranged by time.
+.
+.BP "\-b \fIphoto-url"
+The base URL for the actual photos.
+.
+.BP "\-p \fIphoto-path"
+The base path for the actual photos.
+This must correspond to the base URL given using the
+.B \-b
+option.
+For example, if the directory
+.I ~bar/public_html/photos/
+on host
+.I foo
+is full of photos and is served to the world using the URL
+.IR http://foo/~bar/photos/ ,
+then those two names should be passed together, as
+.B \-p
+and
+.BR \-b .
+.
+.BP "http://\fIhostname\fP:\fIport"
+The URL where
+.B allergy_index
+will appear. The standard HTTP port will typically be occupied by a real
+web server, so you have to provide it explicitly here.
+To listen on all interfaces (using IPv4 and IPv6, unless
+.B \-4
+is provided) specify
+.B *
+or nothing as
+.IR hostname ,
+for example
+.I http://*:8001
+or
+.IR http://:8001 .
+.
+.
+.SH "URLs"
+.
+The web interface of
+.B allergy_index
+looks as follows:
+.
+.IP "\fB/\fP, \fB/index.html"
+The front page.
+.
+.IP "\fB/by-date"
+All photos, newest first.
+.
+.ig
+.IP "\fB/\fIcategory"
+All photos in category
+.IR category ,
+by reverse date.
+A category is just a fancy name for the directory the photo resides in,
+relative to the base path.
+..
+.
+.IP "\fB/\fIyear"
+All photos from a certain year (given as
+.IR yyyy ),
+oldest first.
+.
+.IP "\fB/\fIyear\fB\-\fPmonth"
+Like
+.BR /\fIyear\fP ,
+but narrowed down further to a specific month.
+.IP
+Also, this kind contains a thumbnail gallery
+like that of
+.BR allergy (1).
+It assumes that there are pre-generated thumbnail images,
+as created by that utility.
+.
+.IP "\fB/\fIyear\fB\-\fPmonth\fB\-\fIday"
+Like
+.BR /\fIyear\fP\-\fImonth\fP ,
+but for a single day.
+.
+.IP "\fB/keywords\fP, \fB/key\fP, \fB/key/\fP"
+All keywords, in alphabetical order.
+.
+.IP "\fB/key/\fIkeyword"
+All photos matching the key
+.IR keyword ,
+newest first.
+Like the by-month and by-date pages, this one includes a thumbnail gallery.
+.
+.IP "\fB/css"
+The style sheet applied to all pages.
+.
+.IP "\fB/robots.txt"
+The
+.I "robots exclusion standard"
+document,
+preventing mirroring or indexing of the descriptions and photos.
+.
+.
+.
+.SH "BUGS"
+.B allergy_index
+generates pages with swedish text, and swedish localization in general.
+.PP
+First/prev/next/last/up navigation is just partly implemented.
+.
+.
+.
+.SH "SEE ALSO"
+.BR allergy (1).
+.
+.
+.SH "AUTHOR"
+J\(:orgen Grahn \[fo]grahn+src@snipabacken.se\[fc]
+.
+.
+.SH "LICENSE"
+The Modified BSD license.

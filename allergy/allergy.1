@@ -1,0 +1,298 @@
+.\" $Id: allergy.1,v 1.35 2010-07-30 15:37:30 grahn Exp $
+.\" $Name:  $
+.\" 
+.\"
+.ss 12 0
+.TH allergy 1 "JUL 2010" "Allergy" "User Manuals"
+.SH "NAME"
+allergy \- thumbnail and HTML picture gallery creator
+.SH "SYNOPSIS"
+.B allergy
+.RB [ \-f \ file ]
+\&...
+.RB [ \-T ]
+.RB [ \-k ]
+.RB [ \-v | \-V ]
+.I file
+\&...
+.br
+.B "allergy --help"
+.br
+.B "allergy --version"
+.
+.
+.SH "DESCRIPTION"
+.B Allergy
+takes one or more files (or else standard input),
+concatenates them,
+processes embedded gallery descriptions into HTML code
+for displaying thumbnail images
+(generating the thumbnails meanwhile)
+and writes the result to standard output.
+.
+.SH "OPTIONS"
+.IP \-f\ \fIfile
+Use the text file
+.I file
+as a source of picture descriptions.
+.IP \-T
+In the grid layout, let the caption text end up as the
+.B title
+attribute of the thumbnail image, like in earlier
+.B allergy
+versions.
+.IP \-k
+(keep) Never regenerate existing thumbnails, even if they are
+older than the source image.
+This is useful if you
+.I know
+you have the exact thumbnails you want, but something keeps messing up
+the timestamps.
+.IP \-v
+List the image names, and whether they are being thumbnailed or not,
+as they are processed.
+.IP \-V
+Print a dot as each image is being processed,
+.BR cpio -style.
+.
+.SH "GENERAL INPUT SYNTAX"
+Everything in the input outside the gallery descriptions
+is output as-is. Presumably, it consists of HTML code.
+.LP
+Input may contain one or more gallery descriptions. These are
+bracketed as follows:
+.IP
+.ft CW
+.nf
+\(rsbegin{gallery}
+\&...
+\(rsend{gallery}
+.fi
+.LP
+The gallery description consists of optional definitions lines
+which determine general characteristics of the gallery to be rendered,
+followed by a list of file names and descriptions.
+Empty lines and lines starting with a hash are treated as comments
+and ignored.
+.LP
+Additionally, lines starting with whitespace are considered as
+continuation lines, much like in Internet mail headers \(em
+.BR allergy (1)
+sees them as part of a logical line starting with the previous line
+which starts with a non-whitespace character.
+This is useful when you write long caption texts.
+.
+.SH "GALLERY DEFINITIONS"
+The following definitions are recognized:
+.IP
+.ft CW
+\(rsgrid{\fIcols\fP, n}
+.br
+\(rsgrid{\fIcols\fP, n, title}
+.LP
+Layout of the gallery \- generates a HTML
+.B <table>
+with
+.I cols
+columns and enough rows to fit all images.
+.LP
+If you use the second form \- or supply the
+.B \-T
+command-line option \- 
+the caption text will appear as the
+.B title
+attribute of the thumbnail image.
+Otherwise, it's a paragraph of text after the image within the table cell.
+.LP
+The default gallery layout is
+.BR "\(rsgrid{4, n}" .
+.IP
+.ft CW
+\(rslist{}
+.LP
+Alternate layout strategy \(em generates a
+.B <div>
+containing a series of paragraphs,
+each containing the thumbnail and the caption text.
+.I list
+is more useful than
+.I grid
+when you have a lot to say about each picture.
+.IP
+.ft CW
+\(rsclass{\fIname\fP}
+.LP
+Sets the
+.B class
+attribute on the HTML construct (i.e. the
+.B <table>
+or the
+.BR <div> )
+making up the gallery.
+This is useful for controlling rendering of the page using CSS.
+Default: not set.
+.IP 
+.ft CW
+\(rsbounded{\fIwidth\fP, \fIheight\fP}
+.LP
+Specifies the dimensions of the thumbnail image. Images will be scaled
+so that they fit in a rectangle of the given size,
+while preserving the aspect ratio.
+Default:
+.BR "\(rsbounded{140, 100}" .
+.IP
+.ft CW
+\(rsquality{\fIn\fP}
+.LP
+Quality of the generated JPEG thumbnails, from 0 (uselessly bad) to 100 (way too good).
+Default:
+.BR "\(rsquality{30}" .
+.
+.SH "IMAGE DEFINITIONS"
+Images to be included in the gallery are defined by lines on the forms
+.IP 
+.ft CW
+.nf
+filename-or-pattern : caption-text
+filename-or-pattern : caption-text
+  more caption-text
+  ...
+filename-or-pattern
+.fi
+.LP
+The images can be specified one at a time, using filename expansion, or
+using a combination of the two.
+The filename expansion is implemented by
+\(lqglobbing\(rq, which expands patterns in the manner of
+.BR sh (1)
+\(em things like
+.BR * ,
+.BR ? ,
+and
+.B []
+are supported.
+.LP
+Images are laid out in the order of appearance in the input file.
+Patterns expand to a sorted list of all matching file names.
+For each gallery definition, duplicate image definitions are removed
+by removing all but the first one in the list. This makes it possible
+to move important images to near the top and let the others appear in
+order below. For example:
+.IP 
+.ft CW
+.nf
+foo.png
+bar.png
+*.png
+.fi
+.LP
+Files that cannot be thumbnailed will appear as plain links in the
+output. Files that
+.I can
+be inlined are image files recognized by
+whatever version of the \fIPython Imaging Library\fP
+you have installed.
+.LP
+The caption text may be any piece of valid HTML if you intend to
+format the gallery as a list.
+If you use the grid layout, it must be plain text in your source
+character set, since it ends up as a
+.B title
+attribute, not normal HTML text.
+.LP
+If you provide no caption text but have a file describing the photos
+(see the
+.B \-f
+command-line option)
+the date, time and description from that file is used instead,
+if available.
+.
+.SH "PICTURE INFORMATION FILE FORMAT"
+If you provide a file with additional information about the pictures
+using the
+.B \-f
+option, it has to be on the following format:
+.IP \(bu 2m
+A series of image entries, separated by blank lines.
+.IP \(bu
+Comment lines start with a
+.BR # .
+.IP \(bu
+First line in an entry is the file name, without path.
+.IP \(bu
+Second line may be the creation time, on the format
+.IR yyyy-mm-dd\ hh:mm ,
+and in local time.
+Unless the
+.B \-e
+command-line option was given,
+this may be used in image titles.
+.IP
+If this second line exists but does not match the timestamp format above,
+it is assumed to be one of the ...
+.IP \(bu
+following lines which, if present, describe the image.
+Line breaks and spacing is irrelevant.
+.IP \(bu
+Straight [brackets] mark keywords or key phrases in the description.
+These nest, so the phrase
+.B "foo [bar [baz]]"
+contains two key phrases,
+.B "bar"
+and
+.BR "bar baz" .
+.IP \(bu
+Curly {brackets} also mark keywords, but are not shown as part of the description.
+.LP
+An entry could look like this:
+.IP 
+.ft CW
+.nf
+030701_24.jpg
+2003-07-01 08:56
+mountains covered in snow,
+on the border towards [Norway], from [R\(:odfj\(:allet]
+{landscape}
+.fi
+.
+.SH "GENERATED HTML CODE"
+The general idea is to generate strictly conforming code, and let
+the user take care of specific rendering details using style sheets,
+supported by the \fIclass\fP definition described above.
+.LP
+Inline images (i.e. the thumbnails) are given an
+.B alt
+text, which simply is the filename, bracketed.
+They may also be given, as described above, a
+.B title
+containing the caption text.
+.LP
+Thumbnail pictures are named as the originals, but with a
+.B .jpg
+suffix and placed in a
+.B thumb/
+subdirectory.
+.LP
+When the list layout strategy is used rather than the table layout,
+each entry is a paragraph, ending with a \fI<br>\fP.
+.
+.SH "BUGS"
+.IP \(bu 2m
+The picture description file format might not suit everybody.
+The truth is that I just needed this feature for myself,
+and the system I already used for keeping track of photos
+happened to look like this.
+.IP \(bu
+Error handling and error reporting is probably unsatisfactory.
+.
+.SH "DEPENDENCIES"
+.BR allergy (1)
+depends on the \fIPython Imaging Library\fP (also known as \fIPIL\fP)
+for scaling down images in various formats and for finding image
+dimensions.
+.
+.SH "AUTHOR"
+J\(:orgen Grahn \[fo]grahn+src@snipabacken.se\[fc]
+.
+.SH "LICENSE"
+The Modified BSD license.

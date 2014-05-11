@@ -1,0 +1,151 @@
+-*- text -*-
+
+Major changes (with focus on user-visible changes) to allergy, per version.
+
+_________________________________________
+
+allergy 5.10 (2012-07-17):
+	- IPv6 support.  'allergy_index' will now by default listen to
+	  port 8001 and all interfaces, regardless of IP protocol
+	  version.
+
+	- Bug fix: allergy_index no longer leaves a find(1) zombie
+	  hanging around forever.
+
+allergy 5.9 (2011-07-14):
+	- allergy: optimized to run faster when the image description
+	  file is large (mine is a megabyte and heavily tagged).
+
+allergy 5.8 (2010-07-30):
+	- allergy: by default, make the images' caption texts normal
+	  HTML text, not a popup-style title attribute.
+
+	- allergy: removed the -e option for pulling EXIF information
+	  from the photos themselves. I never used it so it was dead
+	  code.
+
+allergy 5.7 (2010-07-20):
+	- allergy_index: don't sort "photos from yyyy-mm-dd" lists
+	  newest first -- it's only natural for pages which can
+	  potentially be very long, like the full list and the by-key
+	  pages.
+
+allergy 5.6 (2010-05-14):
+	- allergy-mode.el bug fix; colorize years after 2010 properly.
+
+allergy 5.5 (2009-05-03):
+	- Bug fix. 5.4 broke allergy_index slightly.
+
+allergy 5.4 (2009-05-03):
+	- Thumbnail images are now collected under subdirectories
+          'thumb' to get them out of the way.  For example,
+          'foo/bar.png' is thumbnailed into 'foo/thumb/bar.jpg'.
+
+allergy 5.3 (2009-05-03):
+	- allergy_index: generate indices for individual dates, e.g.
+	  /2009-05-03. Also link back from all tables to the by-year,
+	  by-month and by-day indices. This is useful for navigating
+	  from a "keyworded" photo to the list of photos taken that
+	  day, and so on.
+
+allergy 5.2 (2009-03-18):
+	- allergy: do not require photo description files to contain
+	  dates. If you scan e.g. old photo collections, you sometimes
+	  cannot tell which /decade/ each picture is from.
+
+        - Includes allergy-mode, a Gnu Emacs mode for editing photo
+          description files.
+
+allergy 5.1 (2008-10-28):
+	- allergy_index: include image thumbnail galleries for the
+	  smaller pages (by month and by keyword) so you can see all
+	  photos of a certain thing or kind gathered on one page.
+
+allergy 5.0 (2008-10-20):
+	- allergy_index - serve photo gallery indices over HTTP.
+	  This is a simple web server which generates by-date and
+	  by-keyword indices of photos, based on the photos and a text
+	  file describing them. It does not serve the actual /images/.
+
+	  What I like to do is to generate static galleries using
+	  allergy(1), and run this one on the side, for a different view.
+	  Like when you want to find all photos from a certain place
+	  or a certain month, or something.
+
+allergy 4.0 (2008-07-18):
+	- Exactly three years later.
+	- Split the -f file parser into Python module 'photobase', and
+	  extended the file format to contain two kinds of key phrases
+	  ("tags" in current lingo), useful for building indicies of
+	  photos per topic.
+
+allergy 3.1 (2005-07-18):
+	- Fixed a silly bug in the -f file parser; crash if the
+	  file didn't end in an empty line.
+
+allergy 3.0 (2005-07-08):
+	- New option -f for picking image descriptions from
+	  a separate file so you don't have to enter these as caption
+	  texts. This is useful if you already keep track of images
+	  from your digital camera, or whatever.
+
+	- Can now pick and display the time a photo was taken based on
+	  the EXIF information in the image file, if available.
+
+allergy 2.3 (2005-03-28):
+	- Bug fix: Never generate empty tables when there are no
+	  images to show (e.g. theres a *.jpg gallery definition, but
+	  no files matching that pattern.)  Generating them meant
+	  generating invalid HTML (which browsers probably show
+	  correctly, but you never know).
+
+allergy 2.2 (2005-02-20):
+	- Bug fix: the -k flag broke when a thumbnail we expected to
+	  exist didn't.  Of course, it should have been generated in
+	  this case.
+
+allergy 2.1 (2004-06-20):
+	- Bug fix: thumbnailing palette-based images now works.
+	- Now defaults to silent mode rather than printing the name
+	  of each image; that now requires the -v command-line option.
+	- New option -V for printing a '.' for each image.
+        - Input from multiple files, or from standard input,
+	  works again as advertised.
+
+allergy 2.0 (2004-06-16):
+	- Rewritten in Python using the Python Imaging Library.
+	- Runs much (several times?) faster than previous versions.
+	  This was the primary reason for the rewrite.
+	- Supports placing caption text in the "title" attribute.
+	- A handful of incompatibilities against 1.4; see the man
+	  page for details.
+
+allergy 1.4 (2001-12-06):
+	- Added an option (-k) to keep existing thumbnails from
+	  being overwritten, even if they appear to be obsolete.
+
+allergy 1.3 (2001-10-04):
+	- Added the 'list' style as a table-free alternative to
+	  the 'grid' style; more useful for pictures with caption
+	  text.
+	- HTML bug fix; an unneccesary and illegal comma used to
+	  be generated within the rendered <img>.
+	- Continuation lines made part of the syntax, so that you can
+	  divide a long caption text over several lines in the input.
+
+allergy 1.2 (2001-08-29):
+	- Comments (classic '#'-style) are now part of the syntax.
+	- Partial support for caption text.
+	- JPEG quality of the thumbnails is controllable rather than
+	  fixed to '30'.
+	- Support for IFF-ILBM images.
+
+allergy 1.1 (2001-07-29):
+	- Lots of bug fixes.
+
+allergy 1.0 (2001-07-28):
+	- First public version.
+
+_________________________________________
+$Id: NEWS,v 1.32 2011-07-14 07:34:50 grahn Exp $
+$Name:  $

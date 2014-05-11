@@ -1,0 +1,78 @@
+ALLERGY
+
+'Allergy' (many thanks to http://www.wordsmith.org/anagram/ for the name)
+is two things:
+
+- allergy: yet another utility to generate a 'photo album' or 'image
+  gallery' for presenting an overview of lots of images in a web
+  browser.
+
+- allergy_index: a simple web server which generates by-date and
+  by-keyword indices of pictures, based on the pictures and a text
+  file describing them. It does not serve the actual /images/ -- those
+  need to live on a real web server somewhere.
+
+Generating and updating thumbnails and the supporting HTML by hand is
+time consuming, error-prone and boring.
+
+Yes, I *did* do a search on http://freshmeat.net first. However, most
+gallery programs were PHP applications (apparently dynamic pages have
+a higher macho factor than static ones) or were too complex[1].
+I just wanted the job done, so I did it myself.
+
+
+INSTALLATION AND REQUIREMENTS
+
+# make install
+
+(There is also a normal Python setup script, but it doesn't do all of
+the installation.)
+
+Allergy requires Python and the Python Imaging Library (PIL).
+I believe it is portable to any platform which can support Python and
+PIL, but I only have access to Linux systems myself.
+
+The generated HTML text will render well only in the presence of a
+suitable style sheet; `examples/darkroom.css' is included, but you
+will have to install or copy (and customize!) it manually.
+
+
+LICENSE
+
+Allergy is available under the Modified BSD license.
+
+Copyright (c) 2004, 2005, 2008, 2010, 2011, 2013 Jörgen Grahn.
+All rights reserved.
+
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the
+   distribution.
+
+3. The name of the author may not be used to endorse or promote
+   products derived from this software without specific prior written
+   permission.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+
+		-- Jörgen Grahn <grahn+src@snipabacken.se>
+
+[1] Photoaddict <URL:http://photoaddict.sourceforge.net/> looks kind of
+    promising, but I found out about it too late.
+    'cthumb' and 'webmagick' seem to be alternatives too.
+
+$Id: README,v 1.15 2011-07-14 07:34:50 grahn Exp $
+$Name:  $

@@ -1,0 +1,576 @@
+#!/usr/bin/env python
+# -*- coding: iso-8859-1 -*-
+#
+# Copyright (c) 2008, 2010, 2013 Jörgen Grahn <grahn+src@snipabacken.se>
+# All rights reserved.
+#
+"""build a html photo index
+"""
+import re
+import os
+import BaseHTTPServer
+import socket
+import time
+import gzip
+
+from photobase import Superbase, uri_encode, uri_decode
+
+def reversedate(s):
+    """Transform a standard 'yyyy-mm-dd' date string
+    to the less formal 'd.m.yyyy' format popular in Sweden.
+    """
+    date = map(int, s.split('-'))
+    date.reverse()
+    return '%d.%d.%d' % tuple(date)
+
+def _linkdate(dd):
+    """If dd is a 'yyyy-mm-dd' string, return a hyperlinked version
+    which links to /yyyy, /yyyy-mm and /yyyy-mm-dd. Otherwise just
+    return it.
+    """
+    try:
+        y, m, d = dd.split('-')
+        ss = []
+        ss.append('<a href="/%s">%s</a>' % (y, y))
+        ss.append('<a href="/%s-%s">%s</a>' % (y, m, m))
+        ss.append('<a href="/%s-%s-%s">%s</a>' % (y, m, d, d))
+        return '-'.join(ss)
+    except:
+        return dd
+
+def _escape(s):
+    "escape reserved HTML characters <>& in 's'"
+    s = s.replace('&', '&amp;')
+    s = s.replace('<', '&lt;')
+    s = s.replace('>', '&gt;')
+    return s
+
+def _cvs_says():
+    return 'allergy', '5.10'
+
+
+def _date_time_string(epochtime):
+    """Return 'epochtime' formatted for a message header,
+    i.e. as a rfc1123-date. Stolen from BaseHTTPServer.
+    """
+    weekdayname = ('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun')
+    monthname = (None,
+                 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec')
+    year, month, day, hh, mm, ss, wd, y, z = time.gmtime(epochtime)
+    s = "%s, %02d %3s %4d %02d:%02d:%02d GMT" % (
+            weekdayname[wd],
+            day, monthname[month], year,
+            hh, mm, ss)
+    return s
+
+_months = {1: 'januari', 2: 'februari', 3: 'mars',
+           4: 'april', 5: 'maj', 6: 'juni',
+           7: 'juli', 8: 'augusti', 9: 'september',
+           10: 'oktober', 11: 'november', 12: 'december'}
+
+def _year_month_index(photobase, href, w):
+    """An index over years and months.
+    """
+    # XXX We mess with the original ...
+    by_date = photobase.photos
+    by_date.sort(key = lambda x: x.datetime, reverse = True)
+    months = {}
+    for p in by_date:
+        y, m, _ = p.datetime.split('-', 2)
+        ym = (int(y), int(m))
+        months[ym] = None
+    months = months.keys()
+    months.sort(reverse=True)
+    firstyear, _ = months[0]
+    lastyear, _ = months[-1]
+    w('<ul>\n')
+    for y in xrange(firstyear, lastyear-1, -1):
+        ref = href(y)
+        if ref:
+            w('<li><a href="%s">%04d</a>:'% (ref, y))
+        else:
+            w('<li>%04d:'% y)
+        for m in range(1, 13):
+            if (y, m) in months:
+                ref = href(y, m)
+                w(' <a href="%s">%s</a>' % (ref, _months[m]))
+            else:
+                w(' %s' % _months[m])
+        w('\n')
+    w('</ul>\n')
+
+
+def _huge_alpha_index(things, href, w):
+    """Render a HTML index for string sequence 'things' by writing through 'w'.
+    'href' is a function which creates an URI for a thing.
+    The index gets sorted in alphabetical order.
+    """
+    def _one_letter(title, things, href, w):
+        if not things:
+            return
+        w('<h2>%s</h2>\n' % title)
+        w('<p>')
+        acc = []
+        for t in things:
+            name = _escape(t)
+            ref = href(t)
+            acc.append('<a href="%s">%s</a>' % (ref, name))
+        w(' &mdash; '.join(acc))
+        w('\n')
+    things = things[:]
+    things.sort()
+    letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ'
+    for initial in letters:
+        _one_letter(initial,
+                    [ x for x in things if x[0].upper() == initial ],
+                    href, w)
+    _one_letter('...',
+                [ x for x in things if x[0].upper() not in letters ],
+                href, w)
+
+
+def _dated_photo_list(photos, w):
+    w('<table>\n'
+      '<colgroup>\n'
+      ' <col class="date">\n'
+      ' <col class="time">\n'
+      ' <col class="description">\n'
+      '</colgroup>\n'
+      '<tbody>\n')
+    pym = pdate = None
+    for p in photos:
+        date, time = p.datetime.split(None, 2)
+        y, m, _ = p.datetime.split('-', 2)
+        if pym != (y, m):
+            if pym is not None:
+                w('<tbody>\n')
+            w('<tr><th scope="rowgroup" colspan="3">'
+              '<a name="%s-%s">%s %s</a>\n' % (y, m, _months[int(m)], y))
+            pym = y, m
+        if pdate != date:
+            pdate = date
+        else:
+            date = ''
+        w('<tr><td>%s<td>%s<td><a href="%s">%s</a>\n' % (_linkdate(date), time,
+                                                         p.url,
+                                                         _escape(p.description)))
+        w('<td class="keys">%s\n' % _keylist_except(p))
+    w('</table>\n')
+
+def _keylist_except(photo, exception=None):
+    """Render the keywords for a photo, except maybe for one.
+    """
+    keys = [ '<a href="/key/%s">%s</a>' % (uri_encode(x), x)
+             for x in photo.keys
+             if x!=exception ]
+    return ', '.join(keys)
+
+def _undated_photo_list(photos, w, cause):
+    w('<table>\n'
+      '<colgroup>\n'
+      ' <col class="date">\n'
+      ' <col class="time">\n'
+      ' <col class="description">\n'
+      '</colgroup>\n'
+      '<tbody>\n')
+    pdate = None
+    for p in photos:
+        date, time = p.datetime.split(None, 2)
+        y, m, _ = p.datetime.split('-', 2)
+        if pdate != date:
+            pdate = date
+        else:
+            date = ''
+        w('<tr><td>%s<td>%s<td><a href="%s">%s</a>\n' % (_linkdate(date), time,
+                                                         p.url,
+                                                         _escape(p.description)))
+        w('<td class="keys">%s\n' % _keylist_except(p, cause))
+    w('</table>\n')
+
+def _gallery(photos, w):
+    w('<table class="allergy">\n'
+      '<tbody>\n')
+    i = 0
+    for p in photos:
+        if not i % 5:
+            w('<tr>')
+        i+=1
+        thurl = re.sub(r'(.+)/(.+)', r'\1/thumb/\2', p.url)
+        alt = '[%s]' % p.filename
+        title = '%s %s' % (p.datetime, p.description)
+        w('<td><a href="%s"><img src="%s" alt="%s" title="%s"></a>\n' %
+          (p.url,
+           thurl,
+           _escape(alt),
+           _escape(title)))
+    w('</table>\n')
+
+
+class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
+    """Handler for one request. Except for the inherited stuff
+    and the domain-specific stuff, it supports generating
+    an Expires: header and transparent 'gzip' Transfer-Encoding.
+    """
+    server_version = '%s/%s' % _cvs_says()
+    yearre = re.compile(r'/\d{4}$')
+    monthre = re.compile(r'/\d{4}-\d{2}$')
+    dayre = re.compile(r'/\d{4}-\d{2}-\d{2}$')
+    yadre = re.compile(r'/\d{1,2}\.\d{1,2}\.\d{4}$')
+
+    def do_GET(self):
+        p = self.path
+        self.server.photobase.refresh()
+
+        self.gzfile = None
+        if p in ('/', '/index.html'):
+            self.get_index()
+        elif p in ('/keywords', '/key', '/key/'):
+            self.get_keywords()
+        elif p.startswith('/key/'):
+            self.get_key(p[5:])
+        elif p=='/by-date':
+            self.get_by_date()
+        elif self.yearre.match(p):
+            y = int(p[1:])
+            self.get_by_year(y)
+        elif self.monthre.match(p):
+            y, m = [ int(x) for x in p[1:].split('-') ]
+            self.get_by_month(y, m)
+        elif self.dayre.match(p):
+            y, m, d = [ int(x) for x in p[1:].split('-') ]
+            self.get_by_day(y, m, d)
+        elif self.yadre.match(p):
+            d, m , y = [ int(x) for x in p[1:].split('.') ]
+            self.get_by_day(y, m, d)
+        elif p=='/css':
+            self.get_css()
+        elif p=='/robots.txt':
+            self.get_robots()
+        else:
+            self.get_404('not found')
+
+    def get_index(self):
+        server = self.server
+        self.preamble('Foton: index', contents=None)
+        w = self.write
+        w('<h1>Innehåll</h1>\n'
+          '\n'
+          '<ul>\n'
+          '<li><a href="/by-date">Foton efter datum</a> (senaste först)\n')
+        w('<li>Foton för ett år, eller en månad:\n')
+        def ympages(y, m=None):
+            if not m:
+                return '/%04d' % y
+            return '/%04d-%02d' % (y, m)
+        _year_month_index(server.photobase, ympages, w)
+        w('<li><a href="/keywords">Index till nyckelord</a>\n'
+          '</ul>\n'
+          '\n')
+        self.postamble()
+
+    def get_keywords(self):
+        server = self.server
+        self.preamble('Index till nyckelord', up='/')
+        w = self.write
+        w('<h1>Index till nyckelord</h1>\n')
+        keys = server.photobase.keys.keys()
+        def href(key):
+            return '/key/' + uri_encode(key)
+        _huge_alpha_index(keys, href, w)
+        self.postamble()
+
+    def get_key(self, key):
+        key = uri_decode(key)
+        photobase = self.server.photobase
+        try:
+            pp = photobase.keys[key]
+        except KeyError:
+            return self.get_404('Inga foton finns för nyckelord "%s".' % key)
+        pp.sort(key = lambda x: x.datetime, reverse = True)
+        self.preamble('Foton för %s' % key, up='/keywords')
+        w = self.write
+        w('<h1>Foton för <cite>%s</cite></h1>\n' % key)
+
+        _undated_photo_list(pp, w, key)
+        w('<p>\n')
+        _gallery(pp, w)
+
+        self.postamble()
+
+    def get_by_date(self):
+        server = self.server
+        self.preamble('Alla foton, efter datum', up='/')
+        w = self.write
+        w('<h1>Alla foton, efter datum</h1>\n')
+
+        def href(y, m=None):
+            if not m:
+                return None
+            return '#%04d-%02d' % (y, m)
+
+        _year_month_index(server.photobase, href, w)
+
+        # XXX We mess with the original ...
+        by_date = photobase.photos
+        by_date.sort(key = lambda x: x.datetime, reverse = True)
+
+        _dated_photo_list(by_date, w)
+        self.postamble()
+
+    def get_by_year(self, y):
+        photobase = self.server.photobase
+
+        pp = [ x for x in photobase.photos if x.datetime.startswith('%04d-' % y) ]
+        pp.sort(key = lambda x: x.datetime)
+        if not pp:
+            return self.get_404('Inga foton finns från %d.' % y)
+
+        title = 'Alla foton %d' % y
+        self.preamble(title,
+                      up='/',
+                      prev = '%04d' % (y-1),
+                      next = '%04d' % (y+1))
+        w = self.write
+        w('<h1>%s</h1>\n' % title)
+
+        _dated_photo_list(pp, w)
+        self.postamble()
+
+    def get_by_month(self, y, m):
+        photobase = self.server.photobase
+
+        pp = [ x for x in photobase.photos if x.datetime.startswith('%04d-%02d-' % (y, m)) ]
+        pp.sort(key = lambda x: x.datetime)
+        if not pp:
+            return self.get_404('Inga foton finns från %s %d.' % (_months[m], y))
+
+        title = 'Alla foton %s %d' % (_months[m], y)
+        prev = '/%04d-%02d' % (y, m-1)
+        next = '/%04d-%02d' % (y, m+1)
+        if m==1:
+            prev = '/%04d-%02d' % (y-1, 12)
+        elif m==12:
+            next = '/%04d-%02d' % (y+1, 1)
+        self.preamble(title,
+                      up='/',
+                      prev = prev,
+                      next = next)
+        w = self.write
+        w('<h1>%s</h1>\n' % title)
+
+        _dated_photo_list(pp, w)
+        w('<p>\n')
+        _gallery(pp, w)
+
+        self.postamble()
+
+    def get_by_day(self, y, m, d):
+        photobase = self.server.photobase
+
+        datestr = '%04d-%02d-%02d' % (y, m, d)
+        pp = [ x for x in photobase.photos if x.datetime.startswith(datestr) ]
+        pp.sort(key = lambda x: x.datetime)
+        if not pp:
+            return self.get_404('Inga foton finns från %s.' % datestr)
+
+        title = 'Alla foton %s' % datestr
+        up = '/%04d-%02d' % (y, m)
+        self.preamble(title,
+                      up=up)
+        w = self.write
+        w('<h1>%s</h1>\n' % title)
+
+        _dated_photo_list(pp, w)
+        w('<p>\n')
+        _gallery(pp, w)
+
+        self.postamble()
+
+    def get_robots(self):
+        self.send_response(200)
+        self.send_header('Content-Type', 'text/plain; charset=ISO-8859-1')
+        self.send_expires_header()
+        self.end_headers()
+        self.write('User-agent: *\n'
+                   'Disallow: /\n')
+        self.close()
+
+    def get_css(self):
+        self.send_response(200)
+        self.send_header('Content-Type', 'text/css')
+        self.send_expires_header()
+        self.end_headers()
+        w = self.write
+        w('BODY {\n'
+          '	background-color: rgb(255,224,160);\n'
+          '	color: black;\n'
+          '}\n')
+        w('ul { list-style-type: none }\n')
+        w('table.allergy {\n'
+          '	background-color: rgb(0,0,128);\n'
+          '	color: rgb(200,200,128);\n'
+          '	text-align: center;\n'
+          '}\n'
+          'table.allergy td {\n'
+          '	background-color: rgb(0,0,64);\n'
+          '	text-align: center;\n'
+          '}\n'
+          'table.allergy img {\n'
+          '        margin: 1em;\n'
+          '	border-style: none\n'
+          '}\n')
+        w('td.keys {\n'
+          '	font-size: smaller;\n'
+          '	font-style: italic;\n'
+          '	padding-left: 1em;\n'
+          '}\n')
+        w('td.keys a:before { content: "["; }\n')
+        w('td.keys a:after { content: "]"; }\n')
+        w('a { text-decoration: none }\n')
+        w('a:hover { text-decoration: underline }\n')
+        self.close()
+
+    def get_404(self, s):
+        self.send_response(404)
+        self.send_header('Content-Type', 'text/plain; charset=ISO-8859-1')
+        self.send_expires_header()
+        self.end_headers()
+        self.write(s)
+        self.close()
+
+    def preamble(self, title,
+                 contents='/', up=None,
+                 start=None, prev=None, next=None):
+        """write HTTP headers for a successful HTML GET,
+        plus everything to the HTML body.
+        """
+        self.send_response(200)
+        self.send_header('Content-Type', 'text/html; charset=ISO-8859-1')
+        self.send_expires_header()
+        self.end_headers()
+        w = self.write
+        w('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"\n'
+          '"http://www.w3.org/TR/html4/strict.dtd">\n'
+          '<html>\n'
+          '\n'
+          '<head>\n'
+          '<meta http-equiv="Content-Language" content="sv">\n'
+          '<link rel="stylesheet" href="/css" type="text/css" title="plain">\n')
+        for type, uri in (('contents', contents),
+                          ('up', up),
+                          ('start', start),
+                          ('prev', prev),
+                          ('next', next)):
+            if uri:
+                w('<link rel="%s" href="%s">' % (type, uri))
+        w('<title>%s</title>\n' % title)
+        w('</head>\n'
+          '\n'
+          '<body>\n')
+
+    def postamble(self):
+        self.write('</body>\n'
+                   '</html>\n')
+        self.close()
+
+    def end_headers(self, try_gzip=True):
+        """Except from the base end_headers(), also optionally prepare the
+        response for Content-Encoding:gzip, if the client is prepared
+        for it. Modifies what the write() and close() calls will
+        do. Ugly, but then so is BaseHTTPServer ...
+        """
+        z = try_gzip and self.accepts_gzip_te()
+        if z:
+            self.send_header('Content-Encoding', 'gzip')
+        BaseHTTPServer.BaseHTTPRequestHandler.end_headers(self)
+        if z:
+            self.gzfile = gzip.GzipFile(mode='ab',
+                                        fileobj=self.wfile)
+
+    def send_expires_header(self, n=3*60):
+        """Send an 'Expires' header, set to 'n' seconds from now.
+        """
+        self.send_header('Expires', _date_time_string(time.time() + n))
+
+    def accepts_gzip_te(self):
+        """True iff the client accepts 'gzip' transfer encoding.
+        XXX Possibly only defined from within do_FOO.
+        """
+        te = self.headers.get('Accept-Encoding', '')
+        return 'gzip' in [s.strip() for s in te.split(',')]
+
+    def write(self, s):
+        if self.gzfile:
+            self.gzfile.write(s)
+        else:
+            self.wfile.write(s)
+
+    def close(self):
+        """Logically close the output file (something we only do to
+        the gzip stream; someone else owns the socket lifetime).
+        """
+        if self.gzfile:
+            self.gzfile.close()        
+
+
+class Server(BaseHTTPServer.HTTPServer):
+    address_family = socket.AF_INET6
+    def __init__(self, address, photobase):
+        BaseHTTPServer.HTTPServer.__init__(self, address, Handler)
+        self.photobase = photobase
+
+
+if __name__ == "__main__":
+    import getopt
+    import locale
+    import sys
+
+    locale.setlocale(locale.LC_ALL, 'sv_SE')
+
+    prog = os.path.basename(sys.argv[0])
+
+    usage = 'usage: %s [-4] -f descriptions-file ... -b photo-url -p photo-path http://hostname:port' % prog
+    usage += '\n       %s --version' % prog
+    usage += '\n       %s --help   ' % prog
+
+    try:
+        opts, baseurl = getopt.getopt(sys.argv[1:], '4f:b:p:',
+                                      ['help',
+                                       'version'])
+        descriptions = []
+        pbaseurl = None
+        pbasepath = None
+        for option, value in opts:
+            if option == '-4': Server.address_family = socket.AF_INET
+            if option == '-f': descriptions.append(value)
+            if option == '-b': pbaseurl = value
+            if option == '-p': pbasepath = value
+            if option == '--help':
+                print usage
+                sys.exit(0)
+            if option == '--version':
+                print prog
+                print '%s, version %s' % _cvs_says()
+                print 'Copyright (c) 2008, 2010, 2013 Jörgen Grahn.'
+                sys.exit(0)
+        if len(descriptions)==0 or len(baseurl)!=1 or not pbasepath or not pbaseurl:
+            raise ValueError('required argument missing')
+        m = re.match(r'http://(.*?):(\d+)', baseurl[0])
+        if not m:
+            raise ValueError('incorrect base URL')
+        host, port = m.groups(); port = int(port)
+        if host=='*':
+            host = ''
+
+    except (ValueError, getopt.GetoptError), s:
+        print >>sys.stderr, 'error:', s
+        print >>sys.stderr, usage
+        sys.exit(1)
+
+    try:
+        photobase = Superbase(descriptions,
+                              pbasepath, pbaseurl)
+        Server((host, port), photobase).serve_forever()
+    except KeyboardInterrupt:
+        pass
