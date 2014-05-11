@@ -1,13 +1,13 @@
 #
 # Makefile
 #
-# Copyright (c) 2010--2013 Jörgen Grahn
+# Copyright (c) 2010--2014 Jörgen Grahn
 # All rights reserved.
 
-SHELL=/bin/sh
+SHELL=/bin/bash
 INSTALLBASE=/usr/local
 CXXFLAGS=-Wall -Wextra -pedantic -std=c++98 -g -Os -Wold-style-cast
-CPPFLAGS=-I..
+CPPFLAGS=
 
 .PHONY: all
 all: outnumbered
@@ -46,6 +46,9 @@ filter.o: CXXFLAGS+=-Wno-old-style-cast
 deflate.o: CXXFLAGS+=-Wno-old-style-cast
 httpd.o: CXXFLAGS+=-Wno-old-style-cast
 
+liballergy.a: allergy/keys.o
+	$(AR) -r $@ $^
+
 outnumbered: httpd.o liboutnumbered.a
 	$(CXX) $(CXXFLAGS) -o $@ httpd.o -L. -loutnumbered -lrt -lz
 
@@ -62,15 +65,17 @@ libtest.a: test/test_deflate.o
 libtest.a: test/test_cache.o
 libtest.a: test/test_date.o
 libtest.a: test/test_lineparse.o
+libtest.a: allergy/test/test_keys.o
 	$(AR) -r $@ $^
+
+test/%.o: CPPFLAGS+=-I.
+allergy/test/%.o: CPPFLAGS+=-I.
 
 test.cc: libtest.a
 	testicle -o$@ $^
 
-tests: test.o liboutnumbered.a libtest.a
-	$(CXX) $(CXXFLAGS) -o $@ test.o -L. -ltest -loutnumbered -lz
-
-test/%.o: CPPFLAGS+=-I.
+tests: test.o liboutnumbered.a liballergy.a libtest.a
+	$(CXX) $(CXXFLAGS) -o $@ test.o -L. -ltest -loutnumbered -lallergy -lz
 
 %.1.ps : %.1
 	groff -man $< >$@
@@ -84,16 +89,15 @@ TAGS:
 	etags *.cc *.h
 
 depend:
-	makedepend -- $(CXXFLAGS) $(CPPFLAGS) -- -Y -I. *.cc test/*.cc
+	makedepend -- $(CXXFLAGS) $(CPPFLAGS) -- -Y -I. {,test/}*.cc allergy/{,test/}*.cc
 
 .PHONY: clean
 clean:
 	$(RM) outnumbered magic
-	$(RM) *.o
+	$(RM) {,test/}*.o
+	$(RM) allergy/{,test/}*.o
 	$(RM) *.ps
-	$(RM) liboutnumbered.a
-	$(RM) libtest.a
-	$(RM) test/*.o
+	$(RM) lib*.a
 	$(RM) test.cc tests
 	$(RM) Makefile.bak TAGS
 
@@ -114,8 +118,8 @@ magic.o: version.h
 names.o: names.h request.h blob.h
 request.o: request.h blob.h names.h lineparse.h
 requestqueue.o: requestqueue.h request.h blob.h
-response.o: response.h filter.h blob.h deflate.h input.h request.h
 responsebuf.o: responsebuf.h
+response.o: response.h filter.h blob.h deflate.h input.h request.h
 server.o: server.h session.h times.h textread.h requestqueue.h request.h
 server.o: blob.h response.h filter.h deflate.h input.h error.h
 session.o: session.h times.h textread.h requestqueue.h request.h blob.h
@@ -127,11 +131,13 @@ times.o: times.h
 version.o: version.h
 test/pipe.o: test/pipe.h blob.h
 test/test_cache.o: ./headercache.h
-test/test_date.o: date.h blob.h
+test/test_date.o: date.h
 test/test_deflate.o: deflate.h blob.h
 test/test_filter.o: filter.h blob.h deflate.h test/pipe.h
 test/test_lineparse.o: lineparse.h
 test/test_log.o: log.h
 test/test_request.o: request.h blob.h
-test/test_response.o: response.h filter.h blob.h deflate.h input.h
 test/test_responsebuf.o: responsebuf.h
+test/test_response.o: response.h filter.h blob.h deflate.h input.h
+allergy/keys.o: allergy/keys.h
+allergy/test/test_keys.o: ./allergy/keys.h
