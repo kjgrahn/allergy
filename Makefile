@@ -6,7 +6,7 @@
 
 SHELL=/bin/bash
 INSTALLBASE=/usr/local
-CXXFLAGS=-Wall -Wextra -pedantic -std=c++98 -g -Os -Wold-style-cast
+CXXFLAGS=-Wall -Wextra -pedantic -std=c++11 -g -Os -Wold-style-cast
 CPPFLAGS=
 
 .PHONY: all

@@ -60,7 +60,7 @@ namespace {
      * (Incidentally, closing an fd also removes it from the epoll
      * set.)
      */
-    void remove(std::vector<Server::Entry>::iterator i)
+    void rm(std::vector<Server::Entry>::iterator i)
     {
 	Server::Entry& entry = *i;
 	if(!entry.empty()) {
@@ -70,9 +70,9 @@ namespace {
 	entry = Server::Entry();
     }
 
-    void remove(std::vector<Server::Entry>& v, unsigned n)
+    void rm(std::vector<Server::Entry>& v, unsigned n)
     {
-	remove(v.begin() + n);
+	rm(v.begin() + n);
     }
 
     epoll_event mkev(unsigned events, unsigned n)
@@ -138,7 +138,7 @@ void Server::add(int lfd)
     unsigned n = insert(v, lfd);
     epoll_event ep = mkev(EPOLLIN, n);
     if(epoll_ctl(epfd, EPOLL_CTL_ADD, lfd, &ep)==-1) {
-	::remove(v, n);
+	rm(v, n);
     }
 }
 
@@ -152,7 +152,7 @@ void Server::add(int fd, sockaddr_storage& peer, const timespec& t)
     unsigned n = insert(v, fd, new Session(peer, t));
     epoll_event ep = mkev(EPOLLIN, n);
     if(epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &ep)==-1) {
-	::remove(v, n);
+	rm(v, n);
     }
 }
 
@@ -162,7 +162,7 @@ void Server::add(int fd, sockaddr_storage& peer, const timespec& t)
  */
 void Server::remove(const Event& ev)
 {
-    ::remove(v, ev.n);
+    rm(v, ev.n);
 }
 
 
@@ -177,7 +177,7 @@ void Server::ctl(Event ev, unsigned state)
 	entry.events = state;
 	epoll_event ep = mkev(state, ev.n);
 	if(epoll_ctl(epfd, EPOLL_CTL_MOD, entry.fd, &ep)==-1) {
-	    ::remove(v, ev.n);
+	    rm(v, ev.n);
 	}
     }
 }
@@ -237,7 +237,7 @@ void Server::reconsider(const timespec& ts)
 {
     for(std::vector<Entry>::iterator i = v.begin(); i!=v.end(); i++) {
 	if(i->client() && i->session->reconsider(ts)) {
-	    ::remove(i);
+	    rm(i);
 	}
     }
 }
