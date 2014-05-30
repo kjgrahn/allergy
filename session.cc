@@ -53,13 +53,13 @@ Session::Session(const sockaddr_storage& peer,
       reader("\r\n"),
       response(0)
 {
-    Info(log) << *this << " connected";
+    Info(Syslog::log) << *this << " connected";
 }
 
 
 Session::~Session()
 {
-    Info(log) << *this << " closed. " << history;
+    Info(Syslog::log) << *this << " closed. " << history;
     delete response;
 }
 
@@ -138,7 +138,7 @@ void Session::pop_req(const timespec& t)
     assert(!response);
 
     const Request req = req_queue.front();
-    Info(log) << *this << ' ' << req.method << ' ' << req.request_uri();
+    Info(Syslog::log) << *this << ' ' << req.method << ' ' << req.request_uri();
     std::cout << req << '\n';
     req_queue.pop();
     response = new Response(req);

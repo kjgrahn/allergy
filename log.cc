@@ -5,7 +5,7 @@
  */
 #include "log.h"
 
-Syslog log;
+Syslog Syslog::log;
 
 
 Syslog::Syslog()

@@ -8,6 +8,7 @@
 
 void no_test_log()
 {
+    Syslog& log = Syslog::log;
     Debug d(log);
     Debug(log) << "";
     Debug(log) << 'a';
@@ -16,6 +17,7 @@ void no_test_log()
 
 void no_test_log_long()
 {
+    Syslog& log = Syslog::log;
     Debug(log) << "<0123456789 0123456789"
 	       << " 0123456789 0123456789"
 	       << " 0123456789 0123456789"

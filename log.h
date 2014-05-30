@@ -33,17 +33,18 @@ public:
     std::ostream& ostream() { return os; }
     void flush(int prio);
 
+    /**
+     * Since the syslog is naturally process-global and reentrancy is
+     * irrelevant here, we might as well provide a global Syslog object.
+     */
+    static Syslog log;
+
 private:
     std::vector<char_type> v;
     std::ostream os;
 };
 
 
-/**
- * Since the syslog is naturally process-global and reentrancy is
- * irrelevant here, we might as well provide a global Syslog object.
- */
-extern Syslog log;
 
 
 template <int Prio>
