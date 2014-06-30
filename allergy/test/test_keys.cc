@@ -10,7 +10,7 @@ namespace {
     void eq(const allergy::Keys& k,
 	    const char* s)
     {
-	testicle::assert_eq(k.str, s);
+	testicle::assert_eq(k.str(), s);
 	allergy::Keys::const_iterator i = k.begin();
 	testicle::assert_(i==k.end());
     }
@@ -19,7 +19,7 @@ namespace {
 	    const char* s,
 	    const char* k1)
     {
-	testicle::assert_eq(k.str, s);
+	testicle::assert_eq(k.str(), s);
 	allergy::Keys::const_iterator i = k.begin();
 	testicle::assert_(i!=k.end());
 	testicle::assert_eq(*i++, k1);
@@ -31,7 +31,7 @@ namespace {
 	    const char* k1,
 	    const char* k2)
     {
-	testicle::assert_eq(k.str, s);
+	testicle::assert_eq(k.str(), s);
 	allergy::Keys::const_iterator i = k.begin();
 	testicle::assert_(i!=k.end());
 	testicle::assert_eq(*i++, k1);
@@ -113,14 +113,14 @@ namespace allergy_keys {
     {
 	const Keys k("[Vartofta-[Asaka]]");
 	eq(k, "Vartofta-Asaka",
-	   "Vartofta-Asaka", "Asaka");
+	   "Asaka", "Vartofta-Asaka");
     }
 
     void misnested(testicle::TC)
     {
 	const Keys k("foo] bar [b [az]");
 	eq(k, "foo] bar b az",
-	   "b az", "az");
+	   "az", "b az");
     }
 
     namespace curly {

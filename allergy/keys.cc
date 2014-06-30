@@ -9,80 +9,87 @@ using allergy::Keys;
 
 namespace {
 
-    char right(char ch)
+    class TextStack {
+    public:
+	TextStack() : v(1) {}
+	void put(char ch);
+	void open();
+	void close(char ch);
+
+	void report(std::string& s,
+		    std::vector<std::string>& bits);
+
+    private:
+	typedef std::vector<std::string> vs;
+	vs v;
+	vs done;
+    };
+
+    void TextStack::put(char ch)
     {
-	switch(ch) {
-	case '[': return ']';
-	case '{': return '}';
-	default: return '\0';
+	for(vs::iterator i = v.begin(); i!=v.end(); i++) {
+	    i->push_back(ch);
 	}
     }
 
-    /**
-     * Find matching bracket; ] or } depending on what *a is.
-     * Otherwise return b.  Never returns a, unless a==b.
-     */
-    template<class It> It match_bracket(It a, It b)
+    void TextStack::open()
     {
-	if(a!=b) {
-	    const char ch = *a++;
-	    const char ech = right(ch);
-	    unsigned n = 1;
-	    while(a!=b) {
-		if(*a==ch) n++;
-		else if(*a==ech) n--;
-		if(!n) break;
-		a++;
-	    }
-	}
-	return a;
+	v.push_back("");
     }
 
-    std::string parse(const char* a, const char* const b)
+    void TextStack::close(char ch)
     {
-	std::string s;
-
-	while(a!=b) {
-	    if(*a=='[') {
-		const char* c = match_bracket(a, b);
-		if(c!=b) {
-		    s.append(parse(a+1, c));
-		    a = c+1;
-		    continue;
-		}
-	    }
-	    s.push_back(*a++);
+	if(v.size()==1) {
+	    put(ch);
 	}
-	return s;
+	else {
+	    done.push_back(v.back());
+	    v.pop_back();
+	}
     }
 
-    std::string parse(const std::string& s)
+    void TextStack::report(std::string& s,
+			   std::vector<std::string>& bits)
     {
-	const char* p = s.data();
-	return parse(p, p + s.size());
+	vs::iterator i = v.begin();
+	std::swap(s, *i++);
+	std::swap(bits, done);
+	bits.insert(bits.end(), i, v.end());
     }
 }
 
 
-Keys::Keys(const std::string& s)
-    : str(parse(s))
-{}
-
-namespace {
-    static const std::vector<std::string> dummy;
+Keys::Keys(const std::string& str)
+{
+    const char* p = str.data();
+    const char* const q = p + str.size();
+    TextStack stack;
+    while(p!=q) {
+	if(*p=='[') {
+	    stack.open();
+	}
+	else if(*p==']') {
+	    stack.close(']');
+	}
+	else {
+	    stack.put(*p);
+	}
+	p++;
+    }
+    stack.report(s, bits);
 }
 
 Keys::const_iterator Keys::begin() const
 {
-    return dummy.begin();
+    return bits.begin();
 }
 
 Keys::const_iterator Keys::end() const
 {
-    return dummy.end();
+    return bits.end();
 }
 
 bool Keys::empty() const
 {
-    return dummy.empty();
+    return bits.empty();
 }
