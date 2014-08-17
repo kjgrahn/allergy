@@ -222,4 +222,4 @@ bool Zlib<Next>::end(int fd)
 using Filter::Plain;
 template class Zlib<Plain>;
 template class Chunked<Plain>;
-template class Zlib<Chunked<Plain> >;
+template class Zlib<Chunked<Plain>>;
