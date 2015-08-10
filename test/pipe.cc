@@ -6,7 +6,7 @@
 #include "pipe.h"
 #include <blob.h>
 
-#include <testicle.h>
+#include <orchis.h>
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -39,8 +39,8 @@ void Pipe::assert_read(const std::string& s)
 {
     std::string t = s;
     ssize_t n = read(rfd, &t[0], t.size());
-    testicle::assert_eq(n, t.size());
-    testicle::assert_eq(s, t);
+    orchis::assert_eq(n, t.size());
+    orchis::assert_eq(s, t);
 }
 
 
@@ -54,7 +54,7 @@ size_t Pipe::drain(size_t len)
 {
     std::string t(len, ' ');
     ssize_t n = read(rfd, &t[0], t.size());
-    testicle::assert_(n!=-1 || errno==EAGAIN);
+    orchis::assert_(n!=-1 || errno==EAGAIN);
     if(n==-1) n = 0;
     return n;
 }
@@ -66,7 +66,7 @@ size_t Pipe::drain(size_t len)
 void Pipe::assert_drain(size_t len)
 {
     size_t n = drain(len);
-    testicle::assert_eq(n, len);
+    orchis::assert_eq(n, len);
 }
 
 
@@ -77,6 +77,6 @@ void Pipe::assert_empty()
 {
     char buf[1];
     ssize_t n = read(rfd, buf, sizeof buf);
-    testicle::assert_eq(n, -1);
-    testicle::assert_eq(errno, EAGAIN);
+    orchis::assert_eq(n, -1);
+    orchis::assert_eq(errno, EAGAIN);
 }

@@ -6,9 +6,9 @@
  */
 #include <responsebuf.h>
 
-#include <testicle.h>
+#include <orchis.h>
 
-using namespace testicle;
+using namespace orchis;
 
 
 /**

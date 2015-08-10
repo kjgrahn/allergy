@@ -4,7 +4,7 @@
  */
 #include <headercache.h>
 
-#include <testicle.h>
+#include <orchis.h>
 #include <string>
 #include <sstream>
 
@@ -34,20 +34,21 @@ namespace {
 
 namespace cache {
 
-    using testicle::assert_eq;
+    using orchis::assert_eq;
+    using orchis::TC;
 
-    void construct(testicle::TC)
+    void construct(TC)
     {
 	Cache c;
     }
 
-    void simple(testicle::TC)
+    void simple(TC)
     {
 	Cache c;
 	assert_eq(c.insert("42").val, 42);
     }
 
-    void overflow(testicle::TC)
+    void overflow(TC)
     {
 	Cache c;
 	for(int i=0; i<200; i++) {

@@ -4,7 +4,7 @@
  */
 #include <date.h>
 
-#include <testicle.h>
+#include <orchis.h>
 #include <string>
 
 namespace {
@@ -17,24 +17,25 @@ namespace {
     void assert_parses(const char* s, time_t t)
     {
 	DateConv dc;
-	testicle::assert_eq(dc.parse(s), t);
+	orchis::assert_eq(dc.parse(s), t);
     }
 
     void assert_formats(const char* s, time_t t)
     {
 	DateConv dc;
-	testicle::assert_eq(dc.format(t), s);
+	orchis::assert_eq(dc.format(t), s);
     }
 }
 
 
 namespace date {
 
-    using testicle::assert_eq;
+    using orchis::assert_eq;
+    using orchis::TC;
 
     namespace parse {
 
-	void simple(testicle::TC)
+	void simple(TC)
 	{
 	    DateConv dc;
 	    assert_eq(dc.parse("Thu, 09 May 2013 09:35:01 GMT"), may9);
@@ -42,7 +43,7 @@ namespace date {
 	    assert_eq(dc.parse("Thu May  9 09:35:01 2013"), may9);
 	}
 
-	void ignore_wd(testicle::TC)
+	void ignore_wd(TC)
 	{
 	    DateConv dc;
 	    assert_eq(dc.parse("Mon, 09 May 2013 09:35:01 GMT"), may9);
@@ -50,14 +51,14 @@ namespace date {
 	    assert_eq(dc.parse("Mon May  9 09:35:01 2013"), may9);
 	}
 
-	void leading_zero_asctime(testicle::TC)
+	void leading_zero_asctime(TC)
 	{
 	    DateConv dc;
 	    assert_eq(dc.parse("Thu May  9 09:35:01 2013"), may9);
 	    assert_eq(dc.parse("Thu May 09 09:35:01 2013"), may9);
 	}
 
-	void various(testicle::TC)
+	void various(TC)
 	{
 	    assert_parses("Thu, 01 Jan 1970 00:00:00 GMT", 0);
 	    assert_parses("Thu, 01 Jan 1970 00:00:01 GMT", 1);
@@ -75,7 +76,7 @@ namespace date {
 	    assert_parses("Tue, 19 Jan 2038 03:10:00 GMT", 2147483400);
 	}
 
-	void time_t_wraparound(testicle::TC)
+	void time_t_wraparound(TC)
 	{
 	    assert_parses("Sun, 01 Mar 2048 06:02:00 GMT", 2466655320);
 	}
@@ -83,13 +84,13 @@ namespace date {
 
     namespace format {
 
-	void simple(testicle::TC)
+	void simple(TC)
 	{
 	    DateConv dc;
 	    assert_formats("Thu, 09 May 2013 09:35:01 GMT", may9);
 	}
 
-	void various(testicle::TC)
+	void various(TC)
 	{
 	    assert_formats("Thu, 01 Jan 1970 00:00:00 GMT", 0);
 	    assert_formats("Thu, 01 Jan 1970 00:00:01 GMT", 1);
@@ -107,18 +108,18 @@ namespace date {
 	    assert_formats("Tue, 19 Jan 2038 03:10:00 GMT", 2147483400);
 	}
 
-	void time_t_wraparound(testicle::TC)
+	void time_t_wraparound(TC)
 	{
 	    assert_formats("Sun, 01 Mar 2048 06:02:00 GMT", 2466655320);
 	}
 
-	void benchmark(testicle::TC)
+	void benchmark(TC)
 	{
 	    DateConv dc;
 	    for(unsigned n=0; n<50; n++) {
 		for(time_t t = 946620000; t < 1900000000; t += 13*3600) {
 		    const std::string s = dc.format(t);
-		    testicle::assert_eq(s.size(), 29);
+		    orchis::assert_eq(s.size(), 29);
 		}
 	    }
 	}

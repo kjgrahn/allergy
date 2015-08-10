@@ -4,11 +4,11 @@
  */
 #include <lineparse.h>
 
-#include <testicle.h>
+#include <orchis.h>
 
 namespace {
 
-    using testicle::assert_eq;
+    using orchis::assert_eq;
 
     void assert_ws(const std::string& s,
 		   size_t n)
@@ -36,7 +36,9 @@ namespace {
 
 namespace lineparse {
 
-    void ws(testicle::TC)
+    using orchis::TC;
+
+    void ws(TC)
     {
 	assert_ws("", 0);
 	assert_ws("a", 0);
@@ -46,7 +48,7 @@ namespace lineparse {
 	assert_ws(" \xff", 1);
     }
 
-    void non_ws(testicle::TC)
+    void non_ws(TC)
     {
 	assert_non_ws("", 0);
 	assert_non_ws("a", 1);
@@ -54,7 +56,7 @@ namespace lineparse {
 	assert_non_ws("\xff" "a", 2);
     }
 
-    void trimr(testicle::TC)
+    void trimr(TC)
     {
 	assert_trimr("", "");
 	assert_trimr("foo", "foo");

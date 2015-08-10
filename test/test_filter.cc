@@ -5,7 +5,7 @@
 #include <filter.h>
 #include "pipe.h"
 
-#include <testicle.h>
+#include <orchis.h>
 
 namespace {
     template<class Filter>
@@ -39,12 +39,13 @@ namespace filter {
     static const Blob karen("But, I do understand what you're saying;\n"
 			    "it's just that it doesn't make any sense!\n");
 
-    using testicle::assert_eq;
-    using testicle::assert_gt;
+    using orchis::assert_eq;
+    using orchis::assert_gt;
+    using orchis::TC;
 
     namespace plain {
 
-	void simple(testicle::TC)
+	void simple(TC)
 	{
 	    Pipe p;
 	    Filter::P f;
@@ -59,7 +60,7 @@ namespace filter {
 	    p.assert_empty();
 	}
 
-	void block(testicle::TC)
+	void block(TC)
 	{
 	    Pipe p;
 	    Filter::P f;
@@ -86,7 +87,7 @@ namespace filter {
 	    p.assert_empty();
 	}
 
-	void end(testicle::TC)
+	void end(TC)
 	{
 	    Pipe p;
 	    Filter::P f;
@@ -112,7 +113,7 @@ namespace filter {
 
     namespace chunked {
 
-	void simple(testicle::TC)
+	void simple(TC)
 	{
 	    Pipe p;
 	    Filter::C f;
@@ -133,7 +134,7 @@ namespace filter {
 	    p.assert_empty();
 	}
 
-	void block(testicle::TC)
+	void block(TC)
 	{
 	    Pipe p;
 	    Filter::C f;
@@ -173,7 +174,7 @@ namespace filter {
 	    return s;
 	}
 
-	void simple(testicle::TC)
+	void simple(TC)
 	{
 	    Pipe p;
 	    Filter::Z f;

@@ -6,7 +6,7 @@
  */
 #include <sstream>
 
-#include <testicle.h>
+#include <orchis.h>
 
 /*
  * XXX These tests don't relate to anything remotely interesting.
@@ -21,7 +21,7 @@ namespace {
 	std::ostringstream oss;
 	oss << resp;
 	const std::string s = oss.str();
-	testicle::assert_eq(s.empty(), false);
+	orchis::assert_eq(s.empty(), false);
 	return s;
     }
 
@@ -33,7 +33,7 @@ namespace {
 	    message << '\'' << needle << '\''
 		    << " is not a prefix of "
 		    << '\'' << haystack << '\'';
-	    throw testicle::Failure(message);
+	    throw orchis::Failure(message);
 	}
     }
 
@@ -46,7 +46,7 @@ namespace {
 	    message << '\'' << needle << '\''
 		    << " is not a suffix of "
 		    << '\'' << haystack << '\'';
-	    throw testicle::Failure(message);
+	    throw orchis::Failure(message);
 	}
     }
 
@@ -57,7 +57,7 @@ namespace {
     void assert_fmt(const T& resp, const std::string& s)
     {
 	const std::string r = fmt(resp);
-	testicle::assert_eq(r, s);
+	orchis::assert_eq(r, s);
     }
 
     /**

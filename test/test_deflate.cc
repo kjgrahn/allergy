@@ -4,7 +4,7 @@
  */
 #include <deflate.h>
 
-#include <testicle.h>
+#include <orchis.h>
 #include <cstdlib>
 
 namespace {
@@ -36,16 +36,18 @@ namespace {
 
 namespace deflate {
 
-    void hello(testicle::TC)
+    using orchis::TC;
+
+    void hello(TC)
     {
 	Deflate d;
 	std::vector<uint8_t> dest;
 	push(dest, d, "Hello, world!");
 	finish(dest, d);
-	testicle::assert_gt(dest.size(), 0);
+	orchis::assert_gt(dest.size(), 0);
     }
 
-    void hellos(testicle::TC)
+    void hellos(TC)
     {
 	Deflate d;
 	std::vector<uint8_t> dest;
@@ -58,11 +60,11 @@ namespace deflate {
 		 "Hello, world!\n");
 	}
 	finish(dest, d);
-	testicle::assert_gt(dest.size(), 0);
-	testicle::assert_lt(dest.size(), .1 * 20e3*14*5);
+	orchis::assert_gt(dest.size(), 0);
+	orchis::assert_lt(dest.size(), .1 * 20e3*14*5);
     }
 
-    void compresses_well(testicle::TC)
+    void compresses_well(TC)
     {
 	Deflate d;
 	std::vector<uint8_t> dest;
@@ -75,8 +77,8 @@ namespace deflate {
 		 "00000000000000");
 	}
 	finish(dest, d);
-	testicle::assert_gt(dest.size(), 0);
-	testicle::assert_lt(dest.size(), .1 * 20e3*14*5);
+	orchis::assert_gt(dest.size(), 0);
+	orchis::assert_lt(dest.size(), .1 * 20e3*14*5);
     }
 
     std::string random_string(size_t len)
@@ -88,7 +90,7 @@ namespace deflate {
 	return s;
     }
 
-    void compresses_badly(testicle::TC)
+    void compresses_badly(TC)
     {
 	Deflate d;
 	std::vector<uint8_t> dest;
@@ -97,6 +99,6 @@ namespace deflate {
 	    push(dest, d, src);
 	}
 	finish(dest, d);
-	testicle::assert_gt(dest.size(), .9 * 20e3*100);
+	orchis::assert_gt(dest.size(), .9 * 20e3*100);
     }
 }

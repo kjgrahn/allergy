@@ -4,26 +4,26 @@
  */
 #include <allergy/keys.h>
 
-#include <testicle.h>
+#include <orchis.h>
 
 namespace {
     void eq(const allergy::Keys& k,
 	    const char* s)
     {
-	testicle::assert_eq(k.str(), s);
+	orchis::assert_eq(k.str(), s);
 	allergy::Keys::const_iterator i = k.begin();
-	testicle::assert_(i==k.end());
+	orchis::assert_(i==k.end());
     }
 
     void eq(const allergy::Keys& k,
 	    const char* s,
 	    const char* k1)
     {
-	testicle::assert_eq(k.str(), s);
+	orchis::assert_eq(k.str(), s);
 	allergy::Keys::const_iterator i = k.begin();
-	testicle::assert_(i!=k.end());
-	testicle::assert_eq(*i++, k1);
-	testicle::assert_(i==k.end());
+	orchis::assert_(i!=k.end());
+	orchis::assert_eq(*i++, k1);
+	orchis::assert_(i==k.end());
     }
 
     void eq(const allergy::Keys& k,
@@ -31,35 +31,37 @@ namespace {
 	    const char* k1,
 	    const char* k2)
     {
-	testicle::assert_eq(k.str(), s);
+	orchis::assert_eq(k.str(), s);
 	allergy::Keys::const_iterator i = k.begin();
-	testicle::assert_(i!=k.end());
-	testicle::assert_eq(*i++, k1);
-	testicle::assert_(i!=k.end());
-	testicle::assert_eq(*i++, k2);
-	testicle::assert_(i==k.end());
+	orchis::assert_(i!=k.end());
+	orchis::assert_eq(*i++, k1);
+	orchis::assert_(i!=k.end());
+	orchis::assert_eq(*i++, k2);
+	orchis::assert_(i==k.end());
     }
 }
 
 namespace allergy_keys {
 
+    using orchis::TC;
+
     using allergy::Keys;
-    using testicle::assert_eq;
-    using testicle::assert_;
+    using orchis::assert_eq;
+    using orchis::assert_;
 
 
-    void construct(testicle::TC)
+    void construct(TC)
     {
 	Keys k("foo");
     }
 
-    void empty(testicle::TC)
+    void empty(TC)
     {
 	Keys k("");
 	eq(k, "");
     }
 
-    void unkeyed(testicle::TC)
+    void unkeyed(TC)
     {
 	Keys k("foo");
 	eq(k, "foo");
@@ -67,56 +69,56 @@ namespace allergy_keys {
 
     namespace keyed {
 
-	void a(testicle::TC)
+	void a(TC)
 	{
 	    const Keys k("foo [bar] baz");
 	    eq(k, "foo bar baz",
 	       "bar");
 	}
 
-	void b(testicle::TC)
+	void b(TC)
 	{
 	    const Keys k("foo [bar] baz [bat]");
 	    eq(k, "foo bar baz bat",
 	       "bar", "bat");
 	}
 
-	void c(testicle::TC)
+	void c(TC)
 	{
 	    const Keys k("foo [bar] baz [bat] fred");
 	    eq(k, "foo bar baz bat fred",
 	       "bar", "bat");
 	}
 
-	void d(testicle::TC)
+	void d(TC)
 	{
 	    const Keys k("foo[]bar");
 	    eq(k, "foobar",
 	       "");
 	}
 
-	void e(testicle::TC)
+	void e(TC)
 	{
 	    const Keys k("foo[][]bar");
 	    eq(k, "foobar",
 	       "", "");
 	}
 
-	void f(testicle::TC)
+	void f(TC)
 	{
 	    const Keys k("[foo]");
 	    eq(k, "foo", "foo");
 	}
     }
 
-    void nested(testicle::TC)
+    void nested(TC)
     {
 	const Keys k("[Vartofta-[Asaka]]");
 	eq(k, "Vartofta-Asaka",
 	   "Asaka", "Vartofta-Asaka");
     }
 
-    void misnested(testicle::TC)
+    void misnested(TC)
     {
 	const Keys k("foo] bar [b [az]");
 	eq(k, "foo] bar b az",
@@ -125,19 +127,19 @@ namespace allergy_keys {
 
     namespace curly {
 
-	void a(testicle::TC)
+	void a(TC)
 	{
 	    const Keys k("{foo}");
 	    eq(k, "", "foo");
 	}
 
-	void b(testicle::TC)
+	void b(TC)
 	{
 	    const Keys k("{foo}{bar}");
 	    eq(k, "", "foo", "bar");
 	}
 
-	void c(testicle::TC)
+	void c(TC)
 	{
 	    const Keys k("[foo]{bar}");
 	    eq(k, "foo", "foo", "bar");

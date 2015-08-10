@@ -4,7 +4,7 @@
  */
 #include <request.h>
 
-#include <testicle.h>
+#include <orchis.h>
 #include <string>
 
 
@@ -20,24 +20,25 @@ namespace {
 		       const std::string& val)
     {
 	const Blob v = req.header(prop);
-	testicle::assert_(v);
-	testicle::assert_eq(std::string(v.begin(), v.end()), val);
+	orchis::assert_(v);
+	orchis::assert_eq(std::string(v.begin(), v.end()), val);
     }
 
     void assert_no_header(const Request& req, Request::Property prop)
     {
 	const Blob v = req.header(prop);
-	testicle::assert_(!v);
+	orchis::assert_(!v);
     }
 }
 
 
 namespace req {
 
-    using testicle::assert_;
-    using testicle::assert_eq;
+    using orchis::assert_;
+    using orchis::assert_eq;
+    using orchis::TC;
 
-    void simple(testicle::TC)
+    void simple(TC)
     {
 	Request req;
 	add(req, "GET /pub/WWW/TheProject.html HTTP/1.1");
@@ -53,7 +54,7 @@ namespace req {
 	assert_no_header(req, Request::Accept);
     }
 
-    void opera(testicle::TC)
+    void opera(TC)
     {
 	Request req;
 	add(req, "GET /contentfile/imagecrop/1.7867487?cropid=f169w225 HTTP/1.1");
@@ -79,7 +80,7 @@ namespace req {
 
     namespace overflow {
 
-	void plain(testicle::TC)
+	void plain(TC)
 	{
 	    Request req;
 	    add(req, "GET foo HTTP/1.1");
@@ -92,7 +93,7 @@ namespace req {
 	    assert_(req.broken);
 	}
 
-	void continuation(testicle::TC)
+	void continuation(TC)
 	{
 	    Request req;
 	    add(req, "GET foo HTTP/1.1");
@@ -105,7 +106,7 @@ namespace req {
 	    assert_(req.broken);
 	}
 
-	void combine(testicle::TC)
+	void combine(TC)
 	{
 	    Request req;
 	    add(req, "GET foo HTTP/1.1");
@@ -120,7 +121,7 @@ namespace req {
 
     namespace reqline {
 
-	void simple(testicle::TC)
+	void simple(TC)
 	{
 	    Request req;
 	    add(req, "GET foo HTTP/1.1");
@@ -132,7 +133,7 @@ namespace req {
 	    assert_eq(req.version, Request::HTTP11);
 	}
 
-	void case_sens(testicle::TC)
+	void case_sens(TC)
 	{
 	    Request req;
 	    /* extension; the method is really case-sensitive [5.1.1] */
@@ -145,7 +146,7 @@ namespace req {
 	    assert_eq(req.version, Request::HTTP11);
 	}
 
-	void uri(testicle::TC)
+	void uri(TC)
 	{
 	    Request req;
 	    /* extension; unclear to me if the Request-URI can contain spaces */
@@ -158,7 +159,7 @@ namespace req {
 	    assert_eq(req.version, Request::HTTP11);
 	}
 
-	void unknown(testicle::TC)
+	void unknown(TC)
 	{
 	    Request req;
 	    add(req, "FOO foo HTTP/1.2");
@@ -170,7 +171,7 @@ namespace req {
 	    assert_eq(req.version, Request::UNKNOWN);
 	}
 
-	void spacing(testicle::TC)
+	void spacing(TC)
 	{
 	    Request req;
 	    add(req, "  PUT   foo bar  HTTP/1.0  ");
@@ -185,7 +186,7 @@ namespace req {
 
     namespace header {
 
-	void simple(testicle::TC)
+	void simple(TC)
 	{
 	    Request req;
 	    add(req, "GET foo HTTP/1.1");
@@ -196,7 +197,7 @@ namespace req {
 	    assert_header(req, Request::Accept_Encoding, "gzip, deflate");
 	}
 
-	void spacing(testicle::TC)
+	void spacing(TC)
 	{
 	    Request req;
 	    add(req, "GET foo HTTP/1.1");
@@ -207,7 +208,7 @@ namespace req {
 	    assert_header(req, Request::Accept_Encoding, "gzip, deflate");
 	}
 
-	void unknown(testicle::TC)
+	void unknown(TC)
 	{
 	    Request req;
 	    add(req, "GET foo HTTP/1.1");
@@ -220,7 +221,7 @@ namespace req {
 	    assert_header(req, Request::Accept_Encoding, "gzip, deflate");
 	}
 
-	void empty(testicle::TC)
+	void empty(TC)
 	{
 	    Request req;
 	    add(req, "GET foo HTTP/1.1");
@@ -233,7 +234,7 @@ namespace req {
 	    assert_header(req, Request::Accept_Encoding, "gzip, deflate");
 	}
 
-	void nonheader(testicle::TC)
+	void nonheader(TC)
 	{
 	    Request req;
 	    add(req, "GET foo HTTP/1.1");
@@ -245,7 +246,7 @@ namespace req {
 	    assert_(req.broken);
 	}
 
-	void unknown_cont(testicle::TC)
+	void unknown_cont(TC)
 	{
 	    Request req;
 	    add(req, "GET foo HTTP/1.1");
@@ -260,7 +261,7 @@ namespace req {
 	    assert_header(req, Request::Accept_Encoding, "gzip, deflate");
 	}
 
-	void continuation(testicle::TC)
+	void continuation(TC)
 	{
 	    Request req;
 	    add(req, "GET foo HTTP/1.1");
@@ -274,7 +275,7 @@ namespace req {
 	    assert_header(req, Request::Connection, "Keep-Alive");
 	}
 
-	void pseudo_cont(testicle::TC)
+	void pseudo_cont(TC)
 	{
 	    Request req;
 	    add(req, "GET foo HTTP/1.1");
@@ -286,7 +287,7 @@ namespace req {
 	    assert_header(req, Request::Accept_Encoding, "gzip, deflate");
 	}
 
-	void combine(testicle::TC)
+	void combine(TC)
 	{
 	    Request req;
 	    add(req, "GET foo HTTP/1.1");
@@ -301,7 +302,7 @@ namespace req {
 	    assert_header(req, Request::Accept_Encoding, "gzip, deflate, foo");
 	}
 
-	void combine_tricky(testicle::TC)
+	void combine_tricky(TC)
 	{
 	    Request req;
 	    add(req, "GET foo HTTP/1.1");

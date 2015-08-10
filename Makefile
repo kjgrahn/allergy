@@ -72,7 +72,7 @@ test/%.o: CPPFLAGS+=-I.
 allergy/test/%.o: CPPFLAGS+=-I.
 
 test.cc: libtest.a
-	testicle -o$@ $^
+	orchis -o$@ $^
 
 tests: test.o liboutnumbered.a liballergy.a libtest.a
 	$(CXX) $(CXXFLAGS) -o $@ test.o -L. -ltest -loutnumbered -lallergy -lz

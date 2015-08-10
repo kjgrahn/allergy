@@ -4,7 +4,7 @@
  */
 #include <log.h>
 
-#include <testicle.h>
+#include <orchis.h>
 
 void no_test_log()
 {
