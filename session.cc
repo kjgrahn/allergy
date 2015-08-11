@@ -94,6 +94,7 @@ Session::State Session::read(int fd, const timespec& t)
     if(req_queue.broken()) return DIE;
     if (req_queue.complete()) {
 	const Request req = req_queue.front();
+	Info(log) << *this << ' ' << req.method << ' ' << req.request_uri();
 	req_queue.pop();
 	response = new Response(req);
 	history.began(*response, t);
@@ -124,6 +125,7 @@ Session::State Session::write(int fd, const timespec& t)
 	    /* XXX how about broken()? */
 	    if (req_queue.complete()) {
 		const Request req = req_queue.front();
+		Info(log) << *this << ' ' << req.method << ' ' << req.request_uri();
 		req_queue.pop();
 		response = new Response(req);
 		history.began(*response, t);
