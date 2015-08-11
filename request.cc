@@ -251,10 +251,10 @@ std::ostream& Request::put(std::ostream& os) const
 
     os << method << '(' << request_uri() << ", " << version << ") {\n";
     for(unsigned i=1; i<properties.size()-1; i++) {
-	os << properties[i].prop << ": ";
+	os << "  " << properties[i].prop << ": ";
 	os.write(p + properties[i].start,
 		 properties[i+1].start - properties[i].start);
-	os << ",\n";
+	os << '\n';
     }
     return os << '}';
 }
