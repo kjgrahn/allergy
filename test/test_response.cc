@@ -4,10 +4,13 @@
  * Copyright (C) 2010, 2011 Jörgen Grahn.
  * All rights reserved.
  */
-#include <response.h>
 #include <sstream>
 
 #include <testicle.h>
+
+/*
+ * XXX These tests don't relate to anything remotely interesting.
+ */
 
 
 namespace {
