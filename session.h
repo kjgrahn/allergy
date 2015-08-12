@@ -125,6 +125,8 @@ private:
     Session(const Session&);
     Session& operator= (const Session& other);
 
+    void pop_req(const timespec& t);
+
     sockaddr_storage peer;
     History history;
     sockutil::TextReader reader;

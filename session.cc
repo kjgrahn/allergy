@@ -93,11 +93,7 @@ Session::State Session::read(int fd, const timespec& t)
     if(response) return WRITING;
     if(req_queue.broken()) return DIE;
     if (req_queue.complete()) {
-	const Request req = req_queue.front();
-	Info(log) << *this << ' ' << req.method << ' ' << req.request_uri();
-	req_queue.pop();
-	response = new Response(req);
-	history.began(*response, t);
+	pop_req(t);
 	return WRITING;
     }
 
@@ -124,16 +120,29 @@ Session::State Session::write(int fd, const timespec& t)
 
 	    /* XXX how about broken()? */
 	    if (req_queue.complete()) {
-		const Request req = req_queue.front();
-		Info(log) << *this << ' ' << req.method << ' ' << req.request_uri();
-		req_queue.pop();
-		response = new Response(req);
-		history.began(*response, t);
+		pop_req(t);
 	    }
 	}
     }
 
     return reader.eof() ? DIE : READING;
+}
+
+
+/**
+ * Ugly little helper.
+ */
+void Session::pop_req(const timespec& t)
+{
+    assert(req_queue.complete());
+    assert(!response);
+
+    const Request req = req_queue.front();
+    Info(log) << *this << ' ' << req.method << ' ' << req.request_uri();
+    std::cout << req << '\n';
+    req_queue.pop();
+    response = new Response(req);
+    history.began(*response, t);
 }
 
 
