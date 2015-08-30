@@ -138,6 +138,5 @@ test/test_lineparse.o: lineparse.h
 test/test_log.o: log.h
 test/test_request.o: request.h blob.h
 test/test_responsebuf.o: responsebuf.h
-test/test_response.o: response.h filter.h blob.h deflate.h input.h
 allergy/keys.o: allergy/keys.h
 allergy/test/test_keys.o: ./allergy/keys.h

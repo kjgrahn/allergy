@@ -48,4 +48,7 @@ private:
     Filter::P filter;
 };
 
+
+Response* response_of(const Request& request);
+
 #endif
