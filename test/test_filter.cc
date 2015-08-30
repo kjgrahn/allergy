@@ -36,8 +36,8 @@ namespace {
 
 namespace filter {
 
-    static const Blob karen("I do understand what you're saying;\n"
-			    "it just doesn't make any sense!\n");
+    static const Blob karen("But, I do understand what you're saying;\n"
+			    "it's just that it doesn't make any sense!\n");
 
     using testicle::assert_eq;
     using testicle::assert_gt;
