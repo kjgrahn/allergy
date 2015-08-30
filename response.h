@@ -7,12 +7,6 @@
 #ifndef GB_RESPONSE_H_
 #define GB_RESPONSE_H_
 
-#include <string>
-#include "filter.h"
-#include "input.h"
-
-class Request;
-
 /**
  * A complete, specific HTTP response. We have already decided /how/
  * we want to respond (using which status code and so on) and all that
@@ -35,20 +29,17 @@ class Request;
  */
 class Response {
 public:
-    explicit Response(const Request& request);
-    bool write(int fd);
-    bool done() const;
+    virtual ~Response() {}
+    virtual bool write(int fd) = 0;
+    virtual bool done() const = 0;
 
 private:
     Response(const Response&);
     Response& operator= (const Response&);
-
-    InputFd src;
-    bool done_;
-    Filter::P filter;
 };
 
 
+class Request;
 Response* response_of(const Request& request);
 
 #endif
