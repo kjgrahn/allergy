@@ -29,13 +29,15 @@
  */
 class Response {
 public:
+    Response() {}
+    Response(const Response&) = delete;
+    Response& operator= (const Response&) = delete;
     virtual ~Response() {}
+
     virtual bool write(int fd) = 0;
     virtual bool done() const = 0;
 
 private:
-    Response(const Response&);
-    Response& operator= (const Response&);
 };
 
 
