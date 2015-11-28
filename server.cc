@@ -102,10 +102,10 @@ Server::Server(int timeout)
 
 Server::~Server()
 {
-    for(std::vector<Entry>::iterator i = v.begin(); i!=v.end(); i++) {
-	if(!i->empty()) {
-	    close(i->fd);
-	    delete i->session;
+    for(Entry& e : v) {
+	if(!v.empty()) {
+	    close(e.fd);
+	    delete e.session;
 	}
     }
     close(epfd);
@@ -248,8 +248,8 @@ void Server::reconsider(const timespec& ts)
  */
 bool Server::has_clients() const
 {
-    for(std::vector<Entry>::const_iterator i = v.begin(); i!=v.end(); i++) {
-	if(i->client()) return true;
+    for(const Entry& e : v) {
+	if(e.client()) return true;
     }
     return false;
 }
