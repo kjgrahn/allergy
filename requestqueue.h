@@ -33,8 +33,7 @@ private:
     RequestQueue(const RequestQueue&);
     RequestQueue& operator= (const RequestQueue&);
 
-    typedef std::queue<Request> Val;
-    Val val;
+    std::queue<Request> val;
 };
 
 #endif

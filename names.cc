@@ -83,7 +83,7 @@ namespace {
 Request::Property Names::lookup(const char* a, const char* b) const
 {
     const std::string s(a, b);
-    Map::const_iterator i = map.find(s);
+    auto i = map.find(s);
     if(i==map.end()) {
 	return Request::UNKNOWN;
     }

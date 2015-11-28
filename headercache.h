@@ -7,7 +7,7 @@
 #ifndef GB_HCACHE_H_
 #define GB_HCACHE_H_
 
-#include <tr1/unordered_map>
+#include <unordered_map>
 #include <string>
 
 /**
@@ -33,16 +33,15 @@ public:
     const T& insert(const char* a, const char* b);
 
 private:
-    typedef std::tr1::unordered_map<std::string, T> Map;
+    std::unordered_map<std::string, T> map;
     static const size_t THRESHOLD = 50;
-    Map map;
 };
 
 
 template <class T>
 const T& HeaderCache<T>::insert(const std::string& s)
 {
-    typename Map::iterator i = map.find(s);
+    auto i = map.find(s);
     if(i!=map.end()) {
 	return i->second;
     }

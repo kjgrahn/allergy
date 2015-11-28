@@ -9,7 +9,7 @@
 
 #include "request.h"
 
-#include <tr1/unordered_map>
+#include <unordered_map>
 #include <string>
 
 /**
@@ -27,8 +27,7 @@ public:
     Request::Property lookup(const char* a, const char* b) const;
 
 private:
-    typedef std::tr1::unordered_map<std::string, Request::Property> Map;
-    Map map;
+    std::unordered_map<std::string, Request::Property> map;
 };
 
 #endif
