@@ -5,5 +5,5 @@ outnumbered
 test.cc
 tests
 TAGS
-Makefile.bak
+dep/
 gmon.out

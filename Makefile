@@ -100,42 +100,24 @@ clean:
 	$(RM) lib*.a
 	$(RM) test.cc tests
 	$(RM) Makefile.bak TAGS
+	$(RM) -r dep/
 
 love:
 	@echo "not war?"
 
-# DO NOT DELETE
+$(shell mkdir -p dep/{allergy/,}test)
+DEPFLAGS=-MT $@ -MMD -MP -MF dep/$*.Td
+COMPILE.cc=$(CXX) $(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c
 
-date.o: date.h blob.h
-deflate.o: deflate.h blob.h error.h
-filter.o: filter.h blob.h deflate.h error.h
-httpd.o: version.h error.h server.h session.h times.h textread.h
-httpd.o: requestqueue.h request.h blob.h response.h
-input.o: input.h
-log.o: log.h
-magic.o: version.h
-names.o: names.h request.h blob.h
-request.o: request.h blob.h names.h lineparse.h
-requestqueue.o: requestqueue.h request.h blob.h
-responsebuf.o: responsebuf.h
-response.o: response.h request.h blob.h filter.h deflate.h date.h
-server.o: server.h session.h times.h textread.h requestqueue.h request.h
-server.o: blob.h response.h error.h
-session.o: session.h times.h textread.h requestqueue.h request.h blob.h
-session.o: response.h log.h
-sessionhistory.o: session.h times.h textread.h requestqueue.h request.h
-sessionhistory.o: blob.h response.h
-textread.o: textread.h
-times.o: times.h
-version.o: version.h
-test/pipe.o: test/pipe.h blob.h
-test/test_cache.o: ./headercache.h
-test/test_date.o: date.h
-test/test_deflate.o: deflate.h blob.h
-test/test_filter.o: filter.h blob.h deflate.h test/pipe.h
-test/test_lineparse.o: lineparse.h
-test/test_log.o: log.h
-test/test_request.o: request.h blob.h
-test/test_responsebuf.o: responsebuf.h
-allergy/keys.o: allergy/keys.h
-allergy/test/test_keys.o: ./allergy/keys.h
+%.o: %.cc
+	$(COMPILE.cc) $(OUTPUT_OPTION) $<
+	@mv dep/$*.{Td,d}
+
+dep/%.d: ;
+dep/test/%.d: ;
+dep/allergy/%.d: ;
+dep/allergy/test/%.d: ;
+-include dep/*.d
+-include dep/test/*.d
+-include dep/allergy/*.d
+-include dep/allergy/test/*.d
