@@ -1,30 +1,29 @@
 /* -*- c++ -*-
  *
- * Copyright (c) 2012, 2013 Jörgen Grahn
+ * Copyright (c) 2012, 2013, 2015 Jörgen Grahn
  * All rights reserved.
  *
  */
 #ifndef GB_RESPONSE_H_
 #define GB_RESPONSE_H_
 
+#include "backlog.h"
+#include "filter.h"
+#include "entity.h"
+
 /**
- * A complete, specific HTTP response. We have already decided /how/
- * we want to respond (using which status code and so on) and all that
- * is left is to respond.
+ * A complete, specific HTTP response in the form of a state machine.
+ * tick(fd) pushes it towards completion, until done() turns true.
  *
- * If it hadn't been for our poll-driven/nonblocking architecture,
- * this could have been a straight function call: write headers;
- * read from file and write to socket until we're done.
- *
- * As it is, we have to be prepared for any socket write to be partial
- * or EWOULDBLOCK, in which case we have to be prepared to remember
- * our state and resume later.
- *
- * To summarize, write(fd) means try one socket write operation, and
- * the result is one of:
- * - ok to write more immediately
- * - wait for the socket to turn writable, then continue writing
- * - done; the response has been written completely.
+ *   +---------+                             +--------+
+ *   | headers |-----------------+---------->| fd     |
+ *   +---------+     +--------+  |           |        |
+ *   | Entity  +---->| Filter +----+-------->|        |
+ *   |         |     |        |  v v         |        |
+ *   +---------+     +--------+ +------+     |        |
+ *                              | Back +---->|        |
+ *                              | log  |     |        |
+ *                              +------+     +--------+
  *
  */
 class Response {
@@ -34,10 +33,13 @@ public:
     Response& operator= (const Response&) = delete;
     virtual ~Response() {}
 
-    virtual bool write(int fd) = 0;
-    virtual bool done() const = 0;
+    bool tick(int fd);
+    bool done() const;
 
 private:
+    Backlog backlog;
+    Filter::P filter;
+    Entity entity;
 };
 
 

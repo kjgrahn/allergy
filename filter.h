@@ -7,33 +7,12 @@
 #ifndef GB_FILTER_H_
 #define GB_FILTER_H_
 
-#include "blob.h"
+#include "backlog.h"
 #include "deflate.h"
 
 #include <vector>
 
 
-/**
- * Slightly funny name for a thing used to write to a nonblocking
- * socket, and which stores unwritten parts until the next write.
- */
-class Backlog {
-public:
-    Backlog() {}
-    bool empty() const { return v.empty(); }
-    size_t write(int fd);
-    size_t write(int fd, const Blob& a);
-    size_t write(int fd, const Blob& a, const Blob& b);
-    size_t write(int fd, const Blob& a, const Blob& b, const Blob& c);
-
-    typedef std::vector<char> Buf;
-
-private:
-    Backlog(const Backlog&);
-    Backlog& operator= (const Backlog&);
-
-    Buf v;
-};
 
 
 /**

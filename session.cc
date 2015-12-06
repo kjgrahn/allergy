@@ -109,7 +109,7 @@ Session::State Session::write(int fd, const timespec& t)
 {
     while(response) {
 	history.wrote(t);
-	if(!response->write(fd)) {
+	if(!response->tick(fd)) {
 	    return WRITING;
 	}
 

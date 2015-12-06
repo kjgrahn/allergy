@@ -37,6 +37,7 @@ liboutnumbered.a: request.o
 liboutnumbered.a: date.o
 liboutnumbered.a: names.o
 liboutnumbered.a: filter.o
+liboutnumbered.a: backlog.o
 liboutnumbered.a: chunk.o
 liboutnumbered.a: deflate.o
 liboutnumbered.a: response.o
@@ -45,7 +46,7 @@ liboutnumbered.a: join.o
 liboutnumbered.a: glob.o
 	$(AR) -r $@ $^
 
-filter.o: CXXFLAGS+=-Wno-old-style-cast
+backlog.o: CXXFLAGS+=-Wno-old-style-cast
 deflate.o: CXXFLAGS+=-Wno-old-style-cast
 httpd.o: CXXFLAGS+=-Wno-old-style-cast
 
