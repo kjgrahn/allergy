@@ -36,12 +36,12 @@ liboutnumbered.a: requestqueue.o
 liboutnumbered.a: request.o
 liboutnumbered.a: date.o
 liboutnumbered.a: names.o
+liboutnumbered.a: entity.o
 liboutnumbered.a: filter.o
 liboutnumbered.a: backlog.o
 liboutnumbered.a: chunk.o
 liboutnumbered.a: deflate.o
 liboutnumbered.a: response.o
-liboutnumbered.a: input.o
 liboutnumbered.a: join.o
 liboutnumbered.a: glob.o
 	$(AR) -r $@ $^
