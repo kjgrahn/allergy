@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include <cstdlib>
 #include <vector>
+#include <array>
 #include <string>
 #include <cstring>
 
@@ -25,23 +26,27 @@ public:
 	: a(reinterpret_cast<const uint8_t*>(a)),
 	  n(n)
     {}
+    Blob(const char* a, const char* b)
+	: Blob(a, b-a)
+    {}
     Blob(const uint8_t* a, size_t n) : a(a), n(n) {}
     Blob(const uint8_t* a,
 	 const uint8_t* b)
-	: a(a),
-	  n(b-a)
+	: Blob(a, b-a)
     {}
     explicit Blob(const std::vector<uint8_t>& v)
-	: a(&v[0]),
+	: Blob(v.data(), v.size())
+    {}
+    template<std::size_t n>
+    explicit Blob(const std::array<uint8_t, n>& v)
+	: a(v.data()),
 	  n(v.size())
     {}
     explicit Blob(const std::string& s)
-	: a(reinterpret_cast<const uint8_t*>(s.c_str())),
-	  n(s.size())
+	: Blob(s.data(), s.size())
     {}
     explicit Blob(const char* s)
-	: a(reinterpret_cast<const uint8_t*>(s)),
-	  n(std::strlen(s))
+	: Blob(s, std::strlen(s))
     {}
 
     const uint8_t* begin() const { return a; }
