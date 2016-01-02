@@ -1,6 +1,6 @@
 /* -*- c++ -*-
  *
- * Copyright (c) 2012, 2013 Jörgen Grahn
+ * Copyright (c) 2012, 2013, 2016 Jörgen Grahn
  * All rights reserved.
  *
  */
@@ -11,8 +11,6 @@
 #include "deflate.h"
 
 #include <vector>
-
-
 
 
 /**
@@ -55,7 +53,12 @@ namespace Filter {
      */
     class Plain {
     public:
-	Plain() {}
+	explicit Plain(Backlog& backlog)
+	    : backlog(backlog)
+	{}
+	Plain(const Plain&) = delete;
+	Plain& operator= (const Plain&) = delete;
+
 	bool write(int fd) {
 	    return backlog.write(fd)==0;
 	}
@@ -73,10 +76,7 @@ namespace Filter {
 	}
 
     private:
-	Plain(const Plain&);
-	Plain& operator= (const Plain&);
-
-	Backlog backlog;
+	Backlog& backlog;
     };
 
 
@@ -87,15 +87,17 @@ namespace Filter {
     template<class Next>
     class Chunked {
     public:
-	Chunked() {}
+	explicit Chunked(Backlog& backlog)
+	    : next(backlog)
+	{}
+	Chunked(const Chunked&) = delete;
+	Chunked& operator= (const Chunked&) = delete;
+
 	bool write(int fd) { return next.write(fd); }
 	bool write(int fd, const Blob& a);
 	bool end(int fd);
 
     private:
-	Chunked(const Chunked&);
-	Chunked& operator= (const Chunked&);
-
 	Next next;
     };
 
@@ -106,16 +108,19 @@ namespace Filter {
     template<class Next>
     class Zlib {
     public:
-	Zlib() : ending(false) {}
+	explicit Zlib(Backlog& backlog)
+	    : next(backlog),
+	      ending(false)
+	{}
+	Zlib(const Zlib&) = delete;
+	Zlib& operator= (const Zlib&) = delete;
+
 	bool write(int fd);
 	bool write(int fd, const Blob& a);
 	bool write(int fd, const Blob& a, const Blob& b);
 	bool end(int fd);
 
     private:
-	Zlib(const Zlib&);
-	Zlib& operator= (const Zlib&);
-
 	Next next;
 	Deflate compress;
 	bool ending;

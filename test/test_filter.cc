@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Jörgen Grahn.
+ * Copyright (C) 2013, 2016 Jörgen Grahn.
  * All rights reserved.
  */
 #include <filter.h>
@@ -48,7 +48,8 @@ namespace filter {
 	void simple(TC)
 	{
 	    Pipe p;
-	    Filter::P f;
+	    Backlog backlog;
+	    Filter::P f(backlog);
 	    assert_eq(write(f, p, "foo"), true);
 	    p.assert_read("foo");
 	    p.assert_empty();
@@ -63,7 +64,8 @@ namespace filter {
 	void block(TC)
 	{
 	    Pipe p;
-	    Filter::P f;
+	    Backlog backlog;
+	    Filter::P f(backlog);
 
 	    size_t n = 0;
 	    while(f.write(p.fd(), karen, karen)) {
@@ -90,7 +92,8 @@ namespace filter {
 	void end(TC)
 	{
 	    Pipe p;
-	    Filter::P f;
+	    Backlog backlog;
+	    Filter::P f(backlog);
 
 	    size_t n = 0;
 	    while(f.write(p.fd(), karen, karen, karen)) {
@@ -116,7 +119,8 @@ namespace filter {
 	void simple(TC)
 	{
 	    Pipe p;
-	    Filter::C f;
+	    Backlog backlog;
+	    Filter::C f(backlog);
 	    assert_eq(write(f, p, "foo"), true);
 	    p.assert_read("3\r\n"
 			  "foo\r\n");
@@ -137,7 +141,8 @@ namespace filter {
 	void block(TC)
 	{
 	    Pipe p;
-	    Filter::C f;
+	    Backlog backlog;
+	    Filter::C f(backlog);
 
 	    size_t n = 0;
 	    while(f.write(p.fd(), karen)) {
@@ -177,7 +182,8 @@ namespace filter {
 	void simple(TC)
 	{
 	    Pipe p;
-	    Filter::Z f;
+	    Backlog backlog;
+	    Filter::Z f(backlog);
 
 	    while(f.write(p.fd(), Blob(random_string(40)))) ;
 	    while(p.drain(10000)) ;
