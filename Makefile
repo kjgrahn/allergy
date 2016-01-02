@@ -37,6 +37,7 @@ liboutnumbered.a: request.o
 liboutnumbered.a: date.o
 liboutnumbered.a: names.o
 liboutnumbered.a: filter.o
+liboutnumbered.a: chunk.o
 liboutnumbered.a: deflate.o
 liboutnumbered.a: response.o
 liboutnumbered.a: input.o
@@ -56,10 +57,10 @@ magic: magic.o liboutnumbered.a
 	$(CXX) $(CXXFLAGS) -o $@ magic.o -L. -loutnumbered -lmagic
 
 #libtest.a: test/test_response.o
-#libtest.a: test/test_responsebuf.o
 libtest.a: test/test_request.o
 libtest.a: test/test_filter.o
 libtest.a: test/test_blob.o
+libtest.a: test/test_chunk.o
 libtest.a: test/test_log.o
 libtest.a: test/pipe.o
 libtest.a: test/test_deflate.o
@@ -84,7 +85,7 @@ tests: test.o liboutnumbered.a liballergy.a libtest.a
 %.5.ps : %.5
 	groff -man $< >$@
 
-.PHONY: tags
+.PHONY: tags TAGS
 tags: TAGS
 TAGS:
 	etags *.cc *.h
