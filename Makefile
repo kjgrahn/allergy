@@ -59,6 +59,7 @@ magic: magic.o liboutnumbered.a
 #libtest.a: test/test_responsebuf.o
 libtest.a: test/test_request.o
 libtest.a: test/test_filter.o
+libtest.a: test/test_blob.o
 libtest.a: test/test_log.o
 libtest.a: test/pipe.o
 libtest.a: test/test_deflate.o

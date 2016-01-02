@@ -55,6 +55,10 @@ public:
     bool empty() const { return !n; }
     size_t size() const { return n; }
     operator const void*() const { return empty()? 0: this; }
+    bool operator== (const Blob& other) const {
+	return size()==other.size() &&
+	    std::equal(begin(), end(), other.begin());
+    }
 
 private:
     const uint8_t* a;
