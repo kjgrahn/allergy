@@ -12,7 +12,7 @@
 #include <sys/stat.h>
 
 
-Entity::String::String(const char* s)
+entity::String::String(const char* s)
     : s(s),
       i(0)
 {}
@@ -21,7 +21,7 @@ Entity::String::String(const char* s)
  * Return the next chunk, or an empty one if there's nothing more to
  * read.
  */
-Blob Entity::String::tick()
+Blob entity::String::tick()
 {
     size_t i0 = i;
     i = std::min(i + 8192, s.size());
@@ -40,13 +40,13 @@ namespace {
     }
 }
 
-Entity::File::File(int fd)
+entity::File::File(int fd)
     : fd(fd),
       statsize(stat_size(fd)),
       acc(0)
 {}
 
-Blob Entity::File::tick()
+Blob entity::File::tick()
 {
     ssize_t rc = read(fd, v.data(), v.size());
     if(rc==-1) throw SessionError();

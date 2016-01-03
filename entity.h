@@ -11,7 +11,7 @@
 
 class Blob;
 
-namespace Entity {
+namespace entity {
 
     /**
      * A fixed string as a HTML entity: a size, and a way to emit its
