@@ -1,0 +1,176 @@
+GET /~grahn/scanned/ HTTP/1.1
+User-Agent: Opera/9.80 (X11; Linux x86_64) Presto/2.12.388 Version/12.16
+Host: tuva-v4
+Accept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/webp, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1
+Accept-Language: en,sv;q=0.9
+Accept-Encoding: gzip, deflate
+Connection: Keep-Alive
+
+
+HTTP/1.1 200 OK
+Date: Mon, 04 Aug 2014 22:05:06 GMT
+Server: Apache/2.2.22 (Debian)
+Last-Modified: Tue, 02 Apr 2013 19:08:26 GMT
+ETag: "24723e-dce-4d9657644fe80"
+Accept-Ranges: bytes
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 949
+Keep-Alive: timeout=5, max=100
+Connection: Keep-Alive
+Content-Type: text/html
+
+GET /~grahn/plain.css HTTP/1.1
+User-Agent: Opera/9.80 (X11; Linux x86_64) Presto/2.12.388 Version/12.16
+Host: tuva-v4
+Accept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/webp, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1
+Accept-Language: en,sv;q=0.9
+Accept-Encoding: gzip, deflate
+Connection: Keep-Alive
+
+
+HTTP/1.1 200 OK
+Date: Mon, 04 Aug 2014 22:05:06 GMT
+Server: Apache/2.2.22 (Debian)
+Last-Modified: Fri, 02 Jul 2010 10:06:40 GMT
+ETag: "1d873a-a0d-48a64be3eec00"
+Accept-Ranges: bytes
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 1069
+Keep-Alive: timeout=5, max=99
+Connection: Keep-Alive
+Content-Type: text/css
+
+
+GET /favicon.ico HTTP/1.1
+User-Agent: Opera/9.80 (X11; Linux x86_64) Presto/2.12.388 Version/12.16
+Host: tuva-v4
+Accept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/webp, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1
+Accept-Language: en,sv;q=0.9
+Accept-Encoding: gzip, deflate
+Connection: Keep-Alive
+
+
+HTTP/1.1 404 Not Found
+Date: Mon, 04 Aug 2014 22:05:06 GMT
+Server: Apache/2.2.22 (Debian)
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 268
+Keep-Alive: timeout=5, max=100
+Connection: Keep-Alive
+Content-Type: text/html; charset=iso-8859-1
+
+HTTP/1.1 200 OK
+Date: Mon, 04 Aug 2014 22:05:20 GMT
+Server: Apache/2.2.22 (Debian)
+Last-Modified: Mon, 14 Jul 2014 14:47:53 GMT
+ETag: "439e2c-6f4d-4fe286033d840"
+Accept-Ranges: bytes
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 3739
+Keep-Alive: timeout=5, max=100
+Connection: Keep-Alive
+Content-Type: text/html
+
+GET /~grahn/scanned/2003.1/thumb/030118_02.jpg HTTP/1.1
+User-Agent: Opera/9.80 (X11; Linux x86_64) Presto/2.12.388 Version/12.16
+Host: tuva-v4
+Accept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/webp, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1
+Accept-Language: en,sv;q=0.9
+Accept-Encoding: gzip, deflate
+Connection: Keep-Alive
+
+GET /~grahn/scanned/2003.1/thumb/030119_08.jpg HTTP/1.1
+User-Agent: Opera/9.80 (X11; Linux x86_64) Presto/2.12.388 Version/12.16
+Host: tuva-v4
+Accept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/webp, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1
+Accept-Language: en,sv;q=0.9
+Accept-Encoding: gzip, deflate
+Connection: Keep-Alive
+
+GET /~grahn/scanned/2003.1/thumb/030215_44.jpg HTTP/1.1
+User-Agent: Opera/9.80 (X11; Linux x86_64) Presto/2.12.388 Version/12.16
+Host: tuva-v4
+Accept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/webp, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1
+Accept-Language: en,sv;q=0.9
+Accept-Encoding: gzip, deflate
+Connection: Keep-Alive
+
+HTTP/1.1 200 OK
+Date: Mon, 04 Aug 2014 22:05:20 GMT
+Server: Apache/2.2.22 (Debian)
+Last-Modified: Tue, 24 Jun 2014 17:29:29 GMT
+ETag: "4420bb-638-4fc984d4d9040"
+Accept-Ranges: bytes
+Content-Length: 1592
+Keep-Alive: timeout=5, max=99
+Connection: Keep-Alive
+Content-Type: image/jpeg
+
+HTTP/1.1 200 OK
+Date: Mon, 04 Aug 2014 22:05:20 GMT
+Server: Apache/2.2.22 (Debian)
+Last-Modified: Sat, 05 Jul 2008 17:55:25 GMT
+ETag: "24ef05-26d-4514a8bfebd40"
+Accept-Ranges: bytes
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 238
+Keep-Alive: timeout=5, max=100
+Connection: Keep-Alive
+Content-Type: text/css
+
+HTTP/1.1 200 OK
+Date: Mon, 04 Aug 2014 22:05:20 GMT
+Server: Apache/2.2.22 (Debian)
+Last-Modified: Tue, 24 Jun 2014 17:29:29 GMT
+ETag: "4420b7-617-4fc984d4d9040"
+Accept-Ranges: bytes
+Content-Length: 1559
+Keep-Alive: timeout=5, max=100
+Connection: Keep-Alive
+Content-Type: image/jpeg
+
+GET /~grahn/scanned/2003.2/ HTTP/1.1
+User-Agent: Opera/9.80 (X11; Linux x86_64) Presto/2.12.388 Version/12.16
+Host: tuva-v4
+Accept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/webp, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1
+Accept-Language: en,sv;q=0.9
+Accept-Encoding: gzip, deflate
+Connection: Keep-Alive
+
+
+HTTP/1.1 200 OK
+Date: Mon, 04 Aug 2014 22:05:44 GMT
+Server: Apache/2.2.22 (Debian)
+Last-Modified: Mon, 14 Jul 2014 14:47:55 GMT
+ETag: "43de01-a746-4fe2860525cc0"
+Accept-Ranges: bytes
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 6006
+Keep-Alive: timeout=5, max=100
+Connection: Keep-Alive
+Content-Type: text/html
+
+GET /~grahn/scanned/2003.2/030405_08.jpg HTTP/1.1
+User-Agent: Opera/9.80 (X11; Linux x86_64) Presto/2.12.388 Version/12.16
+Host: tuva-v4
+Accept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/webp, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1
+Accept-Language: en,sv;q=0.9
+Accept-Encoding: gzip, deflate
+Connection: Keep-Alive
+
+HTTP/1.1 200 OK
+Date: Mon, 04 Aug 2014 22:06:14 GMT
+Server: Apache/2.2.22 (Debian)
+Last-Modified: Tue, 24 Jun 2014 00:07:20 GMT
+ETag: "33f3d9-2e561-4fc89be48be00"
+Accept-Ranges: bytes
+Content-Length: 189793
+Keep-Alive: timeout=5, max=100
+Connection: Keep-Alive
+Content-Type: image/jpeg

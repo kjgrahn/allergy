@@ -9,6 +9,7 @@
 
 #include "backlog.h"
 #include "filter.h"
+#include "chunk.h"
 #include "entity.h"
 
 /**
@@ -28,7 +29,9 @@
  */
 class Response {
 public:
-    Response() {}
+    Response()
+	: filter(backlog)
+    {}
     Response(const Response&) = delete;
     Response& operator= (const Response&) = delete;
     virtual ~Response() {}
@@ -39,7 +42,8 @@ public:
 private:
     Backlog backlog;
     Filter::P filter;
-    Entity entity;
+    Chunk chunk;
+    entity::String entity;
 };
 
 
