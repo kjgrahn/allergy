@@ -54,6 +54,7 @@ liballergy.a: entity/string.o
 liballergy.a: entity/file.o
 liballergy.a: allergy/keys.o
 liballergy.a: allergy/photo.o
+liballergy.a: allergy/files...o
 	$(AR) -r $@ $^
 
 backlog.o: CXXFLAGS+=-Wno-old-style-cast
@@ -82,10 +83,12 @@ libtest.a: test/test_glob.o
 libtest.a: test/test_regex.o
 libtest.a: allergy/test/test_keys.o
 libtest.a: allergy/test/test_photo.o
+libtest.a: allergy/test/test_files.o
 	$(AR) -r $@ $^
 
 test/%.o: CPPFLAGS+=-I.
 allergy/test/%.o: CPPFLAGS+=-I.
+allergy/test/test_files.o: CPPFLAGS+=-Iallergy
 
 test.cc: libtest.a
 	orchis -o$@ $^
