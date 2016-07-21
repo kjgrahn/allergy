@@ -50,6 +50,7 @@ public:
     };
     const Position& position() const;
     Position prev_position() const;
+    bool first() const { return position().line == 1; }
 
 private:
     Files(const Files&);
