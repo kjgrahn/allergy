@@ -30,7 +30,8 @@ namespace allergy {
 	Entry(const std::string& filename,
 	      It begin,
 	      It end,
-	      const Timestamp& timestamp = {});
+	      const Timestamp& timestamp,
+	      const std::string& ibid);
 
 	std::string filename;
 	Timestamp timestamp;
@@ -40,9 +41,10 @@ namespace allergy {
 
     template <class It>
     Entry::Entry(const std::string& filename,
-	  It begin,
-	  It end,
-	  const Timestamp& timestamp)
+		 It begin,
+		 It end,
+		 const Timestamp& timestamp,
+		 const std::string& ibid)
 	: filename(filename),
 	  timestamp(timestamp)
     {
@@ -54,6 +56,7 @@ namespace allergy {
 		keywords.insert(key);
 	    }
 	}
+	if (text=="ibid" && ibid.size()) text = ibid;
     }
 
     std::ostream& operator<< (std::ostream& os, const Entry& val);

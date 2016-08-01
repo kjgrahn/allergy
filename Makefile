@@ -11,7 +11,6 @@ CPPFLAGS=
 
 .PHONY: all
 all: allergyd
-all: parse
 all: tests
 
 .PHONY: install
@@ -53,6 +52,7 @@ liballergy.a: glob.o
 liballergy.a: allergy/thumbnail.o
 liballergy.a: entity/string.o
 liballergy.a: entity/file.o
+liballergy.a: allergy/index.o
 liballergy.a: allergy/entry.o
 liballergy.a: allergy/timestamp.o
 liballergy.a: allergy/keys.o
@@ -70,9 +70,6 @@ allergyd: httpd.o liballergy.a
 magic: magic.o liballergy.a
 	$(CXX) $(CXXFLAGS) -o $@ magic.o -L. -lallergy -lmagic
 
-parse: allergy/parse.o liballergy.a
-	$(CXX) $(CXXFLAGS) -o $@ allergy/parse.o -L. -lallergy
-
 #libtest.a: test/test_response.o
 libtest.a: test/test_request.o
 libtest.a: test/test_filter.o
@@ -87,6 +84,7 @@ libtest.a: test/test_lineparse.o
 libtest.a: test/test_join.o
 libtest.a: test/test_glob.o
 libtest.a: test/test_regex.o
+libtest.a: allergy/test/test_index.o
 libtest.a: allergy/test/test_timestamp.o
 libtest.a: allergy/test/test_keys.o
 libtest.a: allergy/test/test_photo.o
@@ -119,7 +117,7 @@ depend:
 
 .PHONY: clean
 clean:
-	$(RM) allergyd magic parse
+	$(RM) allergyd magic
 	$(RM) {,entity/,test/}*.o
 	$(RM) allergy/{,test/}*.o
 	$(RM) *.ps
