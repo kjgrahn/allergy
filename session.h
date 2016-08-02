@@ -63,7 +63,7 @@ std::ostream& operator<< (std::ostream& os, const History& val)
  * session using nonblocking I/O.
  *
  * The logical view is two possibly infinite sequences of requests and
- * responses. A read may give use 0--N complete requests. A write may
+ * responses. A read may give us 0--N complete requests. A write may
  * complete a response.
  *
  *     +--------           +--------
