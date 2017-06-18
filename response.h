@@ -34,7 +34,7 @@ public:
     {}
     Response(const Response&) = delete;
     Response& operator= (const Response&) = delete;
-    virtual ~Response() {}
+    virtual ~Response() = default;
 
     bool tick(int fd);
     bool done() const;

@@ -102,8 +102,8 @@ public:
 	Content_Range,
 	Content_Type
     };
-    typedef Property Method;
-    typedef Property HTTPVersion;
+    using Method = Property;
+    using HTTPVersion = Property;
 
     Request();
 

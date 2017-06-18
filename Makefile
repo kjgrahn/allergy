@@ -28,6 +28,7 @@ checkv: tests
 liboutnumbered.a: version.o
 liboutnumbered.a: log.o
 liboutnumbered.a: server.o
+liboutnumbered.a: content.o
 liboutnumbered.a: times.o
 liboutnumbered.a: session.o
 liboutnumbered.a: sessionhistory.o
