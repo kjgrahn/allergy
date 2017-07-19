@@ -41,6 +41,7 @@ liboutnumbered.a: chunk.o
 liboutnumbered.a: deflate.o
 liboutnumbered.a: response.o
 liboutnumbered.a: input.o
+liboutnumbered.a: join.o
 	$(AR) -r $@ $^
 
 filter.o: CXXFLAGS+=-Wno-old-style-cast
@@ -67,6 +68,7 @@ libtest.a: test/test_deflate.o
 libtest.a: test/test_cache.o
 libtest.a: test/test_date.o
 libtest.a: test/test_lineparse.o
+libtest.a: test/test_join.o
 libtest.a: allergy/test/test_keys.o
 	$(AR) -r $@ $^
 
