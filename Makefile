@@ -42,6 +42,7 @@ liboutnumbered.a: deflate.o
 liboutnumbered.a: response.o
 liboutnumbered.a: input.o
 liboutnumbered.a: join.o
+liboutnumbered.a: glob.o
 	$(AR) -r $@ $^
 
 filter.o: CXXFLAGS+=-Wno-old-style-cast
@@ -69,17 +70,20 @@ libtest.a: test/test_cache.o
 libtest.a: test/test_date.o
 libtest.a: test/test_lineparse.o
 libtest.a: test/test_join.o
-libtest.a: allergy/test/test_keys.o
+libtest.a: test/test_glob.o
+	$(AR) -r $@ $^
+
+liballergytest.a: allergy/test/test_keys.o
 	$(AR) -r $@ $^
 
 test/%.o: CPPFLAGS+=-I.
 allergy/test/%.o: CPPFLAGS+=-I.
 
-test.cc: libtest.a
+test.cc: libtest.a liballergytest.a
 	orchis -o$@ $^
 
-tests: test.o liboutnumbered.a liballergy.a libtest.a
-	$(CXX) $(CXXFLAGS) -o $@ test.o -L. -ltest -loutnumbered -lallergy -lz
+tests: test.o liboutnumbered.a liballergy.a libtest.a liballergytest.a
+	$(CXX) $(CXXFLAGS) -o $@ test.o -L. -ltest -lallergytest -loutnumbered -lallergy -lz
 
 %.1.ps : %.1
 	groff -man $< >$@
