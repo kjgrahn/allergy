@@ -71,6 +71,7 @@ libtest.a: test/test_date.o
 libtest.a: test/test_lineparse.o
 libtest.a: test/test_join.o
 libtest.a: test/test_glob.o
+libtest.a: test/test_regex.o
 	$(AR) -r $@ $^
 
 liballergytest.a: allergy/test/test_keys.o
