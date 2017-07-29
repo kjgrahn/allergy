@@ -23,6 +23,7 @@
 #include "error.h"
 #include "server.h"
 #include "session.h"
+#include "content.h"
 
 
 namespace {
@@ -116,7 +117,7 @@ namespace {
     /**
      * The main event loop.
      */
-    bool loop(const int lfd)
+    bool loop(const Content& content, const int lfd)
     {
 	Server server(20*1000);
 	server.add(lfd);
@@ -239,6 +240,8 @@ int main(int argc, char ** argv)
 	return 1;
     }
 
+    Content content;
+
     ignore_sigpipe();
 
     if(daemonize) {
@@ -250,7 +253,7 @@ int main(int argc, char ** argv)
 	}
     }
 
-    loop(lfd);
+    loop(content, lfd);
 
     return 0;
 }
