@@ -43,25 +43,52 @@
  */
 class Response {
 public:
-    Response()
-	: filter(backlog)
-    {}
     Response(const Response&) = delete;
     Response& operator= (const Response&) = delete;
     virtual ~Response() = default;
 
-    bool tick(int fd);
-    bool done() const;
+    virtual bool tick(int fd) = 0;
+    virtual bool done() const = 0;
 
-private:
+protected:
     Backlog backlog;
-    Filter::P filter;
-    Chunk chunk;
-    entity::String entity;
 };
 
+#if 0
+template <class E, class F>
+bool Response<E, F>::tick(int fd)
+{
+    if(!backlog.empty()) {
+	backlog.write(fd);
+    }
+    else if(!headers.empty()) {
+    }
 
-class Request;
-Response* response_of(const Request& request);
+    return !backlog.empty();
+}
+#endif
+
+namespace response {
+
+    class String: public Response {
+    public:
+	String();
+
+	bool tick(int fd) override;
+	virtual bool done() const override;
+
+    protected:
+	Filter::P hfilter;
+	Filter::P efilter;
+
+	entity::String headers;
+	entity::String entity;
+    };
+
+    class Error : public String {
+    public:
+	explicit Error(const char* status);
+    };
+}
 
 #endif

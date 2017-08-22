@@ -8,6 +8,7 @@
 #define GB_ENTITY_H_
 
 #include <array>
+#include <string>
 
 class Blob;
 
@@ -19,11 +20,13 @@ namespace entity {
      */
     class String {
     public:
+	String();
 	explicit String(const char* s);
+	explicit String(const std::string& s);
 	size_t size() const { return s.size(); }
 	Blob tick();
     private:
-	const std::string s;
+	std::string s;
 	size_t i;
     };
 

@@ -22,9 +22,10 @@ namespace {
 
     bool wrong_host(const Blob&) { return false; }
 
-    Response* resp501() { return nullptr;}
-    Response* resp400() { return nullptr;}
-    Response* resp404() { return nullptr;}
+    response::Error* resp501() { return new response::Error("501 Not Implemented"); }
+    response::Error* resp400() { return new response::Error("400 Bad Request"); }
+    response::Error* resp404() { return new response::Error("404 Not Found"); }
+
     Response* frontpage() { return resp404(); }
     Response* by_date() { return resp404(); }
     Response* year(unsigned yyyy) { return resp404(); }
