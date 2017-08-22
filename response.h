@@ -9,12 +9,14 @@
 
 #include "backlog.h"
 #include "filter.h"
-#include "chunk.h"
 #include "entity.h"
+
 
 /**
  * A complete, specific HTTP response in the form of a state machine.
  * tick(fd) pushes it towards completion, until done() turns true.
+ *
+ * tick() returns true if the fd goes blocked and the backlog is now non-empty.
  *
  *   +---------+                             +--------+
  *   | headers |-----------------+---------->| fd     |
@@ -25,6 +27,18 @@
  *                              | Back +---->|        |
  *                              | log  |     |        |
  *                              +------+     +--------+
+ *
+ * Or put differently:
+ *
+ *     headers --> filter::P -+---> backlog ---> fd
+ *     entity ---> filter ----'
+ *
+ * At different points in time, there may be data in:
+ * - the backlog
+ * - the headers
+ * - the entity
+ * - the entity's filter (e.g if it's filter::Z)
+ * If they're all empty, the request is done().
  *
  */
 class Response {
