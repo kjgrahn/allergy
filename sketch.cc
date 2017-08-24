@@ -35,6 +35,12 @@ namespace entity {
     public:
 	explicit Image(int fd);
     };
+
+    class Generated {
+    public:
+	template <class F>
+	explicit Generated(const F& f);
+    };
 }
 
 
@@ -134,5 +140,26 @@ struct Image : public Response {
     Backlog backlog;
 
     Content<entity::Image, Filter::P> content;
+    Headers headers;
+};
+
+
+struct Generated : public Response {
+    template <class F>
+    explicit Generated(const F& f)
+	: content(backlog, f),
+	  headers(backlog, content)
+    {}
+
+    bool tick(int fd) override
+    {
+	bool unblocked = ::tick(fd, backlog, headers, content);
+	done = content.done();
+	return unblocked;
+    }
+
+    Backlog backlog;
+
+    Content<entity::Generated, Filter::P> content;
     Headers headers;
 };
