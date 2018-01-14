@@ -5,6 +5,7 @@
  *
  */
 #include "session.h"
+#include "content.h"
 #include "log.h"
 
 #include <iostream>
@@ -46,9 +47,11 @@ namespace {
 }
 
 
-Session::Session(const sockaddr_storage& peer,
+Session::Session(const Content& content,
+		 const sockaddr_storage& peer,
 		 const timespec& t)
-    : peer(peer),
+    : content(content),
+      peer(peer),
       history(t),
       reader("\r\n"),
       response(0)
@@ -141,7 +144,7 @@ void Session::pop_req(const timespec& t)
     Info(Syslog::log) << *this << ' ' << req.method << ' ' << req.request_uri();
     std::cout << req << '\n';
     req_queue.pop();
-    response = response_of(req);
+    response = content.response_of(req);
     history.began(*response, t);
 }
 

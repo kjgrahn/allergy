@@ -17,6 +17,8 @@
 #include "requestqueue.h"
 #include "response.h"
 
+struct Content;
+
 
 /**
  * A Session's history or log, for printing statistics but also
@@ -104,7 +106,8 @@ std::ostream& operator<< (std::ostream& os, const History& val)
  */
 class Session {
 public:
-    explicit Session(const sockaddr_storage& peer,
+    explicit Session(const Content& content,
+		     const sockaddr_storage& peer,
 		     const timespec& t);
     ~Session();
 
@@ -121,12 +124,13 @@ public:
     std::ostream& put(std::ostream& os) const;
 
 private:
-    Session();
-    Session(const Session&);
-    Session& operator= (const Session& other);
+    Session() = delete;
+    Session(const Session&) = delete;
+    Session& operator= (const Session& other) = delete;
 
     void pop_req(const timespec& t);
 
+    const Content& content;
     sockaddr_storage peer;
     History history;
     sockutil::TextReader reader;

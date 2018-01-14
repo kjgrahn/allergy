@@ -13,6 +13,7 @@
 struct sockaddr_storage;
 struct timespec;
 struct Session;
+struct Content;
 
 
 /**
@@ -26,7 +27,7 @@ struct Session;
  */
 class Server {
 public:
-    Server(int timeout = -1);
+    explicit Server(const Content& content, int timeout = -1);
     ~Server();
 
     struct Entry {
@@ -66,8 +67,10 @@ public:
     void reconsider(const timespec& ts);
 
 private:
-    Server(const Server&);
-    Server& operator= (const Server&);
+    Server(const Server&) = delete;
+    Server& operator= (const Server&) = delete;
+
+    const Content& content;
 
     std::vector<Entry> v;
     const int timeout;

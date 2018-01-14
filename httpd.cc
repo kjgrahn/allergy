@@ -119,7 +119,7 @@ namespace {
      */
     bool loop(const Content& content, const int lfd)
     {
-	Server server(20*1000);
+	Server server(content, 20*1000);
 	server.add(lfd);
 	timespec ts = now();
 	Periodic audit(ts, 20);
@@ -184,17 +184,20 @@ int main(int argc, char ** argv)
 {
     using std::string;
 
-    const string prog = argv[0];
+    const string prog = argv[0] ? argv[0] : "outnumbered";
     const string usage = string("usage: ")
 	+ prog +
 	" [-d]"
 	" [-a listen-address]"
-	" [-p port]";
+	" [-p port]"
+	" --host hostname"
+	" root";
     const char optstring[] = "+dp:a:";
     struct option long_options[] = {
 	{"--daemon",       0, 0, 'd'},
 	{"--address",      1, 0, 'a'},
 	{"--port",         1, 0, 'p'},
+	{"--host",         1, 0, 'H'},
 	{"version", 	   0, 0, 'v'},
 	{"help",    	   0, 0, 'h'},
 	{0, 0, 0, 0}
@@ -203,6 +206,7 @@ int main(int argc, char ** argv)
     bool daemonize = false;
     string addr = "";
     string port = "http";
+    string host;
 
     int ch;
     while((ch = getopt_long(argc, argv,
@@ -217,12 +221,15 @@ int main(int argc, char ** argv)
 	case 'p':
 	    port = optarg;
 	    break;
+	case 'H':
+	    host = optarg;
+	    break;
 	case 'h':
 	    std::cout << usage << '\n';
 	    return 0;
 	case 'v':
 	    std::cout << "outnumbered " << version() << '\n'
-		      << "Copyright (c) 2010-2013 Jörgen Grahn\n";
+		      << "Copyright (c) 2010-2018 Jörgen Grahn\n";
 	    return 0;
 	    break;
 	case ':':
@@ -235,12 +242,18 @@ int main(int argc, char ** argv)
 	}
     }
 
+    const std::vector<string> roots(argv+optind, argv+argc);
+    if(host.empty() || roots.size() != 1) {
+	    std::cerr << usage << '\n';
+	    return 1;
+    }
+
     const int lfd = listening_socket(addr, port);
     if(lfd==-1) {
 	return 1;
     }
 
-    Content content;
+    const Content content(host, roots.front());
 
     ignore_sigpipe();
 

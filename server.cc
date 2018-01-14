@@ -92,8 +92,9 @@ namespace {
  * don't have any periodic tasks except those which relate to clients
  * (killing slow ones, for example).
  */
-Server::Server(int timeout)
-    : timeout(timeout),
+Server::Server(const Content& content, int timeout)
+    : content(content),
+      timeout(timeout),
       epfd(epoll_create(10))
 {
     if(epfd==-1) throw FatalError();
@@ -149,7 +150,7 @@ void Server::add(int lfd)
  */
 void Server::add(int fd, sockaddr_storage& peer, const timespec& t)
 {
-    unsigned n = insert(v, fd, new Session(peer, t));
+    unsigned n = insert(v, fd, new Session(content, peer, t));
     epoll_event ep = mkev(EPOLLIN, n);
     if(epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &ep)==-1) {
 	rm(v, n);
