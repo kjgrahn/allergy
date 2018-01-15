@@ -13,6 +13,8 @@
 
 
 /**
+ * XXX Description is for the earlier design.
+ *
  * A complete, specific HTTP response in the form of a state machine.
  * tick(fd) pushes it towards completion, until done() turns true.
  *
@@ -43,52 +45,74 @@
  */
 class Response {
 public:
+    Response() = default;
+    virtual ~Response() = default;
     Response(const Response&) = delete;
     Response& operator= (const Response&) = delete;
-    virtual ~Response() = default;
 
+    /**
+     * Assuming !done and 'fd' is writable, push towards completion.
+     * Returns true if the fd goes blocked and the backlog is now
+     * non-empty.
+     */
     virtual bool tick(int fd) = 0;
-    virtual bool done() const = 0;
-
-protected:
-    Backlog backlog;
+    bool done = false;
 };
 
-#if 0
-template <class E, class F>
-bool Response<E, F>::tick(int fd)
-{
-    if(!backlog.empty()) {
-	backlog.write(fd);
-    }
-    else if(!headers.empty()) {
-    }
-
-    return !backlog.empty();
-}
-#endif
 
 namespace response {
 
-    class String: public Response {
-    public:
-	String();
+    /**
+     *
+     */
+    struct Headers {
+	template <class Content>
+	explicit Headers(Backlog& backlog, const Content& c)
+	    : text(""),
+	      filter(backlog)
+	{
+	    std::ostringstream oss;
+	    oss << c.status_code
+		<< date()
+		<< c.encoding
+		<< c.type
+		<< c.len;
+	    text = entity::String{oss};
+	}
 
-	bool tick(int fd) override;
-	virtual bool done() const override;
+	bool tick(int fd);
+	bool done() const;
 
-    protected:
-	Filter::P hfilter;
-	Filter::P efilter;
+	entity::String text;
+	Filter::P filter;
 
-	entity::String headers;
-	entity::String entity;
+    private:
+	const char* date() const { return "XXX"; }
     };
 
-    class Error : public String {
-    public:
-	explicit Error(const char* status);
+    /**
+     *
+     */
+    template <class E, class F>
+    struct Content {
+	template <class C>
+	Content(Backlog& backlog, C arg)
+	    : entity(arg),
+	      filter(backlog)
+	{}
+
+	bool tick(int fd);
+	bool done() const;
+
+	const char* status_code;
+	const char* encoding;
+	const char* type;
+	const char* len;
+
+	E entity;
+	F filter;
     };
+
 }
 
 #endif
