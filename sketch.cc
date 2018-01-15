@@ -2,6 +2,9 @@
 
 #include "filter.h"
 
+/**
+ *
+ */
 class Response {
 public:
     Response() = default;
@@ -44,6 +47,9 @@ namespace entity {
 }
 
 
+/**
+ *
+ */
 struct Headers {
     template <class C>
     explicit Headers(Backlog& backlog, const C& c)
@@ -70,6 +76,9 @@ private:
 };
 
 
+/**
+ *
+ */
 template <class E, class F>
 struct Content {
     template <class C>
@@ -104,6 +113,9 @@ namespace {
 }
 
 
+/**
+ *
+ */
 struct Error : public Response {
     explicit Error(const char* s)
 	: content(backlog, s),
@@ -124,6 +136,9 @@ struct Error : public Response {
 };
 
 
+/**
+ *
+ */
 struct Image : public Response {
     explicit Image(int fd)
 	: content(backlog, fd),
@@ -144,6 +159,9 @@ struct Image : public Response {
 };
 
 
+/**
+ *
+ */
 struct Generated : public Response {
     template <class F>
     explicit Generated(const F& f)
