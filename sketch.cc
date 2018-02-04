@@ -51,17 +51,17 @@ namespace entity {
  *
  */
 struct Headers {
-    template <class C>
-    explicit Headers(Backlog& backlog, const C& c)
+    template <class B>
+    explicit Headers(Backlog& backlog, const B& b)
 	: text(""),
 	  filter(backlog)
     {
 	std::ostringstream oss;
-	oss << c.status_code
+	oss << b.status_code
 	    << date()
-	    << c.encoding
-	    << c.type
-	    << c.len;
+	    << b.encoding
+	    << b.type
+	    << b.len;
 	text = entity::String{oss};
     }
 
@@ -80,9 +80,9 @@ private:
  *
  */
 template <class E, class F>
-struct Content {
+struct Body {
     template <class C>
-    Content(Backlog& backlog, C arg)
+    Body(Backlog& backlog, C arg)
 	: entity(arg),
 	  filter(backlog)
     {}
@@ -101,14 +101,14 @@ struct Content {
 
 
 namespace {
-    template <class Content>
+    template <class Body>
     bool tick(int fd, Backlog& backlog,
 	      Headers& headers,
-	      Content& content)
+	      Body& body)
     {
 	if(!backlog.empty()) return backlog.write(fd);
 	if(!headers.done()) return headers.tick(fd);
-	return content.tick(fd);
+	return body.tick(fd);
     }
 }
 
@@ -118,20 +118,20 @@ namespace {
  */
 struct Error : public Response {
     explicit Error(const char* s)
-	: content(backlog, s),
-	  headers(backlog, content)
+	: body(backlog, s),
+	  headers(backlog, body)
     {}
 
     bool tick(int fd) override
     {
-	bool unblocked = ::tick(fd, backlog, headers, content);
-	done = content.done();
+	bool unblocked = ::tick(fd, backlog, headers, body);
+	done = body.done();
 	return unblocked;
     }
 
     Backlog backlog;
 
-    Content<entity::String, Filter::P> content;
+    Body<entity::String, Filter::P> body;
     Headers headers;
 };
 
@@ -141,20 +141,20 @@ struct Error : public Response {
  */
 struct Image : public Response {
     explicit Image(int fd)
-	: content(backlog, fd),
-	  headers(backlog, content)
+	: body(backlog, fd),
+	  headers(backlog, body)
     {}
 
     bool tick(int fd) override
     {
-	bool unblocked = ::tick(fd, backlog, headers, content);
-	done = content.done();
+	bool unblocked = ::tick(fd, backlog, headers, body);
+	done = body.done();
 	return unblocked;
     }
 
     Backlog backlog;
 
-    Content<entity::Image, Filter::P> content;
+    Body<entity::Image, Filter::P> body;
     Headers headers;
 };
 
@@ -165,19 +165,19 @@ struct Image : public Response {
 struct Generated : public Response {
     template <class F>
     explicit Generated(const F& f)
-	: content(backlog, f),
-	  headers(backlog, content)
+	: body(backlog, f),
+	  headers(backlog, body)
     {}
 
     bool tick(int fd) override
     {
-	bool unblocked = ::tick(fd, backlog, headers, content);
-	done = content.done();
+	bool unblocked = ::tick(fd, backlog, headers, body);
+	done = body.done();
 	return unblocked;
     }
 
     Backlog backlog;
 
-    Content<entity::Generated, Filter::P> content;
+    Body<entity::Generated, Filter::P> body;
     Headers headers;
 };
