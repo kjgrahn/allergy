@@ -48,7 +48,8 @@ namespace entity {
 
 
 /**
- *
+ * The response headers for a certain Body, filtered and connected to
+ * the Backlog.
  */
 struct Headers {
     template <class B>
@@ -77,7 +78,7 @@ private:
 
 
 /**
- *
+ * The combination of entity, and the filter applied to it.
  */
 template <class E, class F>
 struct Body {
