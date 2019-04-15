@@ -2,6 +2,10 @@
 
 #include "filter.h"
 
+#include "entity/string.h"
+#include "entity/image.h"
+#include "entity/generated.h"
+
 /**
  *
  */
@@ -20,31 +24,6 @@ public:
     virtual bool tick(int fd) = 0;
     bool done = false;
 };
-
-
-namespace entity {
-
-    class String {
-    public:
-	explicit String(const char* s);
-	explicit String(const std::string& s);
-	template <class C>
-	explicit String(const C& c)
-	    : String(c.str())
-	{}
-    };
-
-    class Image {
-    public:
-	explicit Image(int fd);
-    };
-
-    class Generated {
-    public:
-	template <class F>
-	explicit Generated(const F& f);
-    };
-}
 
 
 /**
