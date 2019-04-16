@@ -9,7 +9,10 @@
 
 #include "backlog.h"
 #include "filter.h"
-#include "entity.h"
+
+#include "entity/string.h"
+#include "entity/image.h"
+#include "entity/generated.h"
 
 
 /**
@@ -63,20 +66,21 @@ public:
 namespace response {
 
     /**
-     *
+     * The response headers for a certain Body, filtered and connected to
+     * the Backlog.
      */
     struct Headers {
-	template <class Content>
-	explicit Headers(Backlog& backlog, const Content& c)
+	template <class B>
+	explicit Headers(Backlog& backlog, const B& b)
 	    : text(""),
 	      filter(backlog)
 	{
 	    std::ostringstream oss;
-	    oss << c.status_code
+	    oss << b.status_code
 		<< date()
-		<< c.encoding
-		<< c.type
-		<< c.len;
+		<< b.encoding
+		<< b.type
+		<< b.len;
 	    text = entity::String{oss};
 	}
 
@@ -91,12 +95,12 @@ namespace response {
     };
 
     /**
-     *
+     * The combination of entity, and the filter applied to it.
      */
     template <class E, class F>
-    struct Content {
+    struct Body {
 	template <class C>
-	Content(Backlog& backlog, C arg)
+	Body(Backlog& backlog, C arg)
 	    : entity(arg),
 	      filter(backlog)
 	{}
@@ -113,6 +117,82 @@ namespace response {
 	F filter;
     };
 
+    template <class Body>
+    bool tick(int fd, Backlog& backlog,
+	      Headers& headers,
+	      Body& body)
+    {
+	if(!backlog.empty()) return backlog.write(fd);
+	if(!headers.done()) return headers.tick(fd);
+	return body.tick(fd);
+    }
+
+    /**
+     *
+     */
+    struct Error : public Response {
+	explicit Error(const char* s)
+	    : body(backlog, s),
+	      headers(backlog, body)
+	{}
+
+	bool tick(int fd) override
+	{
+	    bool unblocked = response::tick(fd, backlog, headers, body);
+	    done = body.done();
+	    return unblocked;
+	}
+
+	Backlog backlog;
+
+	Body<entity::String, Filter::P> body;
+	Headers headers;
+    };
+
+    /**
+     *
+     */
+    struct Image : public Response {
+	explicit Image(int fd)
+	    : body(backlog, fd),
+	      headers(backlog, body)
+	{}
+
+	bool tick(int fd) override
+	{
+	    bool unblocked = response::tick(fd, backlog, headers, body);
+	    done = body.done();
+	    return unblocked;
+	}
+
+	Backlog backlog;
+
+	Body<entity::Image, Filter::P> body;
+	Headers headers;
+    };
+
+    /**
+     *
+     */
+    struct Generated : public Response {
+	template <class F>
+	explicit Generated(const F& f)
+	    : body(backlog, f),
+	      headers(backlog, body)
+	{}
+
+	bool tick(int fd) override
+	{
+	    bool unblocked = response::tick(fd, backlog, headers, body);
+	    done = body.done();
+	    return unblocked;
+	}
+
+	Backlog backlog;
+
+	Body<entity::Generated, Filter::P> body;
+	Headers headers;
+    };
 }
 
 #endif
