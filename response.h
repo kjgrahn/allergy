@@ -117,16 +117,6 @@ namespace response {
 	F filter;
     };
 
-    template <class Body>
-    bool tick(int fd, Backlog& backlog,
-	      Headers& headers,
-	      Body& body)
-    {
-	if(!backlog.empty()) return backlog.write(fd);
-	if(!headers.done()) return headers.tick(fd);
-	return body.tick(fd);
-    }
-
     /**
      *
      */
@@ -136,15 +126,9 @@ namespace response {
 	      headers(backlog, body)
 	{}
 
-	bool tick(int fd) override
-	{
-	    bool unblocked = response::tick(fd, backlog, headers, body);
-	    done = body.done();
-	    return unblocked;
-	}
+	bool tick(int fd) override;
 
 	Backlog backlog;
-
 	Body<entity::String, Filter::P> body;
 	Headers headers;
     };
@@ -158,15 +142,9 @@ namespace response {
 	      headers(backlog, body)
 	{}
 
-	bool tick(int fd) override
-	{
-	    bool unblocked = response::tick(fd, backlog, headers, body);
-	    done = body.done();
-	    return unblocked;
-	}
+	bool tick(int fd) override;
 
 	Backlog backlog;
-
 	Body<entity::Image, Filter::P> body;
 	Headers headers;
     };
@@ -181,15 +159,9 @@ namespace response {
 	      headers(backlog, body)
 	{}
 
-	bool tick(int fd) override
-	{
-	    bool unblocked = response::tick(fd, backlog, headers, body);
-	    done = body.done();
-	    return unblocked;
-	}
+	bool tick(int fd) override;
 
 	Backlog backlog;
-
 	Body<entity::Generated, Filter::P> body;
 	Headers headers;
     };

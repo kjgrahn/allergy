@@ -44,39 +44,36 @@ namespace {
 	std::string s = oss.str();
 	return out.write(fd, Blob(s));
     }
-}
 
-
-response::Error::Error(const char* status)
-    : entity(status)
-{
-    std::ostringstream oss;
-    const char crlf[] = "\r\n";
-    oss << "HTTP/1.1 " << status << crlf
-	<< "Date: " << now() << crlf
-	<< "Server: allergy" << crlf
-	<< "Content-Length: " << entity.size() << crlf
-	<< "Content-Type: text/plain; charset=iso-8859-1" << crlf
-	<< crlf;
-    headers = entity::String(oss.str());
-}
-
-namespace {
-    template <class A, class B>
-    Blob tick(A& a, B& b)
+    template <class Body>
+    bool tick(int fd, Backlog& backlog,
+	      response::Headers& headers,
+	      Body& body)
     {
-	Blob blob = a.tick();
-	if(blob.size()) return blob;
-	return b.tick();
+	if(!backlog.empty()) return backlog.write(fd);
+	if(!headers.done()) return headers.tick(fd);
+	return body.tick(fd);
     }
 }
+
 
 bool response::Error::tick(int fd)
 {
-    if(backlog.empty()) {
-	Blob b = ::tick(headers, entity);
-    }
-    else {
-	return backlog.write(fd);
-    }
+    bool unblocked = ::tick(fd, backlog, headers, body);
+    done = body.done();
+    return unblocked;
+}
+
+bool response::Image::tick(int fd)
+{
+    bool unblocked = ::tick(fd, backlog, headers, body);
+    done = body.done();
+    return unblocked;
+}
+
+bool response::Generated::tick(int fd)
+{
+    bool unblocked = ::tick(fd, backlog, headers, body);
+    done = body.done();
+    return unblocked;
 }
