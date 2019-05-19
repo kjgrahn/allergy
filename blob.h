@@ -62,7 +62,7 @@ public:
 
 private:
     const uint8_t* a;
-    const size_t n;
+    size_t n;
 };
 
 #endif

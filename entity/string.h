@@ -9,7 +9,7 @@
 
 #include <string>
 
-class Blob;
+#include "../blob.h"
 
 namespace entity {
 
@@ -26,10 +26,14 @@ namespace entity {
 	    : String(c.str())
 	{}
 
+	String(const String&) = delete;
+	String& operator= (const String&) = delete;
+
 	size_t size() const { return s.size(); }
 	Blob tick();
     private:
-	std::string s;
+	const std::string s;
+	Blob blob;
     };
 }
 
