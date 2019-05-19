@@ -44,6 +44,7 @@ liboutnumbered.a: deflate.o
 liboutnumbered.a: response.o
 liboutnumbered.a: join.o
 liboutnumbered.a: glob.o
+liboutnumbered.a: entity/string.o
 	$(AR) -r $@ $^
 
 backlog.o: CXXFLAGS+=-Wno-old-style-cast
@@ -115,7 +116,7 @@ clean:
 love:
 	@echo "not war?"
 
-$(shell mkdir -p dep/{allergy/,}test)
+$(shell mkdir -p dep/{entity/,allergy/,}{,test})
 DEPFLAGS=-MT $@ -MMD -MP -MF dep/$*.Td
 COMPILE.cc=$(CXX) $(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c
 
@@ -124,10 +125,13 @@ COMPILE.cc=$(CXX) $(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c
 	@mv dep/$*.{Td,d}
 
 dep/%.d: ;
+dep/entity/%.d: ;
+dep/entity/test/%.d: ;
 dep/test/%.d: ;
 dep/allergy/%.d: ;
 dep/allergy/test/%.d: ;
 -include dep/*.d
+-include dep/entity/*.d
 -include dep/test/*.d
 -include dep/allergy/*.d
 -include dep/allergy/test/*.d
