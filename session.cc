@@ -116,7 +116,7 @@ Session::State Session::write(int fd, const timespec& t)
 	    return WRITING;
 	}
 
-	if(response->done()) {
+	if(response->done) {
 	    history.ended(*response, t);
 	    delete response;
 	    response = 0;

@@ -14,6 +14,8 @@
 #include "entity/image.h"
 #include "entity/generated.h"
 
+#include <sstream>
+
 
 /**
  * XXX Description is for the earlier design.
