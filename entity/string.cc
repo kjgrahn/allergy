@@ -27,7 +27,7 @@ namespace {
     {
 	auto a = std::begin(blob);
 	auto b = std::end(blob);
-	size_t n = std::min(8192u, blob.size());
+	size_t n = std::min({8192}, blob.size());
 	blob = {a+n, b};
 	return {a, a+n};
     }
