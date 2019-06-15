@@ -28,11 +28,12 @@ namespace entity {
 
 	String(const String&) = delete;
 	String& operator= (const String&) = delete;
+	String& operator= (String&&) = default;
 
 	size_t size() const { return s.size(); }
 	Blob tick();
     private:
-	const std::string s;
+	std::string s;
 	Blob blob;
     };
 }
