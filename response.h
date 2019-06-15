@@ -89,10 +89,10 @@ namespace response {
 	bool tick(int fd);
 	bool done() const;
 
+    private:
 	entity::String text;
 	Filter::P filter;
 
-    private:
 	const char* date() const { return "XXX"; }
     };
 
@@ -130,6 +130,7 @@ namespace response {
 
 	bool tick(int fd) override;
 
+    private:
 	Backlog backlog;
 	Body<entity::String, Filter::P> body;
 	Headers headers;
@@ -146,6 +147,7 @@ namespace response {
 
 	bool tick(int fd) override;
 
+    private:
 	Backlog backlog;
 	Body<entity::Image, Filter::P> body;
 	Headers headers;
@@ -163,6 +165,7 @@ namespace response {
 
 	bool tick(int fd) override;
 
+    private:
 	Backlog backlog;
 	Body<entity::Generated, Filter::P> body;
 	Headers headers;
