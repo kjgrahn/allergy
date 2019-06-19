@@ -56,6 +56,17 @@ namespace {
     }
 }
 
+bool response::Headers::tick(int fd)
+{
+    const Blob b = text.tick();
+    if (b.empty()) return filter.end(fd);
+    return filter.write(fd, b);
+}
+
+bool response::Headers::done() const
+{
+    return text.done();
+}
 
 bool response::Error::tick(int fd)
 {

@@ -32,6 +32,7 @@ namespace entity {
 
 	size_t size() const { return s.size(); }
 	Blob tick();
+	bool done() const;
     private:
 	std::string s;
 	Blob blob;
