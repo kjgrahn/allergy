@@ -31,11 +31,20 @@ namespace entity {
 	String& operator= (String&&) = default;
 
 	size_t size() const { return s.size(); }
-	Blob tick();
-	bool done() const;
+	bool done() const { return blob.empty(); }
+
+	template<class Filter>
+	bool tick(int fd, Filter& filter)
+	{
+	    const Blob b = tick();
+	    if (b.empty()) return filter.end(fd);
+	    return filter.write(fd, b);
+	}
     private:
 	std::string s;
 	Blob blob;
+
+	Blob tick();
     };
 }
 

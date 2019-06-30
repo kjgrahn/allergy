@@ -58,13 +58,12 @@ namespace {
 
 bool response::Headers::tick(int fd)
 {
-    const Blob b = text.tick();
-    if (b.empty()) return filter.end(fd);
-    return filter.write(fd, b);
+    return text.tick(fd, filter);
 }
 
 bool response::Headers::done() const
 {
+    // ok because the filter is always Plain.
     return text.done();
 }
 
