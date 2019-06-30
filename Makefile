@@ -105,7 +105,7 @@ depend:
 .PHONY: clean
 clean:
 	$(RM) outnumbered magic
-	$(RM) {,test/}*.o
+	$(RM) {,entity/,test/}*.o
 	$(RM) allergy/{,test/}*.o
 	$(RM) *.ps
 	$(RM) lib*.a
