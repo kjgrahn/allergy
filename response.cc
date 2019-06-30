@@ -67,6 +67,15 @@ bool response::Headers::done() const
     return text.done();
 }
 
+template <class E, class F>
+bool response::Body<E, F>::tick(int fd)
+{
+    return entity.tick(fd, filter);
+}
+
+template <class E, class F>
+bool response::Body<E, F>::done() const;
+
 bool response::Error::tick(int fd)
 {
     bool unblocked = ::tick(fd, backlog, headers, body);
