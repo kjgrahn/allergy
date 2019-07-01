@@ -17,6 +17,15 @@ struct WriteError : public SessionError {
     int err;
 };
 
+/**
+ * Surprising error originating in the entity, including I/O error
+ * after deciding to return it in a 200 OK.
+ */
+struct EntityError : public SessionError {
+    explicit EntityError(int err = 0) : err(err) {}
+    int err;
+};
+
 
 /**
  * An error which means death to the whole server.

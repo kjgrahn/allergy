@@ -45,6 +45,7 @@ liboutnumbered.a: response.o
 liboutnumbered.a: join.o
 liboutnumbered.a: glob.o
 liboutnumbered.a: entity/string.o
+liboutnumbered.a: entity/image.o
 	$(AR) -r $@ $^
 
 backlog.o: CXXFLAGS+=-Wno-old-style-cast
