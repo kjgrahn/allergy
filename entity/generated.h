@@ -13,6 +13,13 @@ namespace entity {
     public:
 	template <class F>
 	explicit Generated(const F& f);
+
+	Generated(const Generated&) = delete;
+	Generated& operator= (const Generated&) = delete;
+
+	bool done() const;
+	template<class Filter>
+	bool tick(int fd, Filter& filter);
     };
 }
 

@@ -74,7 +74,15 @@ bool response::Body<E, F>::tick(int fd)
 }
 
 template <class E, class F>
-bool response::Body<E, F>::done() const;
+bool response::Body<E, F>::done() const
+{
+    /* XXX not correct because the filter may not be
+     * flushed.  On the other hand, we should have
+     * flushed the filter when we discovered that
+     * we were done.
+     */
+    return entity.done();
+}
 
 bool response::Error::tick(int fd)
 {
