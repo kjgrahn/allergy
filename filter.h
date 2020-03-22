@@ -71,8 +71,12 @@ namespace Filter {
 	bool write(int fd, const Blob& a, const Blob& b, const Blob& c) {
 	    return backlog.write(fd, a, b, c)==0;
 	}
+
 	bool end(int fd) {
 	    return backlog.write(fd)==0;
+	}
+	bool end(int fd, const Blob& a) {
+	    return backlog.write(fd, a)==0;
 	}
 
     private:
