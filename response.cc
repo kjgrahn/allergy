@@ -45,6 +45,11 @@ namespace {
 	return out.write(fd, Blob(s));
     }
 
+    /**
+     * tick() a combination of headers, body and backlog; returns true
+     * iff the fd goes blocked. Undefined result if the whole sequence
+     * was already done.
+     */
     template <class Body>
     bool tick(int fd, Backlog& backlog,
 	      response::Headers& headers,
@@ -86,21 +91,21 @@ bool response::Body<E, F>::done() const
 
 bool response::Error::tick(int fd)
 {
-    bool unblocked = ::tick(fd, backlog, headers, body);
+    bool blocked = ::tick(fd, backlog, headers, body);
     done = body.done();
-    return unblocked;
+    return blocked;
 }
 
 bool response::Image::tick(int fd)
 {
-    bool unblocked = ::tick(fd, backlog, headers, body);
+    bool blocked = ::tick(fd, backlog, headers, body);
     done = body.done();
-    return unblocked;
+    return blocked;
 }
 
 bool response::Generated::tick(int fd)
 {
-    bool unblocked = ::tick(fd, backlog, headers, body);
+    bool blocked = ::tick(fd, backlog, headers, body);
     done = body.done();
-    return unblocked;
+    return blocked;
 }
