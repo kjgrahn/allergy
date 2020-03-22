@@ -34,17 +34,11 @@ namespace entity {
 	bool done() const { return blob.empty(); }
 
 	template<class Filter>
-	bool tick(int fd, Filter& filter)
-	{
-	    const Blob b = tick();
-	    if (b.empty()) return filter.end(fd);
-	    return filter.write(fd, b);
-	}
+	bool tick(int fd, Filter& filter);
+
     private:
 	std::string s;
 	Blob blob;
-
-	Blob tick();
     };
 }
 

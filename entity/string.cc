@@ -4,6 +4,8 @@
  */
 #include "string.h"
 
+#include "../filter.h"
+
 using entity::String;
 
 String::String(const char* s)
@@ -33,7 +35,12 @@ namespace {
     }
 }
 
-Blob String::tick()
+template<class Filter>
+bool String::tick(int fd, Filter& filter)
 {
-    return consume(blob);
+    const Blob b = consume(blob);
+    if (blob.empty()) return filter.end(fd, b);
+    return filter.write(fd, b);
 }
+
+template bool String::tick(int fd, Filter::P& filter);
