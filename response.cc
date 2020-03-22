@@ -57,6 +57,7 @@ namespace {
     {
 	if(!backlog.empty()) return backlog.write(fd);
 	if(!headers.done()) return headers.tick(fd);
+	assert(!body.done());
 	return body.tick(fd);
     }
 }
