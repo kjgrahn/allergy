@@ -18,34 +18,50 @@
 
 
 /**
- * XXX Description is for the earlier design.
- *
  * A complete, specific HTTP response in the form of a state machine.
  * tick(fd) pushes it towards completion, until done() turns true.
  *
  * tick() returns true if the fd goes blocked and the backlog is now non-empty.
  *
- *   +---------+                             +--------+
- *   | headers |-----------------+---------->| fd     |
- *   +---------+     +--------+  |           |        |
- *   | Entity  +---->| Filter +----+-------->|        |
- *   |         |     |        |  v v         |        |
- *   +---------+     +--------+ +------+     |        |
- *                              | Back +---->|        |
- *                              | log  |     |        |
- *                              +------+     +--------+
+ *   +---------+     +--------+     +------+     +-----+
+ *   | Headers |---->| Filter |---->|      |---->|     |
+ *   +---------+     +--------+     | Back |     | fd  |
+ *   | Body    +---->| Filter +---->| log  |---->|     |
+ *   |         |     |        |     |      |     |     |
+ *   +---------+     +--------+     +------+     +-----+
  *
- * Or put differently:
+ * What's interesting from the Response user's point of view is
+ * whether the response is done (written to the fd) and if not,
+ * whether it's blocked and we need to wait for the fd to become
+ * writable before tick()ing the state machine again.
  *
- *     headers --> filter::P -+---> backlog ---> fd
- *     entity ---> filter ----'
+ * Internally
  *
- * At different points in time, there may be data in:
- * - the backlog
- * - the headers
- * - the entity
- * - the entity's filter (e.g if it's filter::Z)
- * If they're all empty, the request is done().
+ * - The Backlog buffers the fd, so that any single write succeeds, by
+ *   placing the failed tail in the backlog. However we must not
+ *   continue tick()ing after that happens. And when the socket
+ *   becomes writeable again, we must begin by draining the backlog;
+ *   we can't let it grow indefinitely.
+ *
+ * - The Headers and Body can both be seen as an Entity passed through
+ *   a Filter, even though the headers have a pass-through filter.
+ *   Entities are drained stepwise through the filter. Filters can
+ *   buffer: you may put a long text into a filter::Z and nothing
+ *   comes out. When an entity hits EOF, the filter must be flushed so
+ *   we don't get an extra state: the entity being empty but the
+ *   filter being not.
+ *
+ * So when the fd becomes writable, the strategy to safely advance the
+ * state machine becomes one of the three:
+ *
+ * - If the backlog isn't empty, drain it.
+ * - If the headers aren't empty, tick() them.
+ * - If the body isn't empty, tick() it.
+ *
+ * If none of these things can be done, there's a programming error.
+ *
+ * I/O errors go on top of all this in the form of exceptions, and are
+ * fatal for the whole Session.
  *
  */
 class Response {
