@@ -45,6 +45,10 @@
  *        goes writable.
  * All other situations map to an exception being thrown.
  *
+ * Except after write(), data may also be stuck in the filter itself,
+ * depending on its type. end() guarantees that the tail of the data
+ * stream /at least/ has reached the backlog.
+ *
  */
 namespace Filter {
 
