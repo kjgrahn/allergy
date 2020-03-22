@@ -92,7 +92,9 @@ bool Zlib<Next>::end(int fd)
 
 /* Explicit template instantiation for the interesting cases.
  */
-using Filter::Plain;
-template class Zlib<Plain>;
-template class Chunked<Plain>;
-template class Zlib<Chunked<Plain>>;
+namespace Filter {
+
+    template class Zlib<Plain>;
+    template class Chunked<Plain>;
+    template class Zlib<Chunked<Plain>>;
+}
