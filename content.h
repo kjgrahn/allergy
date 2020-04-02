@@ -43,7 +43,10 @@ struct Patterns {
  */
 class Content {
 public:
-    explicit Content(const std::string& host, const std::string& path);
+    Content(const std::string& host, const std::string& path);
+    Content(const Content&) = delete;
+    Content& operator= (const Content&) = delete;
+
     Response* response_of(const Request& request) const;
 
 private:

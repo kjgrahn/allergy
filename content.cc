@@ -40,7 +40,6 @@ namespace {
     Response* favicon() { return resp404(); }
 }
 
-
 Patterns::Patterns()
     : frontpage("/|/index.html"),
       by_date  ("/by-date"),
@@ -56,6 +55,9 @@ Patterns::Patterns()
       favicon  ("/favicon\\.ico")
 {}
 
+Content::Content(const std::string& host, const std::string& path)
+    : host{host}
+{}
 
 Response* Content::response_of(const Request& req) const
 {
