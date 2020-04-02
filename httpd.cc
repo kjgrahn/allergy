@@ -194,10 +194,10 @@ int main(int argc, char ** argv)
 	" root";
     const char optstring[] = "+dp:a:";
     struct option long_options[] = {
-	{"--daemon",       0, 0, 'd'},
-	{"--address",      1, 0, 'a'},
-	{"--port",         1, 0, 'p'},
-	{"--host",         1, 0, 'H'},
+	{"daemon",       0, 0, 'd'},
+	{"address",      1, 0, 'a'},
+	{"port",         1, 0, 'p'},
+	{"host",         1, 0, 'H'},
 	{"version", 	   0, 0, 'v'},
 	{"help",    	   0, 0, 'h'},
 	{0, 0, 0, 0}
