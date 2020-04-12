@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include <iostream>
 
 using entity::Image;
 
@@ -27,6 +28,15 @@ Image::Image(int fd)
     : fd(fd),
       st_size(size_of(fd))
 {}
+
+std::ostream& Image::headers(std::ostream& os) const
+{
+    os << "Content-Type: image/jpeg\r\n"
+       << "Content-Length: " << st_size << "\r\n"
+       << "Last-Modified: Mon, 04 Aug 2014 22:05:06 GMT\r\n";
+
+    return os;
+}
 
 template<class Filter>
 bool Image::tick(int fd, Filter& filter)

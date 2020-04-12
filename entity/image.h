@@ -7,8 +7,11 @@
 #ifndef GB_ENTITY_IMAGE_H_
 #define GB_ENTITY_IMAGE_H_
 
+#include "entity.h"
 #include "../blob.h"
+
 #include <array>
+#include <iosfwd>
 
 namespace entity {
 
@@ -19,14 +22,13 @@ namespace entity {
      * was discovered that way -- it's preferable to send a broken
      * image compared to breaking the session.
      */
-    class Image {
+    class Image : public Entity {
     public:
 	explicit Image(int fd);
-	Image(const Image&) = delete;
-	Image& operator= (const Image&) = delete;
 
-	size_t size() const { return st_size; }
-	bool done() const { return n == size(); }
+	std::ostream& headers(std::ostream& os) const;
+
+	bool done() const { return n == st_size; }
 	template<class Filter>
 	bool tick(int fd, Filter& filter);
 

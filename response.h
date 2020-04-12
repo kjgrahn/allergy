@@ -94,11 +94,9 @@ namespace response {
 	      filter(backlog)
 	{
 	    std::ostringstream oss;
-	    oss << b.status_code
-		<< date()
-		<< b.encoding
-		<< b.type
-		<< b.len;
+	    oss << "HTTP/1.1 " << b.entity.status_code
+		<< date();
+	    b.entity.headers(oss) << "\r\n";
 	    text = entity::String{oss};
 	}
 
@@ -109,7 +107,7 @@ namespace response {
 	entity::String text;
 	Filter::P filter;
 
-	const char* date() const { return "XXX"; }
+	const char* date() const { return "Date: Mon, 04 Aug 2014 22:05:06 GMT\r\n"; }
     };
 
     /**

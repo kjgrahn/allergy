@@ -8,7 +8,9 @@
 #define GB_ENTITY_STRING_H_
 
 #include <string>
+#include <iosfwd>
 
+#include "entity.h"
 #include "../blob.h"
 
 namespace entity {
@@ -17,7 +19,7 @@ namespace entity {
      * A fixed string as a HTML entity: a size, and a way to emit its
      * content in reasonably-sized chunks.
      */
-    class String {
+    class String : public Entity {
     public:
 	explicit String(const char* s);
 	explicit String(const std::string& s);
@@ -26,11 +28,10 @@ namespace entity {
 	    : String(c.str())
 	{}
 
-	String(const String&) = delete;
-	String& operator= (const String&) = delete;
 	String& operator= (String&&) = default;
 
-	size_t size() const { return s.size(); }
+	std::ostream& headers(std::ostream& os) const;
+
 	bool done() const { return blob.empty(); }
 
 	template<class Filter>
