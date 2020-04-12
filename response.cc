@@ -97,10 +97,3 @@ bool response::Image::tick(int fd)
     done = body.done();
     return blocked;
 }
-
-bool response::Generated::tick(int fd)
-{
-    bool blocked = ::tick(fd, backlog, headers, body);
-    done = body.done();
-    return blocked;
-}
