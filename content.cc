@@ -28,8 +28,8 @@ namespace {
 
     Response* frontpage() { return resp404(); }
     Response* by_date() { return resp404(); }
-    Response* year(unsigned yyyy) { return resp404(); }
-    Response* month(unsigned yyyy, unsigned mm) { return resp404(); }
+    Response* year(unsigned) { return resp404(); }
+    Response* month(unsigned, unsigned) { return resp404(); }
     Response* redirect(const std::string&) { return resp404(); }
     Response* photo(const std::string&) { return resp404(); }
     Response* thumb(const std::string&) { return resp404(); }
@@ -55,7 +55,7 @@ Patterns::Patterns()
       favicon  ("/favicon\\.ico")
 {}
 
-Content::Content(const std::string& host, const std::string& path)
+Content::Content(const std::string& host, const std::string&)
     : host{host}
 {}
 
