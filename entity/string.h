@@ -25,7 +25,8 @@ namespace entity {
 	explicit String(const std::string& s);
 	template <class C>
 	explicit String(const C& c)
-	    : String(c.str())
+	    : s(c.str()),
+	      blob(s)
 	{}
 
 	String& operator= (String&&) = default;
