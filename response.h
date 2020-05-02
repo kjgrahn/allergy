@@ -89,14 +89,15 @@ namespace response {
      */
     struct Headers {
 	template <class B>
-	explicit Headers(Backlog& backlog, const B& b)
+	explicit Headers(Backlog& backlog, const B& body)
 	    : text(""),
 	      filter(backlog)
 	{
 	    std::ostringstream oss;
-	    oss << "HTTP/1.1 " << b.entity.status_code
-		<< date();
-	    b.entity.headers(oss) << "\r\n";
+	    oss << "HTTP/1.1 " << body.entity.status_code;
+	    general_headers(oss);
+	    response_headers(oss);
+	    body.entity.headers(oss) << "\r\n";
 	    text = entity::String{oss};
 	}
 
@@ -106,6 +107,16 @@ namespace response {
     private:
 	entity::String text;
 	Filter::P filter;
+
+	std::ostream& general_headers(std::ostream& oss)
+	{
+	    return oss << date();
+	}
+
+	std::ostream& response_headers(std::ostream& oss)
+	{
+	    return oss << "Server: allergy\r\n";
+	}
 
 	const char* date() const { return "Date: Mon, 04 Aug 2014 22:05:06 GMT\r\n"; }
     };
