@@ -16,22 +16,6 @@ namespace {
 	"Jul Aug Sep Oct Nov Dec";
 
     /**
-     * Advance past a Mon--Sun or Monday--Sunday.
-     * XXX The latter missing.
-     */
-    const char* weekday(const char* a, const char* const b)
-    {
-	if(b-a < 3) return a;
-	int found = 0;
-	for(int i=0; i<7; i++) {
-	    found += !std::strncmp(a, weekdays+4*i, 3);
-	}
-	if(found) a+=3;
-	return a;
-    }
-
-
-    /**
      * Parse a three-letter month name in a[0..2] as Jan--Dec,
      * into 0--11, or -1.
      */
