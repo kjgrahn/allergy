@@ -25,6 +25,7 @@ namespace entity {
     class Image : public Entity {
     public:
 	explicit Image(int fd);
+	~Image();
 
 	std::ostream& headers(std::ostream& os) const;
 

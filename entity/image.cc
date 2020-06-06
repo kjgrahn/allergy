@@ -29,6 +29,11 @@ Image::Image(int fd)
       st_size(size_of(fd))
 {}
 
+Image::~Image()
+{
+    close(fd);
+}
+
 std::ostream& Image::headers(std::ostream& os) const
 {
     os << "Content-Type: image/jpeg\r\n"
