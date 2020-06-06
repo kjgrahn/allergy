@@ -7,6 +7,10 @@
 #include "request.h"
 #include "response.h"
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 namespace {
     bool match(const std::string& s, const std::regex& re)
     {
@@ -22,16 +26,35 @@ namespace {
 
     bool wrong_host(const Blob&) { return false; }
 
-    response::Error* resp501() { return new response::Error("501 Not Implemented"); }
     response::Error* resp400() { return new response::Error("400 Bad Request"); }
     response::Error* resp404() { return new response::Error("404 Not Found"); }
+    response::Error* resp500() { return new response::Error("500 Internal Server Error"); }
+    response::Error* resp501() { return new response::Error("501 Not Implemented"); }
+
+    /**
+     * R(path) or a response::Error if the file cannot be opened.
+     */
+    template <class R>
+    Response* open(const std::string& path)
+    {
+	int fd = ::open(path.c_str(), O_RDONLY);
+	if (fd==-1) switch (errno) {
+	    case EACCES: // don't give away that the file exists
+	    case ENOENT:
+	    case ENOTDIR:
+		return resp404();
+	    default:
+		return resp500();
+	}
+	return new R{fd};
+    }
 
     Response* frontpage() { return resp404(); }
     Response* by_date() { return resp404(); }
     Response* year(unsigned) { return resp404(); }
     Response* month(unsigned, unsigned) { return resp404(); }
     Response* redirect(const std::string&) { return resp404(); }
-    Response* photo(const std::string&) { return resp404(); }
+    Response* photo(const std::string& s) { return open<response::Image>(s); }
     Response* thumb(const std::string&) { return resp404(); }
     Response* keywords() { return resp404(); }
     Response* keyword(const std::string&) { return resp404(); }
