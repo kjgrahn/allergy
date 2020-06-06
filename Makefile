@@ -37,6 +37,7 @@ liboutnumbered.a: textread.o
 liboutnumbered.a: requestqueue.o
 liboutnumbered.a: request.o
 liboutnumbered.a: date.o
+liboutnumbered.a: dateparse.o
 liboutnumbered.a: names.o
 liboutnumbered.a: filter.o
 liboutnumbered.a: backlog.o
