@@ -34,7 +34,7 @@ namespace entity {
 	bool tick(int fd, Filter& filter);
 
     private:
-	const int fd;
+	const int src;
 	const size_t st_size;
 	size_t n = 0;
     };

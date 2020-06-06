@@ -25,13 +25,13 @@ namespace {
 }
 
 Image::Image(int fd)
-    : fd(fd),
-      st_size(size_of(fd))
+    : src(fd),
+      st_size(size_of(src))
 {}
 
 Image::~Image()
 {
-    close(fd);
+    close(src);
 }
 
 std::ostream& Image::headers(std::ostream& os) const
@@ -48,7 +48,7 @@ bool Image::tick(int fd, Filter& filter)
 {
     char buf[8192];
     size_t len = std::min(sizeof buf, st_size - n);
-    ssize_t rlen = read(fd, buf, len);
+    ssize_t rlen = read(src, buf, len);
     if (rlen==-1) throw EntityError{errno};
     if (rlen != ssize_t(len)) throw EntityError{};
 
