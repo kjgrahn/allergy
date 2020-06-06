@@ -24,6 +24,7 @@
 #include "server.h"
 #include "session.h"
 #include "content.h"
+#include "log.h"
 
 
 namespace {
@@ -158,8 +159,8 @@ namespace {
 			state = session.read(fd, ts);
 		    }
 		}
-		catch(const SessionError&) {
-		    ;
+		catch(const SessionError& e) {
+		    Info(Syslog::log) << session << " aborted: " << e;
 		}
 
 		if(state==Session::DIE) {

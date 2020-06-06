@@ -32,6 +32,7 @@ liboutnumbered.a: content.o
 liboutnumbered.a: times.o
 liboutnumbered.a: session.o
 liboutnumbered.a: sessionhistory.o
+liboutnumbered.a: error.o
 liboutnumbered.a: textread.o
 liboutnumbered.a: requestqueue.o
 liboutnumbered.a: request.o
