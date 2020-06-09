@@ -30,7 +30,7 @@ namespace {
     }
 
 
-    class DateConv dateconv;
+    DateConv dateconv;
 
     std::string now()
     {

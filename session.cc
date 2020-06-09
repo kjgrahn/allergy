@@ -33,7 +33,7 @@ namespace {
 			     | NI_NUMERICHOST
 			     | NI_NUMERICSERV);
 	if(rc) {
-	    return os << "unknown(" << strerror(errno) << ')';
+	    return os << "unknown(" << std::strerror(errno) << ')';
 	}
 	return os << hbuf << ':' << sbuf;
     }
