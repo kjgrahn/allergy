@@ -46,6 +46,7 @@ liboutnumbered.a: deflate.o
 liboutnumbered.a: response.o
 liboutnumbered.a: join.o
 liboutnumbered.a: glob.o
+liboutnumbered.a: thumbnail.o
 liboutnumbered.a: entity/string.o
 liboutnumbered.a: entity/image.o
 	$(AR) -r $@ $^
