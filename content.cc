@@ -4,12 +4,20 @@
  */
 #include "content.h"
 
+#include "file.h"
 #include "request.h"
 #include "response.h"
+#include "status.h"
 
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+
+int File::open() const
+{
+    return openat(dir, path.c_str(), O_RDONLY);
+}
 
 namespace {
     bool match(const std::string& s, const std::regex& re)
@@ -26,41 +34,38 @@ namespace {
 
     bool wrong_host(const Blob&) { return false; }
 
-    response::Error* resp400() { return new response::Error("400 Bad Request"); }
-    response::Error* resp404() { return new response::Error("404 Not Found"); }
-    response::Error* resp500() { return new response::Error("500 Internal Server Error"); }
-    response::Error* resp501() { return new response::Error("501 Not Implemented"); }
+    template <class Error>
+    Response* open(int root)
+    {
+	int fd = File{root, Error::status::file}.open();
+	if (fd==-1) {
+	    return new response::Error{Error::status::text};
+	}
+	return new Error{fd};
+    }
+
+    Response* resp400(int root) { return open<response::ErrorPage<status::S400>>(root); }
+    Response* resp404(int root) { return open<response::ErrorPage<status::S404>>(root); }
+    Response* resp500(int root) { return open<response::ErrorPage<status::S500>>(root); }
+    Response* resp501(int root) { return open<response::ErrorPage<status::S501>>(root); }
 
     /**
-     * R(path) or a response::Error if the file cannot be opened.
+     * R(fd) or a response::Error if the file cannot be opened.
      */
     template <class R>
-    Response* open(const std::string& path)
+    Response* open(int root, const std::string& path)
     {
-	int fd = ::open(path.c_str(), O_RDONLY);
+	int fd = File{root, path}.open();
 	if (fd==-1) switch (errno) {
 	    case EACCES: // don't give away that the file exists
 	    case ENOENT:
 	    case ENOTDIR:
-		return resp404();
+		return resp404(root);
 	    default:
-		return resp500();
+		return resp500(root);
 	}
 	return new R{fd};
     }
-
-    Response* frontpage() { return resp404(); }
-    Response* by_date() { return resp404(); }
-    Response* year(unsigned) { return resp404(); }
-    Response* month(unsigned, unsigned) { return resp404(); }
-    Response* redirect(const std::string&) { return resp404(); }
-    Response* photo(const std::string& s) { return open<response::Image>(s); }
-    Response* thumb(const std::string&) { return resp404(); }
-    Response* keywords() { return resp404(); }
-    Response* keyword(const std::string&) { return resp404(); }
-    Response* robots() { return resp404(); }
-    Response* css() { return resp404(); }
-    Response* favicon() { return resp404(); }
 }
 
 Patterns::Patterns()
@@ -78,16 +83,22 @@ Patterns::Patterns()
       favicon  ("/favicon\\.ico")
 {}
 
-Content::Content(const std::string& host, const std::string&)
-    : host{host}
+Content::Content(const std::string& host, const std::string& root)
+    : host{host},
+      root{open(root.c_str(), O_DIRECTORY | O_PATH)}
 {}
+
+Content::~Content()
+{
+    if (root!=-1) close(root);
+}
 
 Response* Content::response_of(const Request& req) const
 {
-    if(req.method != Request::Method::GET) return resp501();
+    if(req.method != Request::Method::GET) return resp501(root);
 
     const auto& host = req.header(Request::Property::Host);
-    if(wrong_host(host)) return resp400();
+    if(wrong_host(host)) return resp400(root);
 
     const auto& uri = req.request_uri();
 
@@ -112,5 +123,18 @@ Response* Content::response_of(const Request& req) const
     if(match(uri, re.robots)) return robots();
     if(match(uri, re.favicon)) return favicon();
 
-    return resp404();
+    return resp404(root);
 }
+
+Response* Content::frontpage() const { return resp404(root); }
+Response* Content::by_date() const { return resp404(root); }
+Response* Content::year(unsigned) const { return resp404(root); }
+Response* Content::month(unsigned, unsigned) const { return resp404(root); }
+Response* Content::redirect(const std::string&) const { return resp404(root); }
+Response* Content::photo(const std::string& s) const { return open<response::Image>(root, s); }
+Response* Content::thumb(const std::string&) const { return resp404(root); }
+Response* Content::keywords() const { return resp404(root); }
+Response* Content::keyword(const std::string&) const { return resp404(root); }
+Response* Content::robots() const { return resp404(root); }
+Response* Content::css() const { return resp404(root); }
+Response* Content::favicon() const { return resp404(root); }

@@ -1,6 +1,6 @@
 /* -*- c++ -*-
  *
- * Copyright (c) 2017 Jörgen Grahn
+ * Copyright (c) 2017, 2020 Jörgen Grahn
  * All rights reserved.
  *
  */
@@ -44,6 +44,7 @@ struct Patterns {
 class Content {
 public:
     Content(const std::string& host, const std::string& path);
+    ~Content();
     Content(const Content&) = delete;
     Content& operator= (const Content&) = delete;
 
@@ -52,6 +53,20 @@ public:
 private:
     const Patterns re;
     const std::string host;
+    const int root;
+
+    Response* frontpage() const;
+    Response* by_date() const;
+    Response* year(unsigned yyyy) const;
+    Response* month(unsigned yyyy, unsigned mm) const;
+    Response* redirect(const std::string& s) const;
+    Response* photo(const std::string& s) const;
+    Response* thumb(const std::string& s) const;
+    Response* keywords() const;
+    Response* keyword(const std::string& s) const;
+    Response* robots() const;
+    Response* css() const;
+    Response* favicon() const;
 };
 
 #endif

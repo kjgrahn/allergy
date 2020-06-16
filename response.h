@@ -164,6 +164,16 @@ namespace response {
     /**
      *
      */
+    template <class Status>
+    struct ErrorPage : public Response {
+	explicit ErrorPage(int fd);
+	bool tick(int fd) override;
+	using status = Status;
+    };
+
+    /**
+     *
+     */
     struct Image : public Response {
 	explicit Image(int fd)
 	    : body(backlog, fd),
