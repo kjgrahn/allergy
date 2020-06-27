@@ -24,9 +24,9 @@
  * tick() returns true if the fd goes blocked and the backlog is now non-empty.
  *
  *   +---------+     +--------+     +------+     +-----+
- *   | Headers |---->| Filter |---->|      |---->|     |
+ *   | Headers |---->| Filter |-----|------|---->|     |
  *   +---------+     +--------+     | Back |     | fd  |
- *   | Body    +---->| Filter +---->| log  |---->|     |
+ *   | Body    +---->| Filter +-----| log -|---->|     |
  *   |         |     |        |     |      |     |     |
  *   +---------+     +--------+     +------+     +-----+
  *
@@ -145,7 +145,7 @@ namespace response {
     };
 
     /**
-     *
+     * An error (like 404 Not Found) with a minimal body.
      */
     struct Error : public Response {
 	explicit Error(const char* s)
@@ -162,7 +162,7 @@ namespace response {
     };
 
     /**
-     *
+     * Like Error, but with a static HTML body read from file.
      */
     template <class Status>
     struct ErrorPage : public Response {
@@ -172,7 +172,7 @@ namespace response {
     };
 
     /**
-     *
+     * A JPEG image, read from file.
      */
     struct Image : public Response {
 	explicit Image(int fd)
