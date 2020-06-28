@@ -34,20 +34,20 @@ namespace {
 
     bool wrong_host(const Blob&) { return false; }
 
-    template <class Error>
+    template <class ErrorPage>
     Response* open(int root)
     {
-	int fd = File{root, Error::status::file}.open();
+	int fd = File{root, ErrorPage::status::file}.open();
 	if (fd==-1) {
-	    return new response::Error{Error::status::text};
+	    return new response::Error<typename ErrorPage::status>;
 	}
-	return new Error{fd};
+	return new ErrorPage{fd};
     }
 
-    Response* resp400(int root) { return open<response::ErrorPage<status::S400>>(root); }
-    Response* resp404(int root) { return open<response::ErrorPage<status::S404>>(root); }
-    Response* resp500(int root) { return open<response::ErrorPage<status::S500>>(root); }
-    Response* resp501(int root) { return open<response::ErrorPage<status::S501>>(root); }
+    Response* resp400(int root) { return open<response::ErrorPage<Status<400>>>(root); }
+    Response* resp404(int root) { return open<response::ErrorPage<Status<404>>>(root); }
+    Response* resp500(int root) { return open<response::ErrorPage<Status<500>>>(root); }
+    Response* resp501(int root) { return open<response::ErrorPage<Status<501>>>(root); }
 
     /**
      * R(fd) or a response::Error if the file cannot be opened.

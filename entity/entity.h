@@ -32,8 +32,6 @@ namespace entity {
 	Entity(const Entity&) = delete;
 	Entity& operator= (const Entity&) = delete;
 	Entity& operator= (Entity&&) = default;
-
-	static constexpr const char* status_code = "200 OK\r\n";
     };
 }
 

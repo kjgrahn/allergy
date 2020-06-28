@@ -10,10 +10,13 @@
 #include "backlog.h"
 #include "filter.h"
 
+#include "status.h"
 #include "entity/string.h"
+#include "entity/file.h"
 #include "entity/image.h"
 #include "entity/generated.h"
 
+#include <cassert>
 #include <sstream>
 
 
@@ -88,16 +91,16 @@ namespace response {
      * the Backlog.
      */
     struct Headers {
-	template <class B>
-	explicit Headers(Backlog& backlog, const B& body)
+	template <class B, class Status>
+	explicit Headers(Backlog& backlog, const B& body, const Status status)
 	    : text(""),
 	      filter(backlog)
 	{
 	    std::ostringstream oss;
-	    oss << "HTTP/1.1 " << body.entity.status_code;
+	    oss << "HTTP/1.1 " << status.text << "\r\n";
 	    general_headers(oss);
 	    response_headers(oss);
-	    body.entity.headers(oss) << "\r\n";
+	    body.entity_headers(oss) << "\r\n";
 	    text = entity::String{oss};
 	}
 
@@ -132,28 +135,51 @@ namespace response {
 	      filter(backlog)
 	{}
 
-	bool tick(int fd);
-	bool done() const;
+	bool tick(int fd) { return entity.tick(fd, filter); }
+	bool done() const { return entity.done(); }
 
-	const char* status_code;
-	const char* encoding;
-	const char* type;
-	const char* len;
+	std::ostream& entity_headers(std::ostream& oss) const
+	{
+	    return entity.headers(oss);
+	}
 
+    private:
 	E entity;
 	F filter;
     };
 
     /**
+     * tick() a combination of headers, body and backlog; returns true
+     * iff the fd goes blocked. Undefined result if the whole sequence
+     * was already done.
+     */
+    template <class Body>
+    bool tick(int fd, Backlog& backlog,
+	      response::Headers& headers,
+	      Body& body)
+    {
+	if(!backlog.empty()) return backlog.write(fd);
+	if(!headers.done()) return headers.tick(fd);
+	assert(!body.done());
+	return body.tick(fd);
+    }
+
+    /**
      * An error (like 404 Not Found) with a minimal body.
      */
+    template <class Status>
     struct Error : public Response {
-	explicit Error(const char* s)
-	    : body(backlog, s),
-	      headers(backlog, body)
+	Error()
+	    : body(backlog, Status::text),
+	      headers(backlog, body, Status{})
 	{}
 
-	bool tick(int fd) override;
+	bool tick(int fd) override
+	{
+	    bool blocked = response::tick(fd, backlog, headers, body);
+	    done = body.done();
+	    return blocked;
+	}
 
     private:
 	Backlog backlog;
@@ -166,9 +192,23 @@ namespace response {
      */
     template <class Status>
     struct ErrorPage : public Response {
-	explicit ErrorPage(int fd);
-	bool tick(int fd) override;
 	using status = Status;
+
+	explicit ErrorPage(int fd)
+	    : body(backlog, fd),
+	      headers(backlog, body, Status{})
+	{}
+	bool tick(int fd) override
+	{
+	    bool blocked = response::tick(fd, backlog, headers, body);
+	    done = body.done();
+	    return blocked;
+	}
+
+    private:
+	Backlog backlog;
+	Body<entity::Image, Filter::P> body;
+	Headers headers;
     };
 
     /**
@@ -177,7 +217,7 @@ namespace response {
     struct Image : public Response {
 	explicit Image(int fd)
 	    : body(backlog, fd),
-	      headers(backlog, body)
+	      headers(backlog, body, Status<200>{})
 	{}
 
 	bool tick(int fd) override;
@@ -195,7 +235,7 @@ namespace response {
 	template <class F>
 	explicit Generated(const F& f)
 	    : body(backlog, f),
-	      headers(backlog, body)
+	      headers(backlog, body, Status<200>{})
 	{}
 
 	bool tick(int fd) override;

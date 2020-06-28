@@ -1,4 +1,4 @@
-/* Copyright (c) 2012, 2013 Jörgen Grahn
+/* Copyright (c) 2012, 2013, 2020 Jörgen Grahn
  * All rights reserved.
  *
  */
@@ -8,7 +8,6 @@
 #include "filter.h"
 #include "date.h"
 
-#include <cassert>
 #include <cctype>
 #include <sstream>
 
@@ -44,22 +43,6 @@ namespace {
 	std::string s = oss.str();
 	return out.write(fd, Blob(s));
     }
-
-    /**
-     * tick() a combination of headers, body and backlog; returns true
-     * iff the fd goes blocked. Undefined result if the whole sequence
-     * was already done.
-     */
-    template <class Body>
-    bool tick(int fd, Backlog& backlog,
-	      response::Headers& headers,
-	      Body& body)
-    {
-	if(!backlog.empty()) return backlog.write(fd);
-	if(!headers.done()) return headers.tick(fd);
-	assert(!body.done());
-	return body.tick(fd);
-    }
 }
 
 bool response::Headers::tick(int fd)
@@ -72,28 +55,9 @@ bool response::Headers::done() const
     return text.done();
 }
 
-template <class E, class F>
-bool response::Body<E, F>::tick(int fd)
-{
-    return entity.tick(fd, filter);
-}
-
-template <class E, class F>
-bool response::Body<E, F>::done() const
-{
-    return entity.done();
-}
-
-bool response::Error::tick(int fd)
-{
-    bool blocked = ::tick(fd, backlog, headers, body);
-    done = body.done();
-    return blocked;
-}
-
 bool response::Image::tick(int fd)
 {
-    bool blocked = ::tick(fd, backlog, headers, body);
+    bool blocked = response::tick(fd, backlog, headers, body);
     done = body.done();
     return blocked;
 }
