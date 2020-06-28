@@ -10,124 +10,123 @@
 /**
  * HTTP status codes [6.1.1]
  */
-namespace status {
+template <unsigned n> class Status;
 
-    struct S200 {
-	static constexpr const char* text = "200 OK";
-    };
-    struct S201 {
-	static constexpr const char* text = "201 Created";
-    };
-    struct S202 {
-	static constexpr const char* text = "202 Accepted";
-    };
-    struct S203 {
-	static constexpr const char* text = "203 Non-Authoritative Information";
-    };
-    struct S204 {
-	static constexpr const char* text = "204 No Content";
-    };
-    struct S205 {
-	static constexpr const char* text = "205 Reset Content";
-    };
-    struct S206 {
-	static constexpr const char* text = "206 Partial Content";
-    };
+template <> struct Status<200> {
+    static constexpr const char* text = "200 OK";
+};
+template <> struct Status<201> {
+    static constexpr const char* text = "201 Created";
+};
+template <> struct Status<202> {
+    static constexpr const char* text = "202 Accepted";
+};
+template <> struct Status<203> {
+    static constexpr const char* text = "203 Non-Authoritative Information";
+};
+template <> struct Status<204> {
+    static constexpr const char* text = "204 No Content";
+};
+template <> struct Status<205> {
+    static constexpr const char* text = "205 Reset Content";
+};
+template <> struct Status<206> {
+    static constexpr const char* text = "206 Partial Content";
+};
 
-    struct S300 {
-	static constexpr const char* text = "300 Multiple Choices";
-    };
-    struct S301 {
-	static constexpr const char* text = "301 Moved Permanently";
-    };
-    struct S302 {
-	static constexpr const char* text = "302 Found";
-    };
-    struct S303 {
-	static constexpr const char* text = "303 See Other";
-    };
-    struct S304 {
-	static constexpr const char* text = "304 Not Modified";
-    };
-    struct S305 {
-	static constexpr const char* text = "305 Use Proxy";
-    };
-    struct S307 {
-	static constexpr const char* text = "307 Temporary Redirect";
-    };
+template <> struct Status<300> {
+    static constexpr const char* text = "300 Multiple Choices";
+};
+template <> struct Status<301> {
+    static constexpr const char* text = "301 Moved Permanently";
+};
+template <> struct Status<302> {
+    static constexpr const char* text = "302 Found";
+};
+template <> struct Status<303> {
+    static constexpr const char* text = "303 See Other";
+};
+template <> struct Status<304> {
+    static constexpr const char* text = "304 Not Modified";
+};
+template <> struct Status<305> {
+    static constexpr const char* text = "305 Use Proxy";
+};
+template <> struct Status<307> {
+    static constexpr const char* text = "307 Temporary Redirect";
+};
 
-    struct S400 {
-	static constexpr const char* text = "400 Bad Request";
-	static constexpr const char* file = "400";
-    };
-    struct S403 {
-	static constexpr const char* text = "403 Forbidden";
-	static constexpr const char* file = "403";
-    };
-    struct S404 {
-	static constexpr const char* text = "404 Not Found";
-	static constexpr const char* file = "404";
-    };
-    struct S405 {
-	static constexpr const char* text = "405 Method Not Allowed";
-    };
-    struct S406 {
-	static constexpr const char* text = "406 Not Acceptable";
-    };
-    struct S407 {
-	static constexpr const char* text = "407 Proxy Authentication Required";
-    };
-    struct S408 {
-	static constexpr const char* text = "408 Request Timeout";
-    };
-    struct S409 {
-	static constexpr const char* text = "409 Conflict";
-    };
-    struct S410 {
-	static constexpr const char* text = "410 Gone";
-    };
-    struct S411 {
-	static constexpr const char* text = "411 Length Required";
-    };
-    struct S412 {
-	static constexpr const char* text = "412 Precondition Failed";
-    };
-    struct S413 {
-	static constexpr const char* text = "413 Request Entity Too Large";
-    };
-    struct S414 {
-	static constexpr const char* text = "414 Request-URI Too Long";
-    };
-    struct S415 {
-	static constexpr const char* text = "415 Unsupported Media Type";
-    };
-    struct S416 {
-	static constexpr const char* text = "416 Requested Range Not Satisfiable";
-    };
-    struct S417 {
-	static constexpr const char* text = "417 Expectation Failed";
-    };
+template <> struct Status<400> {
+    static constexpr const char* text = "400 Bad Request";
+    static constexpr const char* file = "400";
+};
+template <> struct Status<403> {
+    static constexpr const char* text = "403 Forbidden";
+    static constexpr const char* file = "403";
+};
+template <> struct Status<404> {
+    static constexpr const char* text = "404 Not Found";
+    static constexpr const char* file = "404";
+};
+template <> struct Status<405> {
+    static constexpr const char* text = "405 Method Not Allowed";
+};
+template <> struct Status<406> {
+    static constexpr const char* text = "406 Not Acceptable";
+};
+template <> struct Status<407> {
+    static constexpr const char* text = "407 Proxy Authentication Required";
+};
+template <> struct Status<408> {
+    static constexpr const char* text = "408 Request Timeout";
+};
+template <> struct Status<409> {
+    static constexpr const char* text = "409 Conflict";
+};
+template <> struct Status<410> {
+    static constexpr const char* text = "410 Gone";
+};
+template <> struct Status<411> {
+    static constexpr const char* text = "411 Length Required";
+};
+template <> struct Status<412> {
+    static constexpr const char* text = "412 Precondition Failed";
+};
+template <> struct Status<413> {
+    static constexpr const char* text = "413 Request Entity Too Large";
+};
+template <> struct Status<414> {
+    static constexpr const char* text = "414 Request-URI Too Long";
+};
+template <> struct Status<415> {
+    static constexpr const char* text = "415 Unsupported Media Type";
+};
+template <> struct Status<416> {
+    static constexpr const char* text = "416 Requested Range Not Satisfiable";
+};
+template <> struct Status<417> {
+    static constexpr const char* text = "417 Expectation Failed";
+};
 
-    struct S500 {
-	static constexpr const char* text = "500 Internal Server Error";
-	static constexpr const char* file = "500";
-    };
-    struct S501 {
-	static constexpr const char* text = "501 Not Implemented";
-	static constexpr const char* file = "501";
-    };
-    struct S502 {
-	static constexpr const char* text = "502 Bad Gateway";
-    };
-    struct S503 {
-	static constexpr const char* text = "503 Service Unavailable";
-    };
-    struct S504 {
-	static constexpr const char* text = "504 Gateway Timeout";
-    };
-    struct S505 {
-	static constexpr const char* text = "505 HTTP Version Not Supported";
-    };
-}
+template <> struct Status<500> {
+    static constexpr const char* text = "500 Internal Server Error";
+    static constexpr const char* file = "500";
+};
+template <> struct Status<501> {
+    static constexpr const char* text = "501 Not Implemented";
+    static constexpr const char* file = "501";
+};
+template <> struct Status<502> {
+    static constexpr const char* text = "502 Bad Gateway";
+};
+template <> struct Status<503> {
+    static constexpr const char* text = "503 Service Unavailable";
+};
+template <> struct Status<504> {
+    static constexpr const char* text = "504 Gateway Timeout";
+};
+template <> struct Status<505> {
+    static constexpr const char* text = "505 HTTP Version Not Supported";
+};
 
 #endif
