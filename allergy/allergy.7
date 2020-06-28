@@ -82,27 +82,38 @@ preventing mirroring or indexing of the descriptions and photos.
 .
 .SH "HTTP REQUESTS"
 .
-.BP User-Agent
-.BP Host
+.SS "General headers"
+.BP Connection
+.
+.SS "Request headers"
 .BP Accept
+.BP Accept-Charset
 .BP Accept-Language
 .BP Accept-Encoding
-.BP Connection
+.BP Expect
+.BP Host
+.BP TE
 .
 .
 .SH "HTTP RESPONSES"
 .
-.BP Date
-.BP Server
-.BP Last-Modified
-.BP ETag
-.BP Accept-Ranges
-.BP Vary
-.BP Content-Encoding
-.BP Content-Length
-.BP Keep-Alive
+.SS "General headers"
 .BP Connection
+.BP Date
+.BP Transfer-Encoding
+.
+.SS "Response headers"
+.BP ETag
+.BP Location
+.BP Server
+.
+.SS "Entity headers"
+.BP Content-Encoding
+.BP Content-Language
+.BP Content-Length
 .BP Content-Type
+.BP Expires
+.BP Last-Modified
 .
 .
 .SH "SEE ALSO"
