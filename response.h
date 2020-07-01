@@ -129,9 +129,9 @@ namespace response {
      */
     template <class E, class F>
     struct Body {
-	template <class C>
-	Body(Backlog& backlog, C arg)
-	    : entity(arg),
+	template <class ... Args>
+	Body(Backlog& backlog, Args&& ... argv)
+	    : entity(argv ...),
 	      filter(backlog)
 	{}
 
