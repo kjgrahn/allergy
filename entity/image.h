@@ -7,36 +7,18 @@
 #ifndef GB_ENTITY_IMAGE_H_
 #define GB_ENTITY_IMAGE_H_
 
-#include "entity.h"
-#include "../blob.h"
-
-#include <array>
-#include <iosfwd>
+#include "file.h"
 
 namespace entity {
 
     /**
      * An image file, presumably, given by an fd opened for reading.
-     *
-     * Trusts fstat(2) for the size, and never writes more than what
-     * was discovered that way -- it's preferable to send a broken
-     * image compared to breaking the session.
      */
-    class Image : public Entity {
+    class Image : public File {
     public:
-	explicit Image(int fd);
-	~Image();
-
-	std::ostream& headers(std::ostream& os) const;
-
-	bool done() const { return n == st_size; }
-	template<class Filter>
-	bool tick(int fd, Filter& filter);
-
-    private:
-	const int src;
-	const size_t st_size;
-	size_t n = 0;
+	explicit Image(int fd)
+	    : File(fd, "image/jpeg")
+	{}
     };
 }
 

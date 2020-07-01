@@ -1,8 +1,8 @@
-/* Copyright (c) 2019 Jörgen Grahn
+/* Copyright (c) 2020 Jörgen Grahn
  * All rights reserved.
  *
  */
-#include "image.h"
+#include "file.h"
 
 #include "../error.h"
 #include "../filter.h"
@@ -13,7 +13,7 @@
 
 #include <iostream>
 
-using entity::Image;
+using entity::File;
 
 namespace {
     off_t size_of(int fd)
@@ -24,19 +24,20 @@ namespace {
     }
 }
 
-Image::Image(int fd)
+File::File(int fd, const char* mime)
     : src(fd),
-      st_size(size_of(src))
+      st_size(size_of(src)),
+      mime(mime)
 {}
 
-Image::~Image()
+File::~File()
 {
     close(src);
 }
 
-std::ostream& Image::headers(std::ostream& os) const
+std::ostream& File::headers(std::ostream& os) const
 {
-    os << "Content-Type: image/jpeg\r\n"
+    os << "Content-Type: " << mime << "\r\n"
        << "Content-Length: " << st_size << "\r\n"
        << "Last-Modified: Mon, 04 Aug 2014 22:05:06 GMT\r\n";
 
@@ -44,7 +45,7 @@ std::ostream& Image::headers(std::ostream& os) const
 }
 
 template<class Filter>
-bool Image::tick(int fd, Filter& filter)
+bool File::tick(int fd, Filter& filter)
 {
     char buf[8192];
     size_t len = std::min(sizeof buf, st_size - n);
@@ -57,4 +58,4 @@ bool Image::tick(int fd, Filter& filter)
     return filter.write(fd, Blob{buf, len});
 }
 
-template bool Image::tick(int fd, Filter::P& filter);
+template bool File::tick(int fd, Filter::P& filter);

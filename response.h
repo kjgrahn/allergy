@@ -195,7 +195,7 @@ namespace response {
 	using status = Status;
 
 	explicit ErrorPage(int fd)
-	    : body(backlog, fd),
+	    : body(backlog, fd, "text/html"),
 	      headers(backlog, body, Status{})
 	{}
 	bool tick(int fd) override
@@ -207,7 +207,7 @@ namespace response {
 
     private:
 	Backlog backlog;
-	Body<entity::Image, Filter::P> body;
+	Body<entity::File, Filter::P> body;
 	Headers headers;
     };
 
