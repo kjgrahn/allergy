@@ -55,6 +55,13 @@ bool response::Headers::done() const
     return text.done();
 }
 
+bool response::File::tick(int fd)
+{
+    bool blocked = response::tick(fd, backlog, headers, body);
+    done = body.done();
+    return blocked;
+}
+
 bool response::Image::tick(int fd)
 {
     bool blocked = response::tick(fd, backlog, headers, body);

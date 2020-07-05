@@ -212,6 +212,23 @@ namespace response {
     };
 
     /**
+     * Anything successfully read from file, with MIME type.
+     */
+    struct File : public Response {
+	File(int fd, const char* mime)
+	    : body(backlog, fd, mime),
+	      headers(backlog, body, Status<200>{})
+	{}
+
+	bool tick(int fd) override;
+
+    private:
+	Backlog backlog;
+	Body<entity::File, Filter::P> body;
+	Headers headers;
+    };
+
+    /**
      * A JPEG image, read from file.
      */
     struct Image : public Response {
