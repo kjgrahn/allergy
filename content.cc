@@ -122,6 +122,6 @@ Response* Content::photo(const std::string& s) const { return open<response::Ima
 Response* Content::thumb(const std::string&) const { return resp404(root); }
 Response* Content::keywords() const { return resp404(root); }
 Response* Content::keyword(const std::string&) const { return resp404(root); }
-Response* Content::robots() const { return resp404(root); }
+Response* Content::robots() const { return open<response::File>(root, "robots.txt", "text/plain"); }
 Response* Content::css() const { return resp404(root); }
 Response* Content::favicon() const { return resp404(root); }
