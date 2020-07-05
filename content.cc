@@ -42,8 +42,8 @@ namespace {
     /**
      * R(fd) or a response::Error if the file cannot be opened.
      */
-    template <class R>
-    Response* open(const Root& root, const std::string& path)
+    template <class R, class ... Args>
+    Response* open(const Root& root, const std::string& path, Args&& ... argv)
     {
 	int fd = root.open(path);
 	if (fd==-1) switch (errno) {
@@ -54,7 +54,7 @@ namespace {
 	    default:
 		return resp500(root);
 	}
-	return new R{fd};
+	return new R{fd, argv ...};
     }
 }
 
