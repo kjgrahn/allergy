@@ -4,20 +4,10 @@
  */
 #include "content.h"
 
-#include "file.h"
+#include "root.h"
 #include "request.h"
 #include "response.h"
 #include "status.h"
-
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-
-int File::open() const
-{
-    return openat(dir, path.c_str(), O_RDONLY);
-}
 
 namespace {
     bool match(const std::string& s, const std::regex& re)
@@ -35,27 +25,27 @@ namespace {
     bool wrong_host(const Blob&) { return false; }
 
     template <class ErrorPage>
-    Response* open(int root)
+    Response* open(const Root& root)
     {
-	int fd = File{root, ErrorPage::status::file}.open();
+	int fd = root.open(ErrorPage::status::file);
 	if (fd==-1) {
 	    return new response::Error<typename ErrorPage::status>;
 	}
 	return new ErrorPage{fd};
     }
 
-    Response* resp400(int root) { return open<response::ErrorPage<Status<400>>>(root); }
-    Response* resp404(int root) { return open<response::ErrorPage<Status<404>>>(root); }
-    Response* resp500(int root) { return open<response::ErrorPage<Status<500>>>(root); }
-    Response* resp501(int root) { return open<response::ErrorPage<Status<501>>>(root); }
+    Response* resp400(const Root& root) { return open<response::ErrorPage<Status<400>>>(root); }
+    Response* resp404(const Root& root) { return open<response::ErrorPage<Status<404>>>(root); }
+    Response* resp500(const Root& root) { return open<response::ErrorPage<Status<500>>>(root); }
+    Response* resp501(const Root& root) { return open<response::ErrorPage<Status<501>>>(root); }
 
     /**
      * R(fd) or a response::Error if the file cannot be opened.
      */
     template <class R>
-    Response* open(int root, const std::string& path)
+    Response* open(const Root& root, const std::string& path)
     {
-	int fd = File{root, path}.open();
+	int fd = root.open(path);
 	if (fd==-1) switch (errno) {
 	    case EACCES: // don't give away that the file exists
 	    case ENOENT:
@@ -85,13 +75,10 @@ Patterns::Patterns()
 
 Content::Content(const std::string& host, const std::string& root)
     : host{host},
-      root{open(root.c_str(), O_DIRECTORY | O_PATH)}
+      root{root}
 {}
 
-Content::~Content()
-{
-    if (root!=-1) close(root);
-}
+Content::~Content() = default;
 
 Response* Content::response_of(const Request& req) const
 {

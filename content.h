@@ -7,6 +7,8 @@
 #ifndef OUTN_CONTENT_H_
 #define OUTN_CONTENT_H_
 
+#include "root.h"
+
 #include <string>
 #include <regex>
 
@@ -53,7 +55,7 @@ public:
 private:
     const Patterns re;
     const std::string host;
-    const int root;
+    const Root root;
 
     Response* frontpage() const;
     Response* by_date() const;
