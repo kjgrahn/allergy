@@ -57,6 +57,7 @@ deflate.o: CXXFLAGS+=-Wno-old-style-cast
 httpd.o: CXXFLAGS+=-Wno-old-style-cast
 
 liballergy.a: allergy/keys.o
+liballergy.a: allergy/photo.o
 	$(AR) -r $@ $^
 
 outnumbered: httpd.o liboutnumbered.a
@@ -82,6 +83,7 @@ libtest.a: test/test_regex.o
 	$(AR) -r $@ $^
 
 liballergytest.a: allergy/test/test_keys.o
+liballergytest.a: allergy/test/test_photo.o
 	$(AR) -r $@ $^
 
 test/%.o: CPPFLAGS+=-I.

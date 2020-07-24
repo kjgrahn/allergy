@@ -41,7 +41,7 @@ namespace {
     }
 }
 
-namespace allergy_keys {
+namespace keys {
 
     using orchis::TC;
 
