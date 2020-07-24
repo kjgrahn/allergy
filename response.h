@@ -92,13 +92,14 @@ namespace response {
      */
     struct Headers {
 	template <class B, class Status>
-	explicit Headers(Backlog& backlog, const B& body, const Status status)
+	explicit Headers(const timespec& ts, Backlog& backlog,
+			 const B& body, const Status status)
 	    : text(""),
 	      filter(backlog)
 	{
 	    std::ostringstream oss;
 	    oss << "HTTP/1.1 " << status.text << "\r\n";
-	    general_headers(oss);
+	    general_headers(oss, ts);
 	    response_headers(oss);
 	    body.entity_headers(oss) << "\r\n";
 	    text = entity::String{oss};
@@ -111,17 +112,9 @@ namespace response {
 	entity::String text;
 	Filter::P filter;
 
-	std::ostream& general_headers(std::ostream& oss)
-	{
-	    return oss << date();
-	}
-
-	std::ostream& response_headers(std::ostream& oss)
-	{
-	    return oss << "Server: allergy\r\n";
-	}
-
-	const char* date() const { return "Date: Mon, 04 Aug 2014 22:05:06 GMT\r\n"; }
+	std::ostream& general_headers(std::ostream& oss,
+				      const timespec& ts) const;
+	std::ostream& response_headers(std::ostream& oss) const;
     };
 
     /**
@@ -169,9 +162,9 @@ namespace response {
      */
     template <class Status>
     struct Error : public Response {
-	Error()
+	explicit Error(const timespec& ts)
 	    : body(backlog, Status::text),
-	      headers(backlog, body, Status{})
+	      headers(ts, backlog, body, Status{})
 	{}
 
 	bool tick(int fd) override
@@ -194,9 +187,9 @@ namespace response {
     struct ErrorPage : public Response {
 	using status = Status;
 
-	explicit ErrorPage(int fd)
+	ErrorPage(const timespec& ts, int fd)
 	    : body(backlog, fd, "text/html"),
-	      headers(backlog, body, Status{})
+	      headers(ts, backlog, body, Status{})
 	{}
 	bool tick(int fd) override
 	{
@@ -215,9 +208,9 @@ namespace response {
      * Anything successfully read from file, with MIME type.
      */
     struct File : public Response {
-	File(int fd, const char* mime)
+	File(const timespec& ts, int fd, const char* mime)
 	    : body(backlog, fd, mime),
-	      headers(backlog, body, Status<200>{})
+	      headers(ts, backlog, body, Status<200>{})
 	{}
 
 	bool tick(int fd) override;
@@ -232,9 +225,9 @@ namespace response {
      * A JPEG image, read from file.
      */
     struct Image : public Response {
-	explicit Image(int fd)
+	Image(const timespec& ts, int fd)
 	    : body(backlog, fd),
-	      headers(backlog, body, Status<200>{})
+	      headers(ts, backlog, body, Status<200>{})
 	{}
 
 	bool tick(int fd) override;
@@ -250,9 +243,9 @@ namespace response {
      */
     struct Generated : public Response {
 	template <class F>
-	explicit Generated(const F& f)
+	Generated(const timespec& ts, const F& f)
 	    : body(backlog, f),
-	      headers(backlog, body, Status<200>{})
+	      headers(ts, backlog, body, Status<200>{})
 	{}
 
 	bool tick(int fd) override;

@@ -4,10 +4,26 @@
  */
 #include "response.h"
 
+#include "date.h"
 
-bool response::Headers::tick(int fd)
+
+using response::Headers;
+
+bool Headers::tick(int fd)
 {
     return text.tick(fd, filter);
+}
+
+std::ostream& Headers::general_headers(std::ostream& oss,
+				       const timespec& ts) const
+{
+    static DateConv dateconv;
+    return oss << "Date: " << dateconv.format(ts.tv_sec) << "\r\n";
+}
+
+std::ostream& Headers::response_headers(std::ostream& oss) const
+{
+    return oss << "Server: allergy\r\n";
 }
 
 bool response::Headers::done() const

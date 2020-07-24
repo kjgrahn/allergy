@@ -14,6 +14,7 @@
 
 class Request;
 class Response;
+class timespec;
 
 struct Patterns {
     Patterns();
@@ -50,25 +51,25 @@ public:
     Content(const Content&) = delete;
     Content& operator= (const Content&) = delete;
 
-    Response* response_of(const Request& request) const;
+    Response* response_of(const Request& request, const timespec& ts) const;
 
 private:
     const Patterns re;
     const std::string host;
     const Root root;
 
-    Response* frontpage() const;
-    Response* by_date() const;
-    Response* year(unsigned yyyy) const;
-    Response* month(unsigned yyyy, unsigned mm) const;
-    Response* redirect(const std::string& s) const;
-    Response* photo(const std::string& s) const;
-    Response* thumb(const std::string& s) const;
-    Response* keywords() const;
-    Response* keyword(const std::string& s) const;
-    Response* robots() const;
-    Response* css() const;
-    Response* favicon() const;
+    Response* frontpage(const timespec& t) const;
+    Response* by_date(const timespec& t) const;
+    Response* year(const timespec& t, unsigned yyyy) const;
+    Response* month(const timespec& t, unsigned yyyy, unsigned mm) const;
+    Response* redirect(const timespec& t, const std::string& s) const;
+    Response* photo(const timespec& t, const std::string& s) const;
+    Response* thumb(const timespec& t, const std::string& s) const;
+    Response* keywords(const timespec& t) const;
+    Response* keyword(const timespec& t, const std::string& s) const;
+    Response* robots(const timespec& t) const;
+    Response* css(const timespec& t) const;
+    Response* favicon(const timespec& t) const;
 };
 
 #endif
