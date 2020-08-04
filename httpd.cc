@@ -185,7 +185,7 @@ int main(int argc, char ** argv)
 {
     using std::string;
 
-    const string prog = argv[0] ? argv[0] : "outnumbered";
+    const string prog = argv[0] ? argv[0] : "allergyd";
     const string usage = string("usage: ")
 	+ prog +
 	" [-d]"
@@ -229,8 +229,8 @@ int main(int argc, char ** argv)
 	    std::cout << usage << '\n';
 	    return 0;
 	case 'v':
-	    std::cout << "outnumbered " << version() << '\n'
-		      << "Copyright (c) 2010-2018 Jörgen Grahn\n";
+	    std::cout << "allergyd " << version() << '\n'
+		      << "Copyright (c) 2010-2020 Jörgen Grahn\n";
 	    return 0;
 	    break;
 	case ':':

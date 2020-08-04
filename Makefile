@@ -10,13 +10,13 @@ CXXFLAGS=-Wall -Wextra -pedantic -std=c++11 -g -Os -Wold-style-cast
 CPPFLAGS=
 
 .PHONY: all
-all: outnumbered
+all: allergyd
 all: tests
 
 .PHONY: install
-install: outnumbered
+install: allergyd
 install: outnumbered.1
-	install -m755 outnumbered $(INSTALLBASE)/bin/
+	install -m755 allergyd $(INSTALLBASE)/bin/
 	install -m644 outnumbered.1 $(INSTALLBASE)/man/man1/
 
 .PHONY: check checkv
@@ -60,7 +60,7 @@ liballergy.a: allergy/keys.o
 liballergy.a: allergy/photo.o
 	$(AR) -r $@ $^
 
-outnumbered: httpd.o liboutnumbered.a
+allergyd: httpd.o liboutnumbered.a
 	$(CXX) $(CXXFLAGS) -o $@ httpd.o -L. -loutnumbered -lrt -lz
 
 magic: magic.o liboutnumbered.a
@@ -111,7 +111,7 @@ depend:
 
 .PHONY: clean
 clean:
-	$(RM) outnumbered magic
+	$(RM) allergyd magic
 	$(RM) {,entity/,test/}*.o
 	$(RM) allergy/{,test/}*.o
 	$(RM) *.ps

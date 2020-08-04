@@ -14,7 +14,7 @@ Syslog::Syslog()
 {
     char_type* p = &v[0];
     setp(p, p + v.size()-1);
-    openlog("outnumbered", 0, LOG_DAEMON);
+    openlog("allergyd", 0, LOG_DAEMON);
 }
 
 
