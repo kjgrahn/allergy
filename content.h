@@ -56,6 +56,8 @@ public:
 private:
     const Patterns re;
     const std::string host;
+    const Root lib;
+    const Root thumb;
     const Root root;
 
     Response* frontpage(const timespec& t) const;
@@ -64,7 +66,7 @@ private:
     Response* month(const timespec& t, unsigned yyyy, unsigned mm) const;
     Response* redirect(const timespec& t, const std::string& s) const;
     Response* photo(const timespec& t, const std::string& s) const;
-    Response* thumb(const timespec& t, const std::string& s) const;
+    Response* thumbnail(const timespec& t, const std::string& s) const;
     Response* keywords(const timespec& t) const;
     Response* keyword(const timespec& t, const std::string& s) const;
     Response* robots(const timespec& t) const;

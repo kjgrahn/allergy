@@ -25,34 +25,36 @@ namespace {
     bool wrong_host(const Blob&) { return false; }
 
     template <class ErrorPage>
-    Response* open(const timespec& t, const Root& root)
+    Response* open(const timespec& t, const Root& lib)
     {
-	int fd = root.open(ErrorPage::status::file);
+	int fd = lib.open(ErrorPage::status::file);
 	if (fd==-1) {
 	    return new response::Error<typename ErrorPage::status>(t);
 	}
 	return new ErrorPage{t, fd};
     }
 
-    Response* resp400(const timespec& t, const Root& root) { return open<response::ErrorPage<Status<400>>>(t, root); }
-    Response* resp404(const timespec& t, const Root& root) { return open<response::ErrorPage<Status<404>>>(t, root); }
-    Response* resp500(const timespec& t, const Root& root) { return open<response::ErrorPage<Status<500>>>(t, root); }
-    Response* resp501(const timespec& t, const Root& root) { return open<response::ErrorPage<Status<501>>>(t, root); }
+    Response* resp400(const timespec& t, const Root& lib) { return open<response::ErrorPage<Status<400>>>(t, lib); }
+    Response* resp404(const timespec& t, const Root& lib) { return open<response::ErrorPage<Status<404>>>(t, lib); }
+    Response* resp500(const timespec& t, const Root& lib) { return open<response::ErrorPage<Status<500>>>(t, lib); }
+    Response* resp501(const timespec& t, const Root& lib) { return open<response::ErrorPage<Status<501>>>(t, lib); }
 
     /**
      * R(fd) or a response::Error if the file cannot be opened.
      */
     template <class R, class ... Args>
-    Response* open(const timespec& t, const Root& root, const std::string& path, Args&& ... argv)
+    Response* open(const timespec& t,
+		   const Root& root, const Root& lib,
+		   const std::string& path, Args&& ... argv)
     {
 	int fd = root.open(path);
 	if (fd==-1) switch (errno) {
 	    case EACCES: // don't give away that the file exists
 	    case ENOENT:
 	    case ENOTDIR:
-		return resp404(t, root);
+		return resp404(t, lib);
 	    default:
-		return resp500(t, root);
+		return resp500(t, lib);
 	}
 	return new R{t, fd, argv ...};
     }
@@ -75,6 +77,8 @@ Patterns::Patterns()
 
 Content::Content(const std::string& host, const std::string& root)
     : host{host},
+      lib{"lib"},
+      thumb{"thumb"},
       root{root}
 {}
 
@@ -82,10 +86,10 @@ Content::~Content() = default;
 
 Response* Content::response_of(const Request& req, const timespec& t) const
 {
-    if(req.method != Request::Method::GET) return resp501(t, root);
+    if(req.method != Request::Method::GET) return resp501(t, lib);
 
     const auto& host = req.header(Request::Property::Host);
-    if(wrong_host(host)) return resp400(t, root);
+    if(wrong_host(host)) return resp400(t, lib);
 
     const auto& uri = req.request_uri();
 
@@ -100,7 +104,7 @@ Response* Content::response_of(const Request& req, const timespec& t) const
 					     to_int(m[2]));
 
     if(match(uri, re.photo, m)) return photo(t, m[1]);
-    if(match(uri, re.thumb, m)) return thumb(t, m[1]);
+    if(match(uri, re.thumb, m)) return thumbnail(t, m[1]);
 
     if(match(uri, re.key)) return redirect(t, "/key/");
     if(match(uri, re.keywords)) return keywords(t);
@@ -111,18 +115,18 @@ Response* Content::response_of(const Request& req, const timespec& t) const
     if(match(uri, re.robots)) return robots(t);
     if(match(uri, re.favicon)) return favicon(t);
 
-    return resp404(t, root);
+    return resp404(t, lib);
 }
 
-Response* Content::frontpage(const timespec& t) const { return resp404(t, root); }
-Response* Content::by_date(const timespec& t) const { return resp404(t, root); }
-Response* Content::year(const timespec& t, unsigned) const { return resp404(t, root); }
-Response* Content::month(const timespec& t, unsigned, unsigned) const { return resp404(t, root); }
-Response* Content::redirect(const timespec& t, const std::string&) const { return resp404(t, root); }
-Response* Content::photo(const timespec& t, const std::string& s) const { return open<response::Image>(t, root, s); }
-Response* Content::thumb(const timespec& t, const std::string&) const { return resp404(t, root); }
-Response* Content::keywords(const timespec& t) const { return resp404(t, root); }
-Response* Content::keyword(const timespec& t, const std::string&) const { return resp404(t, root); }
-Response* Content::robots(const timespec& t) const { return open<response::File>(t, root, "robots.txt", "text/plain"); }
-Response* Content::css(const timespec& t) const { return open<response::File>(t, root, "css", "text/css"); }
-Response* Content::favicon(const timespec& t) const { return resp404(t, root); }
+Response* Content::frontpage(const timespec& t) const { return resp404(t, lib); }
+Response* Content::by_date(const timespec& t) const { return resp404(t, lib); }
+Response* Content::year(const timespec& t, unsigned) const { return resp404(t, lib); }
+Response* Content::month(const timespec& t, unsigned, unsigned) const { return resp404(t, lib); }
+Response* Content::redirect(const timespec& t, const std::string&) const { return resp404(t, lib); }
+Response* Content::photo(const timespec& t, const std::string& s) const { return open<response::Image>(t, root, lib, s); }
+Response* Content::thumbnail(const timespec& t, const std::string&) const { return resp404(t, lib); }
+Response* Content::keywords(const timespec& t) const { return resp404(t, lib); }
+Response* Content::keyword(const timespec& t, const std::string&) const { return resp404(t, lib); }
+Response* Content::robots(const timespec& t) const { return open<response::File>(t, root, lib, "robots.txt", "text/plain"); }
+Response* Content::css(const timespec& t) const { return open<response::File>(t, root, lib, "css", "text/css"); }
+Response* Content::favicon(const timespec& t) const { return resp404(t, lib); }
