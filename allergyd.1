@@ -1,0 +1,122 @@
+.ss 12 0
+.de BP
+.IP \\fB\\$*
+..
+.
+.TH allergyd 1 "AUG 2020" "Allergy" "User Manuals"
+.
+.SH "NAME"
+allergyd \- serve a photo gallery over HTTP
+.
+.SH "SYNOPSIS"
+.B allergyd
+.RB [ \-d ]
+.RB [ \-a
+.IR listen-address ]
+.RB [ \-p
+.IR port ]
+.B --host
+.I hostname
+.I root
+.br
+.B allergyd
+.B --help
+.br
+.B allergyd
+.B --version
+.
+.SH "DESCRIPTION"
+.
+.B allergyd
+is a web server which only serves a large collection of timestamped
+photos, optionally together with textual descriptions taken from files
+in a format described in
+.BR allergy (5).
+There are various gallery views: by date, by month, by keyword, and so on.
+.
+.
+.SS "URLs"
+.
+.IP "\fB/\fP, \fB/index.html"
+The front page.
+.
+.IP "\fB/by-date"
+All photos, newest first.
+.
+.IP "\fB/\fIyyyy"
+All photos from a certain year, oldest first.
+.
+.IP "\fB/\fIyyyy\fP\-\fPmm"
+Like
+.BR "/\fIyyyy\fP" ,
+but narrowed down further to a specific month,
+and with thumbnail pictures.
+.
+.IP "\fB/\fIyyyy\fP\-\fPmm\fP\-\fPdd"
+Like
+.BR /\fIyyyy\fP\-\fPmm\fP ,
+but for a single day.
+.
+.IP "\fB/keywords\fP, \fB/key\fP, \fB/key/\fP"
+All keywords, in alphabetical order.
+.
+.IP "\fB/key/\fIkeyword"
+All photos matching the key
+.IR keyword ,
+newest first.
+Like the per-month and per-date pages, this one includes a thumbnail gallery.
+.
+.IP "\fB/\fIyyyy\fP\-\fPmm\fP\-\fPdd\fP_\fPfoo\fP.jpg"
+The single photo with this name.
+.
+.IP "\fB/thumb/\fIyyyy\fP\-\fPmm\fP\-\fPdd\fP_\fPfoo\fP.jpg"
+A much scaled down version of a certain photo.
+.
+.IP "\fB/css\fP, \fP/robots.txt\fP, \fBfavicon.ico"
+The style sheet, the
+.I "robots exclusion standard"
+specification, and the favicon.
+.
+.
+.SH "OPTIONS"
+.
+.IP "\fB\-d\fP, \fB--daemon\fP"
+Daemonize.
+.
+.IP "\fB\-a\fP, \fB--address\fP \fIlisten-address"
+The address to listen to.
+Default: listen on all interfaces.
+.\" Should be repeatable.
+.
+.IP "\fB\-p\fP, \fB--port\fP \fIport"
+The port to listen to, instead of port 80
+.RB ( http ).
+.
+.IP "\fB--host\fP \fIhostname"
+The server name, i.e. the
+.B Host
+header allowed in requests.
+.\" Should be optional (accept anything).
+.\" Should be repeatable, and support globbing.
+.
+.
+.SH "FILES"
+.
+.
+.SH "NOTES"
+.
+.
+.SH "BUGS"
+.
+.
+.SH "SEE ALSO"
+.
+.BR allergy (5).
+.
+.
+.SH "AUTHOR"
+J\(:orgen Grahn \[fo]grahn+src@snipabacken.se\[fc].
+.
+.
+.SH "LICENSE"
+The GNU General Public License (GPL) version 2 or (at your option) version 3.

@@ -15,9 +15,11 @@ all: tests
 
 .PHONY: install
 install: allergyd
-install: outnumbered.1
+install: allergyd.1
+install: allergy.5
 	install -m755 allergyd $(INSTALLBASE)/bin/
-	install -m644 outnumbered.1 $(INSTALLBASE)/man/man1/
+	install -m644 allergyd.1 $(INSTALLBASE)/man/man1/
+	install -m644 allergy.5 $(INSTALLBASE)/man/man5/
 
 .PHONY: check checkv
 check: tests
