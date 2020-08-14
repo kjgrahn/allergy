@@ -1,0 +1,126 @@
+.ss 12 0
+.de BP
+.IP \\fB\\$*
+..
+.
+.TH allergy 5 "AUG 2020" Allergy "User Manuals"
+.
+.
+.SH "NAME"
+allergy \- photo description file format
+.
+.
+.SH "DESCRIPTION"
+The
+.B allergy
+file format is used to record information of photos:
+when they were taken, what they show.
+Photos can also be tagged.
+.
+.PP
+As with most text file formats, lines starting with a
+.B "#"
+are comments.
+The rest of the file is photo entries, separated by one
+or more blank lines.
+.
+.SS "Entries"
+An entry is a series of lines:
+.IP
+.nf
+filename
+timestamp
+description
+\&...
+.fi
+.
+.PP
+The
+.B filename
+is the photo's filename, without any directory part; it is assumed
+that this name is globally unique,
+and that the photo can be found in some well-known location.
+I store mine in four directories per year, for example
+.I 2020.3
+for photos taken in July\-September.
+This suits my usage: I don't mind having hundreds of photos in one directory.
+.
+.PP
+The
+.B timestamp
+is an ISO variant, e.g.
+.IR "2020-08-14\~23:47" .
+Optionally seconds can be present:
+.IR "23:47:34" .
+The local timezone is implied.
+.
+.PP
+The
+.B description
+is one or more lines of plain text. The contents are up to the author.
+It's up to the author to decide character encoding, and whether line breaks
+are significant.
+The special description
+.B "ibid"
+(from the Latin
+.IR ibidem )
+means the description is the same as for the previous photo in the file.
+.
+.SS "Tags"
+A photo can be tagged, i.e. associated with one or more tags.
+There are two ways to do this, and both mean embedding tags in the description.
+.
+.IP \- 3x
+With square brackets:
+.I "[cat]s and [dog]s"
+is the description
+.IR "cats and dogs" ,
+but also adds the tags
+.I cat
+and
+.IR dog.
+.IP
+These tags may be nested:
+.I "[[foo][bar]]"
+defines the three tags
+.IR foo ,
+.IR bar ,
+.IR foobar .
+Tags may not, however, span across lines.
+.
+.IP \-
+With curly brackets:
+.IR "{cats} {dogs}" .
+These are just tags and will not be part of the description.
+A sequence of these, and their surrounding whitespace expand to
+a single space, or nothing at all at the beginning or end of the description.
+.
+.SS "Example"
+This example shows two photos sharing one description, and both kinds of tags.
+It also shows local tag conventions:
+.IR "{639411\ 127304}"
+is a RT90 coordinate, and
+.IR "{:obest.}"
+is my convention for tagging incompletely identified species
+(of insects, in this case).
+.IP
+.nf
+2020-05-16_0262.jpg
+2020-05-16 14:11
+litet [mott] i svart och silver med j\(:atteantenner;
+[Adela] sp?
+hygget S om [V\(:arpekullen]
+{639411 127304}
+{:obest.}
+
+2020-05-16_0263.jpg
+2020-05-16 14:11
+ibid
+.fi
+.
+.
+.SH "SEE ALSO"
+.
+.BR olymp (1)
+\- which writes this file format,
+.BR allergyd (1).
