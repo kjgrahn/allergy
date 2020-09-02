@@ -25,6 +25,24 @@ namespace photo {
 	assert_valid("1900-09-01_0001.jpg");
     }
 
+    void quarter(TC)
+    {
+	auto assert_quarter = [] (const char* q, const char* s) {
+	    const Photo p {s};
+	    orchis::assert_true(p.valid());
+	    orchis::assert_eq(p.dir(), q);
+	};
+
+	assert_quarter("2020.1", "2020-01-01_0001.jpg");
+	assert_quarter("2020.1", "2020-03-31_0001.jpg");
+	assert_quarter("2020.2", "2020-04-01_0001.jpg");
+	assert_quarter("2020.2", "2020-06-30_0001.jpg");
+	assert_quarter("2020.3", "2020-07-01_0001.jpg");
+	assert_quarter("2020.3", "2020-07-31_0001.jpg");
+	assert_quarter("2020.4", "2020-10-01_0001.jpg");
+	assert_quarter("2020.4", "2020-12-31_0001.jpg");
+    }
+
     void invalid(TC)
     {
 	auto assert_invalid = [] (const char* s) {
@@ -38,5 +56,7 @@ namespace photo {
 	assert_invalid("../2020-07-24.jpg");
 	assert_invalid("2020-17-24_0001.jpg");
 	assert_invalid("2020-a7-24_0001.jpg");
+
+	assert_invalid("2020-07-24_0001.gif");
     }
 }

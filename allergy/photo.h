@@ -9,6 +9,8 @@
 
 #include <string>
 
+class Root;
+
 namespace allergy {
 
     /**
@@ -16,7 +18,13 @@ namespace allergy {
      * based on the name in an URL.
      *
      * A photo is named 'yyyy-mm-dd_serial.jpg', where 'serial' is
-     * also a non-empty sequence of digits.
+     * also a non-empty sequence of digits. To avoid having thousands
+     * of photos in one directory, we split them across directories
+     * named "yyyy.q". Thus, the URL namespace becomes flatter than the
+     * filesystem.
+     *
+     * Thumbnails work exactly like Photos, but relative to another
+     * Root.
      */
     class Photo {
     public:
@@ -24,11 +32,16 @@ namespace allergy {
 	Photo(const char* a, const char* b);
 
 	bool valid() const { return quarter; }
+	std::string dir() const;
+
+	int open(const Root& root) const;
 
     private:
 	std::string val;
 	unsigned short quarter;
     };
+
+    int open(const Root& r, const Photo& p);
 }
 
 #endif

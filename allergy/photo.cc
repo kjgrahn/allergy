@@ -3,6 +3,7 @@
  *
  */
 #include "photo.h"
+#include "../root.h"
 
 #include <cctype>
 
@@ -60,3 +61,30 @@ Photo::Photo(const std::string& s)
 Photo::Photo(const char* a, const char* const b)
     : Photo {std::string{a, b}}
 {}
+
+std::string Photo::dir() const
+{
+    std::string s;
+    if (!quarter) return s;
+
+    const char* a = val.c_str();
+    const char* c = eat_digits(a);
+    s.append(a, c);
+    s += '.';
+    s += std::to_string(quarter);
+    return s;
+}
+
+int Photo::open(const Root& root) const
+{
+    const std::string s = dir() + "/" + val;
+    return root.open(s);
+}
+
+/**
+ * Open 'p' relative to the root. The photo needs to be valid().
+ */
+int allergy::open(const Root& r, const Photo& p)
+{
+    return p.open(r);
+}
