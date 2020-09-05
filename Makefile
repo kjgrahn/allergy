@@ -62,8 +62,8 @@ liballergy.a: allergy/keys.o
 liballergy.a: allergy/photo.o
 	$(AR) -r $@ $^
 
-allergyd: httpd.o liboutnumbered.a
-	$(CXX) $(CXXFLAGS) -o $@ httpd.o -L. -loutnumbered -lrt -lz
+allergyd: httpd.o liboutnumbered.a liballergy.a
+	$(CXX) $(CXXFLAGS) -o $@ httpd.o -L. -loutnumbered -lallergy -lrt -lz
 
 magic: magic.o liboutnumbered.a
 	$(CXX) $(CXXFLAGS) -o $@ magic.o -L. -loutnumbered -lmagic
@@ -95,7 +95,7 @@ test.cc: libtest.a liballergytest.a
 	orchis -o$@ $^
 
 tests: test.o liboutnumbered.a liballergy.a libtest.a liballergytest.a
-	$(CXX) $(CXXFLAGS) -o $@ test.o -L. -ltest -lallergytest -loutnumbered -lallergy -lz
+	$(CXX) $(CXXFLAGS) -o $@ test.o -L. -ltest -lallergytest -loutnumbered -lallergy -loutnumbered -lz
 
 %.1.ps : %.1
 	groff -man $< >$@

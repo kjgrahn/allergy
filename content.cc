@@ -40,14 +40,15 @@ namespace {
     Response* resp501(const timespec& t, const Root& lib) { return open<response::ErrorPage<Status<501>>>(t, lib); }
 
     /**
-     * R(fd) or a response::Error if the file cannot be opened.
+     * fd = open(root, T) and then R(fd), or a response::Error if the
+     * file cannot be opened.
      */
-    template <class R, class ... Args>
+    template <class R, class T, class ... Args>
     Response* open(const timespec& t,
 		   const Root& root, const Root& lib,
-		   const std::string& path, Args&& ... argv)
+		   const T& path, Args&& ... argv)
     {
-	int fd = root.open(path);
+	int fd = open(root, path);
 	if (fd==-1) switch (errno) {
 	    case EACCES: // don't give away that the file exists
 	    case ENOENT:
@@ -103,8 +104,8 @@ Response* Content::response_of(const Request& req, const timespec& t) const
 					     to_int(m[1]),
 					     to_int(m[2]));
 
-    if(match(uri, re.photo, m)) return photo(t, m[1]);
-    if(match(uri, re.thumb, m)) return thumbnail(t, m[1]);
+    if(match(uri, re.photo, m)) return photo(t, allergy::Photo(m[1]));
+    if(match(uri, re.thumb, m)) return thumbnail(t, allergy::Photo(m[1]));
 
     if(match(uri, re.key)) return redirect(t, "/key/");
     if(match(uri, re.keywords)) return keywords(t);
@@ -123,8 +124,19 @@ Response* Content::by_date(const timespec& t) const { return resp404(t, lib); }
 Response* Content::year(const timespec& t, unsigned) const { return resp404(t, lib); }
 Response* Content::month(const timespec& t, unsigned, unsigned) const { return resp404(t, lib); }
 Response* Content::redirect(const timespec& t, const std::string&) const { return resp404(t, lib); }
-Response* Content::photo(const timespec& t, const std::string& s) const { return open<response::Image>(t, root, lib, s); }
-Response* Content::thumbnail(const timespec& t, const std::string&) const { return resp404(t, lib); }
+
+Response* Content::photo(const timespec& t, const allergy::Photo& p) const
+{
+    if (!p.valid()) return resp404(t, lib);
+    return open<response::Image>(t, root, lib, p);
+}
+
+Response* Content::thumbnail(const timespec& t, const allergy::Photo& p) const
+{
+    if (!p.valid()) return resp404(t, lib);
+    return open<response::Image>(t, thumb, lib, p);
+}
+
 Response* Content::keywords(const timespec& t) const { return resp404(t, lib); }
 Response* Content::keyword(const timespec& t, const std::string&) const { return resp404(t, lib); }
 Response* Content::robots(const timespec& t) const { return open<response::File>(t, root, lib, "robots.txt", "text/plain"); }

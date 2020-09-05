@@ -8,6 +8,7 @@
 #define OUTN_CONTENT_H_
 
 #include "root.h"
+#include "allergy/photo.h"
 
 #include <string>
 #include <regex>
@@ -65,8 +66,8 @@ private:
     Response* year(const timespec& t, unsigned yyyy) const;
     Response* month(const timespec& t, unsigned yyyy, unsigned mm) const;
     Response* redirect(const timespec& t, const std::string& s) const;
-    Response* photo(const timespec& t, const std::string& s) const;
-    Response* thumbnail(const timespec& t, const std::string& s) const;
+    Response* photo(const timespec& t, const allergy::Photo& p) const;
+    Response* thumbnail(const timespec& t, const allergy::Photo& p) const;
     Response* keywords(const timespec& t) const;
     Response* keyword(const timespec& t, const std::string& s) const;
     Response* robots(const timespec& t) const;
