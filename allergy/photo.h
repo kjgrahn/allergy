@@ -33,6 +33,7 @@ namespace allergy {
 
 	bool valid() const { return quarter; }
 	std::string dir() const;
+	std::string path() const;
 
 	int open(const Root& root) const;
 

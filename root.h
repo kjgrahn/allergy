@@ -24,6 +24,7 @@ public:
     Root& operator= (const Root&) = delete;
 
     int open(const std::string& relpath) const;
+    bool chdir() const;
 
 private:
     const int dirfd;

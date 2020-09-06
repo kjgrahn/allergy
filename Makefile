@@ -49,7 +49,7 @@ liballergy.a: deflate.o
 liballergy.a: response.o
 liballergy.a: join.o
 liballergy.a: glob.o
-liballergy.a: thumbnail.o
+liballergy.a: allergy/thumbnail.o
 liballergy.a: entity/string.o
 liballergy.a: entity/file.o
 liballergy.a: allergy/keys.o

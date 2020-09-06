@@ -27,3 +27,11 @@ int Root::open(const std::string& relpath) const
 {
     return openat(dirfd, relpath.c_str(), O_RDONLY);
 }
+
+/**
+ * Change directory to here.  Returns success.
+ */
+bool Root::chdir() const
+{
+    return fchdir(dirfd)==0;
+}

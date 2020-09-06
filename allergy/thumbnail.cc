@@ -12,6 +12,8 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 
+using allergy::Photo;
+
 
 namespace {
 
@@ -56,21 +58,25 @@ namespace {
 	std::string buf;
     };
 
-    void djpeg(int wfd, const std::string& src)
+    [[noreturn]]
+    void djpeg(int wfd, const Root& src, const Photo& photo)
     {
 	std::ostringstream oss;
 	oss << "djpeg" << nil
 	    << "-scale" << nil
 	    << "1/8" << nil
-	    << src;
+	    << photo.path();
 	Argv<4> argv(oss);
 	dup2(wfd, 1); close(wfd);
 	close(0); open("/dev/null", O_RDONLY);
-	execvp("djpeg", argv.val.data());
+	if (src.chdir()) {
+	    execvp("djpeg", argv.val.data());
+	}
 	std::exit(1);
     }
 
-    void cjpeg(int rfd, const std::string& dst)
+    [[noreturn]]
+    void cjpeg(int rfd, const Root& dst, const Photo& photo)
     {
 	std::ostringstream oss;
 	oss << "cjpeg" << nil
@@ -79,18 +85,21 @@ namespace {
 	    << "-optimize" << nil
 	    << "-progressive" << nil
 	    << "-outfile" << nil
-	    << dst;
+	    << photo.path();
 	Argv<7> argv(oss);
 	dup2(rfd, 0); close(rfd);
 	close(1); open("/dev/null", O_WRONLY);
-	execvp("cjpeg", argv.val.data());
+	if (dst.chdir()) {
+	    execvp("cjpeg", argv.val.data());
+	}
 	std::exit(1);
     }
 }
 
 /**
  * More or less
- *   djpeg -scale 1/8 $src | cjpeg -qual 10 -opt -prog -outfile $dst
+ *   (cd $src && djpeg -scale 1/8 $photo) |
+ *   (cd $dst && cjpeg -qual 10 -opt -prog -outfile $photo)
  *
  * This doesn't thumbnail to a specific size, but you still get a file
  * that's a lot smaller than the original (0.1--0.7% in my first tests).
@@ -100,8 +109,9 @@ namespace {
  * flag.
  *
  */
-bool thumbnail(const std::string& src,
-	       const std::string& dst)
+bool allergy::thumbnail(const Root& src,
+			const Root& dst,
+			const Photo& photo)
 {
     /* Pipeline. The unused stdin and stdout are set to /dev/null;
      * stderr is unchanged. So is any other file descriptor, so e.g.
@@ -124,7 +134,7 @@ bool thumbnail(const std::string& src,
     const pid_t cpid = fork();
     if (!cpid) {
 	close(wfd);
-	cjpeg(rfd, dst);
+	cjpeg(rfd, dst, photo);
     }
     close(rfd);
     if (cpid==-1) {
@@ -134,7 +144,7 @@ bool thumbnail(const std::string& src,
 
     const pid_t dpid = fork();
     if (!dpid) {
-	djpeg(wfd, src);
+	djpeg(wfd, src, photo);
     }
     close(wfd);
     if (dpid==-1) {

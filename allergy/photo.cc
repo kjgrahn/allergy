@@ -75,10 +75,17 @@ std::string Photo::dir() const
     return s;
 }
 
+/**
+ * The (relative) path to the photo in the file system.
+ */
+std::string Photo::path() const
+{
+    return dir() + "/" + val;
+}
+
 int Photo::open(const Root& root) const
 {
-    const std::string s = dir() + "/" + val;
-    return root.open(s);
+    return root.open(path());
 }
 
 /**

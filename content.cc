@@ -8,6 +8,7 @@
 #include "request.h"
 #include "response.h"
 #include "status.h"
+#include "allergy/thumbnail.h"
 
 namespace {
     bool match(const std::string& s, const std::regex& re)
@@ -38,6 +39,13 @@ namespace {
     Response* resp404(const timespec& t, const Root& lib) { return open<response::ErrorPage<Status<404>>>(t, lib); }
     Response* resp500(const timespec& t, const Root& lib) { return open<response::ErrorPage<Status<500>>>(t, lib); }
     Response* resp501(const timespec& t, const Root& lib) { return open<response::ErrorPage<Status<501>>>(t, lib); }
+
+    /* Trivial open() overload, for thumbnail().
+     */
+    int open(const Root&, int fd)
+    {
+	return fd;
+    }
 
     /**
      * fd = open(root, T) and then R(fd), or a response::Error if the
@@ -131,10 +139,26 @@ Response* Content::photo(const timespec& t, const allergy::Photo& p) const
     return open<response::Image>(t, root, lib, p);
 }
 
+/**
+ * Requesting a thumbnail. Like requesting a photo, except if it
+ * doesn't exist we try to create it and try again.
+ *
+ * From a whole-server perspective, this is the only "heavy" request.
+ * Everything else is bounded by disk I/O. Acceptable, I hope: every
+ * thumbnail should be generated at most once.
+ */
 Response* Content::thumbnail(const timespec& t, const allergy::Photo& p) const
 {
     if (!p.valid()) return resp404(t, lib);
-    return open<response::Image>(t, thumb, lib, p);
+
+    const int fd = open(thumb, p);
+    if (fd==-1 && errno==ENOENT) {
+	if (!allergy::thumbnail(root, thumb, p)) {
+	    return resp404(t, lib);
+	}
+	return open<response::Image>(t, thumb, lib, p);
+    }
+    return open<response::Image>(t, thumb, lib, fd);
 }
 
 Response* Content::keywords(const timespec& t) const { return resp404(t, lib); }
