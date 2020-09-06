@@ -27,46 +27,44 @@ check: tests
 checkv: tests
 	valgrind -q ./tests -v
 
-liboutnumbered.a: version.o
-liboutnumbered.a: log.o
-liboutnumbered.a: server.o
-liboutnumbered.a: content.o
-liboutnumbered.a: root.o
-liboutnumbered.a: times.o
-liboutnumbered.a: session.o
-liboutnumbered.a: sessionhistory.o
-liboutnumbered.a: error.o
-liboutnumbered.a: textread.o
-liboutnumbered.a: requestqueue.o
-liboutnumbered.a: request.o
-liboutnumbered.a: date.o
-liboutnumbered.a: dateparse.o
-liboutnumbered.a: names.o
-liboutnumbered.a: filter.o
-liboutnumbered.a: backlog.o
-liboutnumbered.a: chunk.o
-liboutnumbered.a: deflate.o
-liboutnumbered.a: response.o
-liboutnumbered.a: join.o
-liboutnumbered.a: glob.o
-liboutnumbered.a: thumbnail.o
-liboutnumbered.a: entity/string.o
-liboutnumbered.a: entity/file.o
+liballergy.a: version.o
+liballergy.a: log.o
+liballergy.a: server.o
+liballergy.a: content.o
+liballergy.a: root.o
+liballergy.a: times.o
+liballergy.a: session.o
+liballergy.a: sessionhistory.o
+liballergy.a: error.o
+liballergy.a: textread.o
+liballergy.a: requestqueue.o
+liballergy.a: request.o
+liballergy.a: date.o
+liballergy.a: dateparse.o
+liballergy.a: names.o
+liballergy.a: filter.o
+liballergy.a: backlog.o
+liballergy.a: chunk.o
+liballergy.a: deflate.o
+liballergy.a: response.o
+liballergy.a: join.o
+liballergy.a: glob.o
+liballergy.a: thumbnail.o
+liballergy.a: entity/string.o
+liballergy.a: entity/file.o
+liballergy.a: allergy/keys.o
+liballergy.a: allergy/photo.o
 	$(AR) -r $@ $^
 
 backlog.o: CXXFLAGS+=-Wno-old-style-cast
 deflate.o: CXXFLAGS+=-Wno-old-style-cast
 httpd.o: CXXFLAGS+=-Wno-old-style-cast
 
-liballergy.a: allergy/keys.o
-liballergy.a: allergy/photo.o
-	$(AR) -r $@ $^
+allergyd: httpd.o liballergy.a
+	$(CXX) $(CXXFLAGS) -o $@ httpd.o -L. -lallergy -lrt -lz
 
-allergyd: httpd.o liboutnumbered.a liballergy.a
-	$(CXX) $(CXXFLAGS) -o $@ httpd.o -L. -loutnumbered -lallergy -lrt -lz
-
-magic: magic.o liboutnumbered.a
-	$(CXX) $(CXXFLAGS) -o $@ magic.o -L. -loutnumbered -lmagic
+magic: magic.o liballergy.a
+	$(CXX) $(CXXFLAGS) -o $@ magic.o -L. -lallergy -lmagic
 
 #libtest.a: test/test_response.o
 libtest.a: test/test_request.o
@@ -82,20 +80,18 @@ libtest.a: test/test_lineparse.o
 libtest.a: test/test_join.o
 libtest.a: test/test_glob.o
 libtest.a: test/test_regex.o
-	$(AR) -r $@ $^
-
-liballergytest.a: allergy/test/test_keys.o
-liballergytest.a: allergy/test/test_photo.o
+libtest.a: allergy/test/test_keys.o
+libtest.a: allergy/test/test_photo.o
 	$(AR) -r $@ $^
 
 test/%.o: CPPFLAGS+=-I.
 allergy/test/%.o: CPPFLAGS+=-I.
 
-test.cc: libtest.a liballergytest.a
+test.cc: libtest.a
 	orchis -o$@ $^
 
-tests: test.o liboutnumbered.a liballergy.a libtest.a liballergytest.a
-	$(CXX) $(CXXFLAGS) -o $@ test.o -L. -ltest -lallergytest -loutnumbered -lallergy -loutnumbered -lz
+tests: test.o liballergy.a libtest.a
+	$(CXX) $(CXXFLAGS) -o $@ test.o -L. -ltest -lallergy -lz
 
 %.1.ps : %.1
 	groff -man $< >$@
