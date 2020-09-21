@@ -53,6 +53,7 @@ liballergy.a: glob.o
 liballergy.a: allergy/thumbnail.o
 liballergy.a: entity/string.o
 liballergy.a: entity/file.o
+liballergy.a: allergy/entry.o
 liballergy.a: allergy/timestamp.o
 liballergy.a: allergy/keys.o
 liballergy.a: allergy/photo.o
