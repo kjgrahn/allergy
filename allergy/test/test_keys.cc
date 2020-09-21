@@ -41,108 +41,110 @@ namespace {
     }
 }
 
-namespace keys {
+namespace allergy {
 
-    using orchis::TC;
+    namespace keys {
 
-    using allergy::Keys;
-    using orchis::assert_eq;
-    using orchis::assert_;
+	using orchis::TC;
+
+	using orchis::assert_eq;
+	using orchis::assert_;
 
 
-    void construct(TC)
-    {
-	Keys k("foo");
-    }
-
-    void empty(TC)
-    {
-	Keys k("");
-	eq(k, "");
-    }
-
-    void unkeyed(TC)
-    {
-	Keys k("foo");
-	eq(k, "foo");
-    }
-
-    namespace keyed {
-
-	void a(TC)
+	void construct(TC)
 	{
-	    const Keys k("foo [bar] baz");
-	    eq(k, "foo bar baz",
-	       "bar");
+	    Keys k("foo");
 	}
 
-	void b(TC)
+	void empty(TC)
 	{
-	    const Keys k("foo [bar] baz [bat]");
-	    eq(k, "foo bar baz bat",
-	       "bar", "bat");
+	    Keys k("");
+	    eq(k, "");
 	}
 
-	void c(TC)
+	void unkeyed(TC)
 	{
-	    const Keys k("foo [bar] baz [bat] fred");
-	    eq(k, "foo bar baz bat fred",
-	       "bar", "bat");
+	    Keys k("foo");
+	    eq(k, "foo");
 	}
 
-	void d(TC)
-	{
-	    const Keys k("foo[]bar");
-	    eq(k, "foobar",
-	       "");
+	namespace keyed {
+
+	    void a(TC)
+	    {
+		const Keys k("foo [bar] baz");
+		eq(k, "foo bar baz",
+		   "bar");
+	    }
+
+	    void b(TC)
+	    {
+		const Keys k("foo [bar] baz [bat]");
+		eq(k, "foo bar baz bat",
+		   "bar", "bat");
+	    }
+
+	    void c(TC)
+	    {
+		const Keys k("foo [bar] baz [bat] fred");
+		eq(k, "foo bar baz bat fred",
+		   "bar", "bat");
+	    }
+
+	    void d(TC)
+	    {
+		const Keys k("foo[]bar");
+		eq(k, "foobar",
+		   "");
+	    }
+
+	    void e(TC)
+	    {
+		const Keys k("foo[][]bar");
+		eq(k, "foobar",
+		   "", "");
+	    }
+
+	    void f(TC)
+	    {
+		const Keys k("[foo]");
+		eq(k, "foo", "foo");
+	    }
 	}
 
-	void e(TC)
+	void nested(TC)
 	{
-	    const Keys k("foo[][]bar");
-	    eq(k, "foobar",
-	       "", "");
+	    const Keys k("[Vartofta-[Asaka]]");
+	    eq(k, "Vartofta-Asaka",
+	       "Asaka", "Vartofta-Asaka");
 	}
 
-	void f(TC)
+	void misnested(TC)
 	{
-	    const Keys k("[foo]");
-	    eq(k, "foo", "foo");
-	}
-    }
-
-    void nested(TC)
-    {
-	const Keys k("[Vartofta-[Asaka]]");
-	eq(k, "Vartofta-Asaka",
-	   "Asaka", "Vartofta-Asaka");
-    }
-
-    void misnested(TC)
-    {
-	const Keys k("foo] bar [b [az]");
-	eq(k, "foo] bar b az",
-	   "az", "b az");
-    }
-
-    namespace curly {
-
-	void a(TC)
-	{
-	    const Keys k("{foo}");
-	    eq(k, "", "foo");
+	    const Keys k("foo] bar [b [az]");
+	    eq(k, "foo] bar b az",
+	       "az", "b az");
 	}
 
-	void b(TC)
-	{
-	    const Keys k("{foo}{bar}");
-	    eq(k, "", "foo", "bar");
-	}
+	namespace curly {
 
-	void c(TC)
-	{
-	    const Keys k("[foo]{bar}");
-	    eq(k, "foo", "foo", "bar");
+	    void a(TC)
+	    {
+		const Keys k("{foo}");
+		eq(k, "", "foo");
+	    }
+
+	    void b(TC)
+	    {
+		const Keys k("{foo}{bar}");
+		eq(k, "", "foo", "bar");
+	    }
+
+	    void c(TC)
+	    {
+		const Keys k("[foo]{bar}");
+		eq(k, "foo", "foo", "bar");
+	    }
 	}
     }
 }
