@@ -53,6 +53,7 @@ liballergy.a: glob.o
 liballergy.a: allergy/thumbnail.o
 liballergy.a: entity/string.o
 liballergy.a: entity/file.o
+liballergy.a: allergy/timestamp.o
 liballergy.a: allergy/keys.o
 liballergy.a: allergy/photo.o
 liballergy.a: allergy/files...o
@@ -85,6 +86,7 @@ libtest.a: test/test_lineparse.o
 libtest.a: test/test_join.o
 libtest.a: test/test_glob.o
 libtest.a: test/test_regex.o
+libtest.a: allergy/test/test_timestamp.o
 libtest.a: allergy/test/test_keys.o
 libtest.a: allergy/test/test_photo.o
 libtest.a: allergy/test/test_files.o
