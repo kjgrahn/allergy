@@ -17,7 +17,7 @@ namespace allergy {
 	void assert_entry(It it,
 			  const std::string& file,
 			  const std::string& timestamp,
-			  const std::string& text)
+			  const std::string& text = "")
 	{
 	    orchis::assert_eq(it->filename, file);
 	    orchis::assert_eq(it->timestamp, Timestamp{timestamp});
@@ -221,6 +221,128 @@ namespace allergy {
 			 "2020-05-16 14:12",
 			 "foobar");
 	    assert_end(it, ix);
+	}
+
+	namespace query {
+
+	    void generate(std::stringstream& ss,
+			  const std::vector<std::string>& v)
+	    {
+		unsigned serial = 100;
+		for (const auto& s : v) {
+		    ss << s.substr(0, 10) << '_' << serial << ".jpg\n"
+		       << s << "\n\n";
+		    serial++;
+		}
+	    }
+
+	    using orchis::assert_eq;
+
+	    void assert_entries(const std::vector<Entry>& ee,
+				const std::vector<std::string>& tt)
+	    {
+		assert_eq(ee.size(), tt.size());
+		auto it = begin(tt);
+		for (const auto& e: ee) {
+		    assert_eq(e.timestamp, Timestamp{*it});
+		    it++;
+		}
+	    }
+
+	    void all(TC)
+	    {
+		std::stringstream ss;
+		generate(ss,
+			 {"2020-05-16 14:11",
+			  "2020-05-16 14:12"});
+		Files ff {ss};
+		const Index ix {ff};
+		assert_entries(ix.all(),
+			       {"2020-05-16 14:11",
+				"2020-05-16 14:12"});
+	    }
+
+	    void year(TC)
+	    {
+		std::stringstream ss;
+		generate(ss,
+			 {"2020-05-16 12:00",
+			  "2020-12-31 12:00",
+			  "2020-01-01 12:00",
+			  "2021-01-01 12:00",
+			  "2019-01-01 12:00"});
+		Files ff {ss};
+		const Index ix {ff};
+		assert_entries(ix.year("2020"),
+			 {"2020-01-01 12:00",
+			  "2020-05-16 12:00",
+			  "2020-12-31 12:00"});
+	    }
+
+	    void month(TC)
+	    {
+		std::stringstream ss;
+		generate(ss,
+			 {"2020-07-01 12:00",
+			  "2020-08-02 12:00",
+			  "1980-08-01 12:00",
+			  "2020-08-01 12:01",
+			  "2020-08-01 12:00",
+			  "2020-09-01 12:00"});
+		Files ff {ss};
+		const Index ix {ff};
+		assert_entries(ix.month("2020-08"),
+			       {"2020-08-01 12:00",
+				"2020-08-01 12:01",
+				"2020-08-02 12:00"});
+	    }
+
+	    void day(TC)
+	    {
+		std::stringstream ss;
+		generate(ss,
+			 {"2020-07-01 12:00",
+			  "2020-09-26 12:01",
+			  "2020-08-02 12:00",
+			  "2020-09-26 12:00",
+			  "2020-09-25 12:00",
+			  "2020-09-24 12:00",
+			  "2020-09-26 11:59",
+			  "1980-08-01 12:00"});
+		Files ff {ss};
+		const Index ix {ff};
+		assert_entries(ix.day("2020-09-26"),
+			       {"2020-09-26 11:59",
+				"2020-09-26 12:00",
+				"2020-09-26 12:01"});
+	    }
+
+	    void key(TC)
+	    {
+		std::stringstream ss("2020-09-26_0001.jpg\n"
+				     "2020-09-26 14:23\n"
+				     "[foo][bar]\n"
+				     "\n"
+				     "2020-09-26_0002.jpg\n"
+				     "2020-09-26 14:24\n"
+				     "ibid\n"
+				     "\n"
+				     "2020-09-26_0003.jpg\n"
+				     "2020-09-26 14:25\n"
+				     "[bar][baz]\n");
+		Files ff {ss};
+		const Index ix {ff};
+		assert_entries(ix.key("foo"),
+			       {"2020-09-26 14:23",
+				"2020-09-26 14:24"});
+		assert_entries(ix.key("bar"),
+			       {"2020-09-26 14:23",
+				"2020-09-26 14:24",
+				"2020-09-26 14:25"});
+		assert_entries(ix.key("baz"),
+			       {"2020-09-26 14:25"});
+		assert_entries(ix.key("bat"), {});
+	    }
 	}
     }
 }

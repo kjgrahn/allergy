@@ -24,9 +24,17 @@ namespace allergy {
     public:
 	explicit Index(Files& in);
 
-	using const_iterator = std::vector<Entry>::const_iterator;
-	const_iterator begin() const { return entries.begin(); }
-	const_iterator end() const { return entries.end(); }
+	using iterator = std::vector<Entry>::const_iterator;
+	iterator begin() const { return entries.begin(); }
+	iterator end() const { return entries.end(); }
+
+	std::vector<Entry> all() const;
+
+	std::vector<Entry> year(const std::string& s) const;
+	std::vector<Entry> month(const std::string& s) const;
+	std::vector<Entry> day(const std::string& s) const;
+
+	std::vector<Entry> key(const std::string& s) const;
 
     private:
 	std::vector<Entry> entries;

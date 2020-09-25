@@ -23,6 +23,7 @@ namespace allergy {
 	bool valid() const { return !str.empty(); }
 
 	bool operator== (const Timestamp& other) const { return str==other.str; }
+	bool operator<  (const Timestamp& other) const { return str<other.str; }
 
 	std::string year;
 	std::string month;

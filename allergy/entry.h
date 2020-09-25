@@ -31,7 +31,7 @@ namespace allergy {
 	      It begin,
 	      It end,
 	      const Timestamp& timestamp,
-	      const std::string& ibid);
+	      const Entry* prev);
 
 	std::string filename;
 	Timestamp timestamp;
@@ -44,7 +44,7 @@ namespace allergy {
 		 It begin,
 		 It end,
 		 const Timestamp& timestamp,
-		 const std::string& ibid)
+		 const Entry* const prev)
 	: filename(filename),
 	  timestamp(timestamp)
     {
@@ -56,7 +56,10 @@ namespace allergy {
 		keywords.insert(key);
 	    }
 	}
-	if (text=="ibid" && ibid.size()) text = ibid;
+	if (text=="ibid" && prev) {
+	    text = prev->text;
+	    keywords = prev->keywords;
+	}
     }
 
     std::ostream& operator<< (std::ostream& os, const Entry& val);

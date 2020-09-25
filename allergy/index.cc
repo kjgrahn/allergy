@@ -6,6 +6,8 @@
 
 #include "files...h"
 
+#include <algorithm>
+
 using namespace allergy;
 
 namespace {
@@ -44,7 +46,7 @@ namespace {
 	auto filename = *p++;
 	if(p==end) return {filename, p, p, {}, {}};
 
-	const auto& ibid = prev.empty()? "" : prev.back().text;
+	const auto& ibid = prev.empty()? nullptr : &prev.back();
 
 	const allergy::Timestamp ts(*p++);
 	if (!ts.valid()) {
@@ -52,6 +54,18 @@ namespace {
 	}
 
 	return {filename, p, end, ts, ibid};
+    }
+
+    void invert(std::unordered_map<std::string, std::vector<unsigned>>& keys,
+		const std::vector<Entry>& ee)
+    {
+	unsigned n = 0;
+	for (const Entry& e: ee) {
+	    for (const std::string& k: e.keywords) {
+		keys[k].push_back(n);
+	    }
+	    n++;
+	}
     }
 }
 
@@ -81,4 +95,64 @@ Index::Index(Files& in)
     }
 
     if(has_entry()) emit();
+
+    invert(keys, entries);
+}
+
+namespace {
+
+    void sort(std::vector<Entry>& ee)
+    {
+	auto earlier = [] (const Entry& a, const Entry& b) {
+			   return a.timestamp < b.timestamp;
+		       };
+	std::stable_sort(begin(ee), end(ee), earlier);
+    }
+
+    template <class Pred>
+    std::vector<Entry> get(const Index& ix, Pred p)
+    {
+	std::vector<Entry> v;
+	std::copy_if(ix.begin(), ix.end(), std::back_inserter(v), p);
+	sort(v);
+	return v;
+    }
+}
+
+std::vector<Entry> Index::all() const
+{
+    std::vector<Entry> v{begin(), end()};
+    sort(v);
+    return v;
+}
+
+std::vector<Entry> Index::year(const std::string& s) const
+{
+    auto p = [&s] (const Entry& e) { return e.timestamp.year == s; };
+    return get(*this, p);
+}
+
+std::vector<Entry> Index::month(const std::string& s) const
+{
+    auto p = [&s] (const Entry& e) { return e.timestamp.month == s; };
+    return get(*this, p);
+}
+
+std::vector<Entry> Index::day(const std::string& s) const
+{
+    auto p = [&s] (const Entry& e) { return e.timestamp.date == s; };
+    return get(*this, p);
+}
+
+std::vector<Entry> Index::key(const std::string& s) const
+{
+    auto it = keys.find(s);
+    if (it==keys.end()) return {};
+
+    std::vector<Entry> v;
+    for (unsigned n: it->second) {
+	v.push_back(entries[n]);
+    }
+    sort(v);
+    return v;
 }
