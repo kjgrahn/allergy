@@ -11,6 +11,7 @@ CPPFLAGS=
 
 .PHONY: all
 all: allergyd
+all: parse
 all: tests
 
 .PHONY: install
@@ -70,6 +71,9 @@ allergyd: httpd.o liballergy.a
 magic: magic.o liballergy.a
 	$(CXX) $(CXXFLAGS) -o $@ magic.o -L. -lallergy -lmagic
 
+parse: allergy/parse.o liballergy.a
+	$(CXX) $(CXXFLAGS) -o $@ allergy/parse.o -L. -lallergy
+
 #libtest.a: test/test_response.o
 libtest.a: test/test_request.o
 libtest.a: test/test_filter.o
@@ -117,7 +121,7 @@ depend:
 
 .PHONY: clean
 clean:
-	$(RM) allergyd magic
+	$(RM) allergyd magic parse
 	$(RM) {,entity/,test/}*.o
 	$(RM) allergy/{,test/}*.o
 	$(RM) *.ps
