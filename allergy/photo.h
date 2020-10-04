@@ -8,6 +8,7 @@
 #define ALLERGY_PHOTO_H
 
 #include <string>
+#include <iosfwd>
 
 class Root;
 
@@ -34,6 +35,10 @@ namespace allergy {
 	explicit Photo(const std::string& s);
 	Photo(const char* a, const char* b);
 
+	bool operator== (const Photo& other) const { return val==other.val; }
+	bool operator<  (const Photo& other) const { return val<other.val; }
+	std::ostream& put(std::ostream& os) const;
+
 	bool valid() const { return quarter; }
 	std::string dir() const;
 	std::string path() const;
@@ -46,6 +51,12 @@ namespace allergy {
     };
 
     int open(const Root& r, const Photo& p);
+
+    inline
+    std::ostream& operator<< (std::ostream& os, const Photo& val)
+    {
+	return val.put(os);
+    }
 }
 
 #endif

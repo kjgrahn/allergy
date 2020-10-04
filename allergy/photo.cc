@@ -6,6 +6,7 @@
 #include "../root.h"
 
 #include <cctype>
+#include <iostream>
 
 
 using allergy::Photo;
@@ -91,6 +92,11 @@ Photo::Photo(const std::string& s)
 Photo::Photo(const char* a, const char* const b)
     : Photo {std::string{a, b}}
 {}
+
+std::ostream& Photo::put(std::ostream& os) const
+{
+    return os << val;
+}
 
 std::string Photo::dir() const
 {
