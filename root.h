@@ -24,6 +24,7 @@ public:
     Root& operator= (const Root&) = delete;
 
     int open(const std::string& relpath) const;
+    bool mkdir(const std::string& name) const;
     bool chdir() const;
 
 private:

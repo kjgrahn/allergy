@@ -29,6 +29,17 @@ int Root::open(const std::string& relpath) const
 }
 
 /**
+ * Create directory 'name' relative to this root. Returns true if it
+ * exists afterwards, like 'mkdir -p'.
+ */
+bool Root::mkdir(const std::string& name) const
+{
+    int err = mkdirat(dirfd, name.c_str(), 0777);
+    if (err) return errno==EEXIST;
+    return true;
+}
+
+/**
  * Change directory to here.  Returns success.
  */
 bool Root::chdir() const

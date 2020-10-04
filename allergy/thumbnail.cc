@@ -113,6 +113,8 @@ bool allergy::thumbnail(const Root& src,
 			const Root& dst,
 			const Photo& photo)
 {
+    if (!dst.mkdir(photo.dir())) return false;
+
     /* Pipeline. The unused stdin and stdout are set to /dev/null;
      * stderr is unchanged. So is any other file descriptor, so e.g.
      * cjpeg may get a gazillion TCP sockets. Unclear what to do about
