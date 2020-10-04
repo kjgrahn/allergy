@@ -8,6 +8,7 @@
 #define ALLERGY_ENTRY_H
 
 #include "keys.h"
+#include "photo.h"
 #include "timestamp.h"
 
 #include <string>
@@ -33,7 +34,7 @@ namespace allergy {
 	      const Timestamp& timestamp,
 	      const Entry* prev);
 
-	std::string filename;
+	Photo filename;
 	Timestamp timestamp;
 	std::string text;
 	std::unordered_set<std::string> keywords;

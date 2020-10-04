@@ -19,7 +19,7 @@ namespace allergy {
 			  const std::string& timestamp,
 			  const std::string& text = "")
 	{
-	    orchis::assert_eq(it->filename, file);
+	    orchis::assert_eq(it->filename, Photo{file});
 	    orchis::assert_eq(it->timestamp, Timestamp{timestamp});
 	    orchis::assert_eq(it->text, text);
 	}
