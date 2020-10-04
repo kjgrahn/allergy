@@ -1,0 +1,41 @@
+#!/bin/bash
+#
+# Simple load test.  Based on known inputs (my photos from 2017) and
+# generated md5sums, which should not change.
+#
+set -e
+
+url() {
+    for name ; do
+	echo "http://localhost:8000/$name"
+    done
+}
+
+thumburl() {
+    for name ; do
+	[ $name = ${name%.jpg} ] || thumb='thumb/'
+	echo "http://localhost:8000/$thumb$name"
+    done
+}
+
+test() {
+    url $@ | xargs curl --limit-rate 500k -fL | md5sum
+}
+
+reference() {
+    (cd ~/photo/2017.3 && cat $@) | md5sum
+}
+
+test css robots.txt nonexistent &
+test 2017-07-26_00{17,18,19,20}.jpg &
+test 2017-07-06_0070.jpg &
+test 2017-07-06_00{7,8}{0,1,2,3,4,5,6,7,8,9}.jpg &
+test 2017-09-02_00{0,1,2}{0,1,2,3,4,5,6,7,8,9}.jpg
+
+exit 0
+
+034e8708891362c4e1d3326ea087a2e1  -
+38c0373a92cd2a50f7abeeb4ca0f3035  -
+59312c3ef17d9ee2c4ad9dc570f8ab43  -
+8ed5d309bf0b87c37822dcca9595284c  -
+a40e110a2523a57ac4f734e3afb1c9b6  -
