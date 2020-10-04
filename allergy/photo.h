@@ -23,6 +23,9 @@ namespace allergy {
      * named "yyyy.q". Thus, the URL namespace becomes flatter than the
      * filesystem.
      *
+     * Photos names 'yymmdd_serial.jpg' are also supported, for legacy
+     * reasons.
+     *
      * Thumbnails work exactly like Photos, but relative to another
      * Root.
      */
