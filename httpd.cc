@@ -24,6 +24,9 @@
 #include "server.h"
 #include "session.h"
 #include "content.h"
+#include "allergy/index.h"
+#include "allergy/files...h"
+
 #include "log.h"
 
 
@@ -192,15 +195,17 @@ int main(int argc, char ** argv)
 	" [-a listen-address]"
 	" [-p port]"
 	" --host hostname"
-	" root";
-    const char optstring[] = "+dp:a:";
+	" -r root"
+	" index ...";
+    const char optstring[] = "+dp:a:r:";
     struct option long_options[] = {
 	{"daemon",       0, 0, 'd'},
 	{"address",      1, 0, 'a'},
 	{"port",         1, 0, 'p'},
 	{"host",         1, 0, 'H'},
-	{"version", 	   0, 0, 'v'},
-	{"help",    	   0, 0, 'h'},
+	{"root",         1, 0, 'r'},
+	{"version", 	 0, 0, 'v'},
+	{"help",    	 0, 0, 'h'},
 	{0, 0, 0, 0}
     };
 
@@ -208,6 +213,7 @@ int main(int argc, char ** argv)
     string addr = "";
     string port = "http";
     string host;
+    string root;
 
     int ch;
     while((ch = getopt_long(argc, argv,
@@ -224,6 +230,9 @@ int main(int argc, char ** argv)
 	    break;
 	case 'H':
 	    host = optarg;
+	    break;
+	case 'r':
+	    root = optarg;
 	    break;
 	case 'h':
 	    std::cout << usage << '\n';
@@ -243,18 +252,20 @@ int main(int argc, char ** argv)
 	}
     }
 
-    const std::vector<string> roots(argv+optind, argv+argc);
-    if(host.empty() || roots.size() != 1) {
+    if(host.empty() || root.empty()) {
 	    std::cerr << usage << '\n';
 	    return 1;
     }
+
+    Files indices {argv+optind, argv+argc};
+    const allergy::Index index {indices};
 
     const int lfd = listening_socket(addr, port);
     if(lfd==-1) {
 	return 1;
     }
 
-    const Content content(host, roots.front());
+    const Content content(host, index, root);
 
     ignore_sigpipe();
 

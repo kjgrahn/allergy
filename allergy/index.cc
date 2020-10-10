@@ -56,7 +56,17 @@ namespace {
 	return {filename, p, end, ts, ibid};
     }
 
-    void invert(std::unordered_map<std::string, std::vector<unsigned>>& keys,
+    void invert(std::map<Photo, unsigned>& names,
+		const std::vector<Entry>& ee)
+    {
+	unsigned n = 0;
+	for (const Entry& e: ee) {
+	    names[e.filename] = n;
+	    n++;
+	}
+    }
+
+    void invert(std::map<std::string, std::vector<unsigned>>& keys,
 		const std::vector<Entry>& ee)
     {
 	unsigned n = 0;
@@ -96,7 +106,8 @@ Index::Index(Files& in)
 
     if(has_entry()) emit();
 
-    invert(keys, entries);
+    invert(by.name, entries);
+    invert(by.key, entries);
 }
 
 namespace {
@@ -117,6 +128,11 @@ namespace {
 	sort(v);
 	return v;
     }
+}
+
+bool Index::has(const Photo& p) const
+{
+    return by.name.count(p);
 }
 
 std::vector<Entry> Index::all() const
@@ -146,8 +162,8 @@ std::vector<Entry> Index::day(const std::string& s) const
 
 std::vector<Entry> Index::key(const std::string& s) const
 {
-    auto it = keys.find(s);
-    if (it==keys.end()) return {};
+    auto it = by.key.find(s);
+    if (it==by.key.end()) return {};
 
     std::vector<Entry> v;
     for (unsigned n: it->second) {

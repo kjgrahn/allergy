@@ -8,7 +8,7 @@
 #define OUTN_CONTENT_H_
 
 #include "root.h"
-#include "allergy/photo.h"
+#include "allergy/index.h"
 
 #include <string>
 #include <regex>
@@ -47,7 +47,9 @@ struct Patterns {
  */
 class Content {
 public:
-    Content(const std::string& host, const std::string& path);
+    Content(const std::string& host,
+	    const allergy::Index& index,
+	    const std::string& path);
     ~Content();
     Content(const Content&) = delete;
     Content& operator= (const Content&) = delete;
@@ -57,6 +59,7 @@ public:
 private:
     const Patterns re;
     const std::string host;
+    const allergy::Index& index;
     const Root lib;
     const Root thumb;
     const Root root;

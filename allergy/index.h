@@ -10,7 +10,7 @@
 #include "entry.h"
 
 #include <vector>
-#include <unordered_map>
+#include <map>
 
 class Files;
 
@@ -28,6 +28,8 @@ namespace allergy {
 	iterator begin() const { return entries.begin(); }
 	iterator end() const { return entries.end(); }
 
+	bool has(const Photo& p) const;
+
 	std::vector<Entry> all() const;
 
 	std::vector<Entry> year(const std::string& s) const;
@@ -38,7 +40,10 @@ namespace allergy {
 
     private:
 	std::vector<Entry> entries;
-	std::unordered_map<std::string, std::vector<unsigned>> keys;
+	struct {
+	    std::map<Photo, unsigned> name;
+	    std::map<std::string, std::vector<unsigned>> key;
+	} by;
     };
 }
 #endif

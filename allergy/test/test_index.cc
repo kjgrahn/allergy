@@ -249,6 +249,25 @@ namespace allergy {
 		}
 	    }
 
+	    void has(TC)
+	    {
+		using orchis::assert_true;
+		using orchis::assert_false;
+
+		std::stringstream ss;
+		generate(ss,
+			 {"2020-05-16 14:11",
+			  "2020-05-16 14:11"});
+		Files ff {ss};
+		const Index ix {ff};
+
+		assert_true(ix.has(Photo{"2020-05-16_100.jpg"}));
+		assert_true(ix.has(Photo{"2020-05-16_101.jpg"}));
+
+		assert_false(ix.has(Photo{"2020-05-16_102.jpg"}));
+		assert_false(ix.has(Photo{""}));
+	    }
+
 	    void all(TC)
 	    {
 		std::stringstream ss;

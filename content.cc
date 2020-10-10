@@ -84,8 +84,11 @@ Patterns::Patterns()
       favicon  ("/favicon\\.ico")
 {}
 
-Content::Content(const std::string& host, const std::string& root)
+Content::Content(const std::string& host,
+		 const allergy::Index& index,
+		 const std::string& root)
     : host{host},
+      index{index},
       lib{"lib"},
       thumb{"thumb"},
       root{root}
@@ -136,6 +139,7 @@ Response* Content::redirect(const timespec& t, const std::string&) const { retur
 Response* Content::photo(const timespec& t, const allergy::Photo& p) const
 {
     if (!p.valid()) return resp404(t, lib);
+    if (!index.has(p)) return resp404(t, lib);
     return open<response::Image>(t, root, lib, p);
 }
 
@@ -150,6 +154,7 @@ Response* Content::photo(const timespec& t, const allergy::Photo& p) const
 Response* Content::thumbnail(const timespec& t, const allergy::Photo& p) const
 {
     if (!p.valid()) return resp404(t, lib);
+    if (!index.has(p)) return resp404(t, lib);
 
     const int fd = open(thumb, p);
     if (fd==-1 && errno==ENOENT) {
