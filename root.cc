@@ -29,6 +29,15 @@ int Root::open(const std::string& relpath) const
 }
 
 /**
+ * Unlink 'name' relative to this root. Returns true if this succeeds
+ * (so it fails if there is nothing to unlink).
+ */
+bool Root::unlink(const std::string& name) const
+{
+    return unlinkat(dirfd, name.c_str(), 0)==0;
+}
+
+/**
  * Create directory 'name' relative to this root. Returns true if it
  * exists afterwards, like 'mkdir -p'.
  */

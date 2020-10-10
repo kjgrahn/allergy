@@ -11,10 +11,10 @@
 
 /**
  * A root directory, from which you can openat(2) files with relative
- * paths.
+ * paths and perform other relative file system operations.
  *
  * We don't use the openat(2) style for security reasons but for
- * convenience; it maps well to HTTP.
+ * convenience and clarity; it maps well to HTTP.
  */
 class Root {
 public:
@@ -24,6 +24,7 @@ public:
     Root& operator= (const Root&) = delete;
 
     int open(const std::string& relpath) const;
+    bool unlink(const std::string& name) const;
     bool mkdir(const std::string& name) const;
     bool chdir() const;
 

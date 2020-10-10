@@ -105,8 +105,8 @@ namespace {
  * that's a lot smaller than the original (0.1--0.7% in my first tests).
  *
  * Ignores Exif information; the image must be valid as a plain JPEG,
- * specifically not require interpretation of the Exif 'Orientation'
- * flag.
+ * specifically it must not require interpretation of the Exif
+ * 'Orientation' flag.
  *
  */
 bool allergy::thumbnail(const Root& src,
@@ -157,7 +157,15 @@ bool allergy::thumbnail(const Root& src,
     const int cstatus = wait_for(cpid);
     const int dstatus = wait_for(dpid);
 
-    if(!WIFEXITED(dstatus) || !WIFEXITED(cstatus)) return false;
-    if(WEXITSTATUS(dstatus) || WEXITSTATUS(cstatus)) return false;
-    return true;
+    auto success = [] (int s) { return WIFEXITED(s) && !WEXITSTATUS(s); };
+
+    if (!success(cstatus)) {
+
+	// cjpeg tends to create an empty file when it fails.
+	// (This is bad style, but it does anyway.)
+	dst.unlink(photo.path());
+	return false;
+    }
+
+    return success(dstatus);
 }
