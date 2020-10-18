@@ -6,6 +6,7 @@
 
 #include "files...h"
 
+#include <iostream>
 #include <algorithm>
 
 using namespace allergy;
@@ -56,12 +57,16 @@ namespace {
 	return {filename, p, end, ts, ibid};
     }
 
-    void invert(std::map<Photo, unsigned>& names,
+    void invert(std::ostream& err,
+		std::map<Photo, unsigned>& names,
 		const std::vector<Entry>& ee)
     {
 	unsigned n = 0;
 	for (const Entry& e: ee) {
-	    names[e.filename] = n;
+	    auto res = names.emplace(e.filename, n);
+	    if (!res.second) {
+		err << "warning: duplicate name '" << e.filename << "'\n";
+	    }
 	    n++;
 	}
     }
@@ -79,7 +84,7 @@ namespace {
     }
 }
 
-Index::Index(Files& in)
+Index::Index(std::ostream& err, Files& in)
 {
     std::string s;
     std::vector<std::string> v;
@@ -106,7 +111,7 @@ Index::Index(Files& in)
 
     if(has_entry()) emit();
 
-    invert(by.name, entries);
+    invert(err, by.name, entries);
     invert(by.key, entries);
 }
 

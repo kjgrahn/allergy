@@ -10,6 +10,8 @@
 #include "status.h"
 #include "allergy/thumbnail.h"
 
+#include <iostream>
+
 namespace {
     bool match(const std::string& s, const std::regex& re)
     {
@@ -84,17 +86,31 @@ Patterns::Patterns()
       favicon  ("/favicon\\.ico")
 {}
 
-Content::Content(const std::string& host,
+Content::Content(std::ostream& err,
+		 const std::string& host,
 		 const allergy::Index& index,
-		 const std::string& root)
+		 const std::string& root_)
     : host{host},
       index{index},
       lib{"lib"},
       thumb{"thumb"},
-      root{root}
-{}
+      root{root_}
+{
+    auto whine = [&err] (const std::string& name) mutable {
+		     err << "error: cannot open directory " << name
+			 << ": " << std::strerror(errno) << '\n';
+		 };
+    if (!root.valid()) whine(root_);
+    else if (!thumb.valid()) whine("thumb");
+    else if (!lib.valid()) whine("lib");
+}
 
 Content::~Content() = default;
+
+bool Content::valid() const
+{
+    return lib.valid() && thumb.valid() && root.valid();
+}
 
 Response* Content::response_of(const Request& req, const timespec& t) const
 {

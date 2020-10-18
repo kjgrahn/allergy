@@ -13,6 +13,33 @@ namespace allergy {
 
 	using orchis::TC;
 
+	void assert_drained(Files& f)
+	{
+	    std::string s;
+	    orchis::assert_false(f.getline(s));
+	}
+
+	/* Convenience wrapper around a valid allergy::Index
+	 * which generated no warnings.
+	 */
+	struct Index {
+	    explicit Index(std::istream& is)
+		: files {is},
+		  index {os, files}
+	    {
+		orchis::assert_true(index.valid());
+		orchis::assert_eq(os.str(), "");
+		assert_drained(files);
+	    }
+
+	    allergy::Index::iterator begin() const { return index.begin(); }
+	    allergy::Index::iterator end()   const { return index.end(); }
+
+	    std::ostringstream os;
+	    Files files;
+	    const allergy::Index index;
+	};
+
 	template <class It>
 	void assert_entry(It it,
 			  const std::string& file,
@@ -30,6 +57,12 @@ namespace allergy {
 	    orchis::assert_true(it==ix.end());
 	}
 
+	template <class It>
+	void assert_end(It it, const allergy::Index& ix)
+	{
+	    orchis::assert_true(it==ix.end());
+	}
+
 	void simple(TC)
 	{
 	    std::stringstream ss("2020-05-16_0262.jpg\n"
@@ -39,8 +72,7 @@ namespace allergy {
 				 "2020-05-16_0263.jpg\n"
 				 "2020-05-16 14:12\n"
 				 "bar\n");
-	    Files ff {ss};
-	    const Index ix {ff};
+	    const Index ix {ss};
 	    auto it = ix.begin();
 	    assert_entry(it++,
 			 "2020-05-16_0262.jpg",
@@ -61,8 +93,7 @@ namespace allergy {
 				 "2020-05-16_0263.jpg\n"
 				 "2020-05-16 14:12\n"
 				 "\n");
-	    Files ff {ss};
-	    const Index ix {ff};
+	    const Index ix {ss};
 	    auto it = ix.begin();
 	    assert_entry(it++,
 			 "2020-05-16_0262.jpg",
@@ -81,8 +112,7 @@ namespace allergy {
 				 "\n"
 				 "2020-05-16_0263.jpg\n"
 				 "foo");
-	    Files ff {ss};
-	    const Index ix {ff};
+	    const Index ix {ss};
 	    auto it = ix.begin();
 	    assert_entry(it++,
 			 "2020-05-16_0262.jpg",
@@ -104,8 +134,7 @@ namespace allergy {
 				 "2020-05-16_0263.jpg\n"
 				 "2020-05-16 14:12\n"
 				 "ibid\n");
-	    Files ff {ss};
-	    const Index ix {ff};
+	    const Index ix {ss};
 	    auto it = ix.begin();
 	    assert_entry(it++,
 			 "2020-05-16_0262.jpg",
@@ -121,8 +150,7 @@ namespace allergy {
 	void empty(TC)
 	{
 	    std::stringstream ss("# nothing here\n");
-	    Files ff {ss};
-	    const Index ix {ff};
+	    const Index ix {ss};
 	    auto it = ix.begin();
 	    assert_end(it, ix);
 	}
@@ -134,8 +162,7 @@ namespace allergy {
 				 "foo\n"
 				 " bar\n"
 				 " baz\n");
-	    Files ff {ss};
-	    const Index ix {ff};
+	    const Index ix {ss};
 	    auto it = ix.begin();
 	    assert_entry(it++,
 			 "2020-05-16_0262.jpg",
@@ -151,8 +178,7 @@ namespace allergy {
 	    std::stringstream ss("2020-05-16_0262.jpg  \n"
 				 "2020-05-16 14:11     \n"
 				 "foobar\n");
-	    Files ff {ss};
-	    const Index ix {ff};
+	    const Index ix {ss};
 	    auto it = ix.begin();
 	    assert_entry(it++,
 			 "2020-05-16_0262.jpg",
@@ -175,8 +201,7 @@ namespace allergy {
 				 "# bar\n"
 				 "\n"
 				 "# bar\n");
-	    Files ff {ss};
-	    const Index ix {ff};
+	    const Index ix {ss};
 	    auto it = ix.begin();
 	    assert_entry(it++,
 			 "2020-05-16_0262.jpg",
@@ -190,8 +215,7 @@ namespace allergy {
 	    std::stringstream ss("2020-05-16_0262.jpg\n"
 				 "2020-05-16 14:11\n"
 				 "foobar");
-	    Files ff {ss};
-	    const Index ix {ff};
+	    const Index ix {ss};
 	    auto it = ix.begin();
 	    assert_entry(it++,
 			 "2020-05-16_0262.jpg",
@@ -209,8 +233,7 @@ namespace allergy {
 				 "2020-05-16_0263.jpg\n"
 				 "2020-05-16 14:12\n"
 				 "ibid\n");
-	    Files ff {ss};
-	    const Index ix {ff};
+	    const Index ix {ss};
 	    auto it = ix.begin();
 	    assert_entry(it++,
 			 "2020-05-16_0262.jpg",
@@ -220,6 +243,29 @@ namespace allergy {
 			 "2020-05-16_0263.jpg",
 			 "2020-05-16 14:12",
 			 "foobar");
+	    assert_end(it, ix);
+	}
+
+	void duplicate(TC)
+	{
+	    std::stringstream ss("2020-05-16_0100.jpg\n"
+				 "2020-05-16 14:11\n"
+				 "\n"
+				 "2020-05-16_0100.jpg\n"
+				 "2020-05-16 14:12\n");
+	    std::ostringstream err;
+	    Files files {ss};
+	    const allergy::Index ix {err, files};
+	    orchis::assert_gt(err.str().size(), 0);
+	    assert_drained(files);
+
+	    auto it = ix.begin();
+	    assert_entry(it++,
+			 "2020-05-16_0100.jpg",
+			 "2020-05-16 14:11");
+	    assert_entry(it++,
+			 "2020-05-16_0100.jpg",
+			 "2020-05-16 14:12");
 	    assert_end(it, ix);
 	}
 
@@ -258,14 +304,13 @@ namespace allergy {
 		generate(ss,
 			 {"2020-05-16 14:11",
 			  "2020-05-16 14:11"});
-		Files ff {ss};
-		const Index ix {ff};
+		const Index ix {ss};
 
-		assert_true(ix.has(Photo{"2020-05-16_100.jpg"}));
-		assert_true(ix.has(Photo{"2020-05-16_101.jpg"}));
+		assert_true(ix.index.has(Photo{"2020-05-16_100.jpg"}));
+		assert_true(ix.index.has(Photo{"2020-05-16_101.jpg"}));
 
-		assert_false(ix.has(Photo{"2020-05-16_102.jpg"}));
-		assert_false(ix.has(Photo{""}));
+		assert_false(ix.index.has(Photo{"2020-05-16_102.jpg"}));
+		assert_false(ix.index.has(Photo{""}));
 	    }
 
 	    void all(TC)
@@ -274,9 +319,8 @@ namespace allergy {
 		generate(ss,
 			 {"2020-05-16 14:11",
 			  "2020-05-16 14:12"});
-		Files ff {ss};
-		const Index ix {ff};
-		assert_entries(ix.all(),
+		const Index ix {ss};
+		assert_entries(ix.index.all(),
 			       {"2020-05-16 14:11",
 				"2020-05-16 14:12"});
 	    }
@@ -290,9 +334,8 @@ namespace allergy {
 			  "2020-01-01 12:00",
 			  "2021-01-01 12:00",
 			  "2019-01-01 12:00"});
-		Files ff {ss};
-		const Index ix {ff};
-		assert_entries(ix.year("2020"),
+		const Index ix {ss};
+		assert_entries(ix.index.year("2020"),
 			 {"2020-01-01 12:00",
 			  "2020-05-16 12:00",
 			  "2020-12-31 12:00"});
@@ -308,9 +351,8 @@ namespace allergy {
 			  "2020-08-01 12:01",
 			  "2020-08-01 12:00",
 			  "2020-09-01 12:00"});
-		Files ff {ss};
-		const Index ix {ff};
-		assert_entries(ix.month("2020-08"),
+		const Index ix {ss};
+		assert_entries(ix.index.month("2020-08"),
 			       {"2020-08-01 12:00",
 				"2020-08-01 12:01",
 				"2020-08-02 12:00"});
@@ -328,9 +370,8 @@ namespace allergy {
 			  "2020-09-24 12:00",
 			  "2020-09-26 11:59",
 			  "1980-08-01 12:00"});
-		Files ff {ss};
-		const Index ix {ff};
-		assert_entries(ix.day("2020-09-26"),
+		const Index ix {ss};
+		assert_entries(ix.index.day("2020-09-26"),
 			       {"2020-09-26 11:59",
 				"2020-09-26 12:00",
 				"2020-09-26 12:01"});
@@ -349,18 +390,17 @@ namespace allergy {
 				     "2020-09-26_0003.jpg\n"
 				     "2020-09-26 14:25\n"
 				     "[bar][baz]\n");
-		Files ff {ss};
-		const Index ix {ff};
-		assert_entries(ix.key("foo"),
+		const Index ix {ss};
+		assert_entries(ix.index.key("foo"),
 			       {"2020-09-26 14:23",
 				"2020-09-26 14:24"});
-		assert_entries(ix.key("bar"),
+		assert_entries(ix.index.key("bar"),
 			       {"2020-09-26 14:23",
 				"2020-09-26 14:24",
 				"2020-09-26 14:25"});
-		assert_entries(ix.key("baz"),
+		assert_entries(ix.index.key("baz"),
 			       {"2020-09-26 14:25"});
-		assert_entries(ix.key("bat"), {});
+		assert_entries(ix.index.key("bat"), {});
 	    }
 	}
     }

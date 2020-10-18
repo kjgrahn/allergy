@@ -67,9 +67,10 @@ namespace {
 
     /* Create a listening socket on host:port (the wildcard address if
      * host is empty). Does everything including listen(), and prints
-     * relevant error messages on stderr.
+     * relevant error messages.
      */
-    int listening_socket(const std::string& host,
+    int listening_socket(std::ostream& err,
+			 const std::string& host,
 			 const std::string& port)
     {
 	struct addrinfo hints;
@@ -87,7 +88,7 @@ namespace {
 				  port.c_str(),
 				  &hints, &result);
 	if(s) {
-	    std::cerr << "error: " << gai_strerror(s) << '\n';
+	    err << "error: " << gai_strerror(s) << '\n';
 	    return -1;
 	}
 
@@ -110,7 +111,7 @@ namespace {
 	freeaddrinfo(result);
 
 	if(!rp || listen(fd, 10)==-1) {
-	    std::cerr << "socket error: " << strerror(errno) << '\n';
+	    err << "socket error: " << strerror(errno) << '\n';
 	    return -1;
 	}
 
@@ -252,20 +253,21 @@ int main(int argc, char ** argv)
 	}
     }
 
-    if(host.empty() || root.empty()) {
+    Files indices {argv+optind, argv+argc, false};
+
+    if(host.empty() || root.empty() || indices.empty()) {
 	    std::cerr << usage << '\n';
 	    return 1;
     }
 
-    Files indices {argv+optind, argv+argc};
-    const allergy::Index index {indices};
+    const allergy::Index index {std::cerr, indices};
+    if (!index.valid()) return 1;
 
-    const int lfd = listening_socket(addr, port);
-    if(lfd==-1) {
-	return 1;
-    }
+    const Content content(std::cerr, host, index, root);
+    if (!content.valid()) return 1;
 
-    const Content content(host, index, root);
+    const int lfd = listening_socket(std::cerr, addr, port);
+    if (lfd==-1) return 1;
 
     ignore_sigpipe();
 

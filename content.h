@@ -10,6 +10,7 @@
 #include "root.h"
 #include "allergy/index.h"
 
+#include <iosfwd>
 #include <string>
 #include <regex>
 
@@ -47,12 +48,15 @@ struct Patterns {
  */
 class Content {
 public:
-    Content(const std::string& host,
+    Content(std::ostream& err,
+	    const std::string& host,
 	    const allergy::Index& index,
 	    const std::string& path);
     ~Content();
     Content(const Content&) = delete;
     Content& operator= (const Content&) = delete;
+
+    bool valid() const;
 
     Response* response_of(const Request& request, const timespec& ts) const;
 

@@ -9,6 +9,7 @@
 
 #include "entry.h"
 
+#include <iosfwd>
 #include <vector>
 #include <map>
 
@@ -22,7 +23,11 @@ namespace allergy {
      */
     class Index {
     public:
-	explicit Index(Files& in);
+	Index(std::ostream& err, Files& in);
+	Index(const Index&) = delete;
+	Index& operator= (const Index&) = delete;
+
+	bool valid() const { return true; }
 
 	using iterator = std::vector<Entry>::const_iterator;
 	iterator begin() const { return entries.begin(); }

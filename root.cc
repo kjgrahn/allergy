@@ -15,7 +15,7 @@ Root::Root(const std::string& path)
 
 Root::~Root()
 {
-    if (dirfd!=-1) close(dirfd);
+    if (valid()) close(dirfd);
 }
 
 /**

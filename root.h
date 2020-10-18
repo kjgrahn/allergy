@@ -23,6 +23,8 @@ public:
     Root(const Root&) = delete;
     Root& operator= (const Root&) = delete;
 
+    bool valid() const { return dirfd != -1; }
+
     int open(const std::string& relpath) const;
     bool unlink(const std::string& name) const;
     bool mkdir(const std::string& name) const;

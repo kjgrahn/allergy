@@ -42,7 +42,7 @@ int main(int argc, char ** argv)
     std::cout.sync_with_stdio(false);
 
     Files files(argv+optind, argv+argc);
-    const allergy::Index ix(files);
+    const allergy::Index ix(std::cerr, files);
 
     const char* sep = "";
     for (const allergy::Entry& e: ix.all()) {
