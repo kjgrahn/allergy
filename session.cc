@@ -142,7 +142,6 @@ void Session::pop_req(const timespec& t)
 
     const Request req = req_queue.front();
     Info(Syslog::log) << *this << ' ' << req.method << ' ' << req.request_uri();
-    std::cout << req << '\n';
     req_queue.pop();
     response = content.response_of(req, t);
     history.began(*response, t);
