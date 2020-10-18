@@ -36,7 +36,8 @@ public:
     Files(It begin, It end,
 	  bool empty_is_stdin = true);
 
-    explicit Files(std::stringstream& ss);
+    explicit Files(std::istream& ss);
+    bool empty() const { return ff.empty(); }
 
     bool getline(std::string& s);
 

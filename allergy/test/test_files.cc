@@ -49,6 +49,7 @@ namespace files {
     using orchis::assert_eq;
     using orchis::assert_gt;
     using orchis::assert_true;
+    using orchis::assert_false;
     using orchis::TC;
 
     static const char pass[] = "/etc/passwd";
@@ -72,6 +73,7 @@ namespace files {
     {
 	const char* const argv[] = {devnull};
 	Files f(argv, argv+1);
+	assert_false(f.empty());
 	std::string s;
 	assert_eq(f.getline(s), false);
     }
@@ -80,6 +82,7 @@ namespace files {
     {
 	const char* const argv[] = {devnull};
 	Files f(argv, argv+0, false);
+	assert_true(f.empty());
 	std::string s;
 	assert_eq(f.getline(s), false);
     }

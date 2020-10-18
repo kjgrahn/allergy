@@ -9,10 +9,10 @@
 
 
 /**
- * Reading from a single string stream instead of named files and/or
- * stdin.
+ * Reading from a single stream (probably a stringstream, for testing)
+ * instead of named files and/or stdin.
  */
-Files::Files(std::stringstream& ss)
+Files::Files(std::istream& ss)
     : is(&ss),
       pos{"<string>", 0}
 {}
