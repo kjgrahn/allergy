@@ -15,12 +15,16 @@
 
 
 /**
- * Crude ostream interface to syslog(3).  We want an efficient way of
- * saying something like:
+ * Crude ostream interface to stderr or syslog(3).  We want an
+ * efficient way of saying something like:
  *
  *    LOG_WARNING << "session " << s << " closed unexpectedly";
  *
  * and have it translate to one syslog message.
+ *
+ * Since a daemon should log to stderr until it goes into the
+ * background, this class does too, until actually told to switch to
+ * syslog.
  *
  * Class Syslog implements the ostream, a fixed, limited-size stream buffer,
  * and the syslogging.  The Log<Prio> template makes the syntax acceptable.
@@ -33,6 +37,8 @@ public:
     std::ostream& ostream() { return os; }
     void flush(int prio);
 
+    void activate();
+
     /**
      * Since the syslog is naturally process-global and reentrancy is
      * irrelevant here, we might as well provide a global Syslog object.
@@ -42,6 +48,7 @@ public:
 private:
     std::array<char_type, 500> v;
     std::ostream os;
+    bool use_syslog = false;
 };
 
 /**

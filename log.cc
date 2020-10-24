@@ -5,6 +5,8 @@
  */
 #include "log.h"
 
+#include <sys/uio.h>
+
 Syslog Syslog::log;
 
 Syslog::Syslog()
@@ -22,8 +24,21 @@ Syslog::~Syslog()
 
 void Syslog::flush(int prio)
 {
-    *pptr() = '\0';
-    syslog(prio, "%s", pbase());
+    if (use_syslog) {
+	*pptr() = '\0';
+	syslog(prio, "%s", pbase());
+    }
+    else {
+	char nl = '\n';
+	iovec v[2] = {{pbase(), pptr() - pbase()},
+		      {&nl, 1}};
+	writev(1, v, 2);
+    }
     char_type* p = &v[0];
     setp(p, p + v.size()-1);
+}
+
+void Syslog::activate()
+{
+    use_syslog = true;
 }

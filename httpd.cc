@@ -278,6 +278,7 @@ int main(int argc, char ** argv)
 		      << strerror(errno) << '\n';
 	    return 1;
 	}
+	Syslog::log.activate();
     }
 
     loop(content, lfd);
