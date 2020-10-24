@@ -9,7 +9,7 @@
 
 #include <iostream>
 #include <streambuf>
-#include <vector>
+#include <array>
 
 #include <syslog.h>
 
@@ -40,17 +40,21 @@ public:
     static Syslog log;
 
 private:
-    std::vector<char_type> v;
+    std::array<char_type, 500> v;
     std::ostream os;
 };
 
-
-
-
+/**
+ * Generating a log message with a certain prio through a Syslog
+ * object.
+ */
 template <int Prio>
 struct Log {
     explicit Log(Syslog& syslog) : syslog(syslog) {}
     ~Log() { syslog.flush(Prio); }
+
+    Log(const Log&) = delete;
+    Log& operator= (const Log&) = delete;
 
     template <class T>
     std::ostream& operator<< (const T& t) {
@@ -59,10 +63,6 @@ struct Log {
 
 private:
     Syslog& syslog;
-
-    Log();
-    Log(const Log&);
-    Log& operator= (const Log&);
 };
 
 typedef Log<LOG_EMERG> Emerg;

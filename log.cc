@@ -7,22 +7,18 @@
 
 Syslog Syslog::log;
 
-
 Syslog::Syslog()
-    : v(500),
-      os(this)
+    : os(this)
 {
     char_type* p = &v[0];
     setp(p, p + v.size()-1);
     openlog("allergyd", 0, LOG_DAEMON);
 }
 
-
 Syslog::~Syslog()
 {
     closelog();
 }
-
 
 void Syslog::flush(int prio)
 {
