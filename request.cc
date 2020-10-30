@@ -221,11 +221,10 @@ Blob Request::header(const Property prop) const
 /**
  * Return the Request-URI. Undefined unless complete.
  */
-std::string Request::request_uri() const
+Uri Request::request_uri() const
 {
     assert(complete);
-    return std::string(&v[properties[0].start],
-		       &v[properties[1].start]);
+    return Uri {&v[properties[0].start], &v[properties[1].start]};
 }
 
 

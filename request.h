@@ -8,6 +8,7 @@
 #define GB_REQUEST_H_
 
 #include "blob.h"
+#include "uri.h"
 
 #include <iosfwd>
 #include <string>
@@ -115,7 +116,7 @@ public:
     HTTPVersion version;
 
     Blob header(Property prop) const;
-    std::string request_uri() const;
+    Uri request_uri() const;
     std::ostream& put(std::ostream& os) const;
 
 private:

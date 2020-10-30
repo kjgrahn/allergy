@@ -14,31 +14,10 @@
 
 #include <iosfwd>
 #include <string>
-#include <regex>
 
 class Request;
 class Response;
 class timespec;
-
-struct Patterns {
-    Patterns();
-
-    std::regex frontpage;
-    std::regex by_date;
-    std::regex year;
-    std::regex month;
-
-    std::regex photo;
-    std::regex thumb;
-
-    std::regex key;
-    std::regex keywords;
-    std::regex keyword;
-
-    std::regex css;
-    std::regex robots;
-    std::regex favicon;
-};
 
 /**
  * The server content, defined by all responses to all possible
@@ -63,7 +42,6 @@ public:
     Response* response_of(const Request& request, const timespec& ts) const;
 
 private:
-    const Patterns re;
     const std::string host;
     const allergy::Index& index;
     const Root lib;

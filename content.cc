@@ -13,15 +13,6 @@
 #include <iostream>
 
 namespace {
-    bool match(const std::string& s, const std::regex& re)
-    {
-	return regex_match(s, re);
-    }
-
-    bool match(const std::string& s, const std::regex& re, std::smatch& m)
-    {
-	return regex_match(s, m, re);
-    }
 
     bool wrong_host(const Blob&) { return false; }
 
@@ -69,21 +60,6 @@ namespace {
     }
 }
 
-Patterns::Patterns()
-    : frontpage("/|/index.html"),
-      by_date  ("/by-date"),
-      year     ("/(\\d{4})"),
-      month    ("/(\\d{4}-\\d{2})"),
-      photo    ("/(\\d{4}-\\d{2}-\\d{2}_.+\\.jpg)"),
-      thumb    ("/thumb/(\\d{4}-\\d{2}-\\d{2}_.+\\.jpg)"),
-      key      ("/key(words)?"),
-      keywords ("/key/"),
-      keyword  ("/key/(.+)"),
-      css      ("/css"),
-      robots   ("/robots\\.txt"),
-      favicon  ("/favicon\\.ico")
-{}
-
 Content::Content(std::ostream& err,
 		 const std::string& host,
 		 const allergy::Index& index,
@@ -119,25 +95,26 @@ Response* Content::response_of(const Request& req, const timespec& t) const
 
     const auto& uri = req.request_uri();
 
-    if(match(uri, re.frontpage)) return frontpage(t);
-    if(match(uri, re.by_date)) return by_date(t);
+    if (match<bool>(uri, ""))           return frontpage(t);
+    if (match<bool>(uri, "index.html")) return frontpage(t);
 
-    std::smatch m;
+    if (match<bool>(uri, "by-date")) return by_date(t);
 
-    if(match(uri, re.year, m)) return calendar(t, allergy::Year{m[1]});
-    if(match(uri, re.month, m)) return calendar(t, allergy::Month{m[1]});
+    if (auto year  = match<allergy::Year>(uri))  return calendar(t, year);
+    if (auto month = match<allergy::Month>(uri)) return calendar(t, month);
 
-    if(match(uri, re.photo, m)) return photo(t, allergy::Photo(m[1]));
-    if(match(uri, re.thumb, m)) return thumbnail(t, allergy::Photo(m[1]));
+    if (auto name = match<allergy::Photo>(uri))          return photo(t, name);
+    if (auto name = match<allergy::Photo>(uri, "thumb")) return thumbnail(t, name);
 
-    if(match(uri, re.key)) return redirect(t, "/key/");
-    if(match(uri, re.keywords)) return keywords(t);
+    if (match<bool>(uri, "keywords")) return redirect(t, "/key/");
+    if (match<bool>(uri, "key"))      return redirect(t, "/key/");
+    if (match<bool>(uri, "key", ""))  return keywords(t);
 
-    if(match(uri, re.keyword, m)) return keyword(t, allergy::Key{m[1]});
+    if (auto key = match<allergy::Key>(uri, "key")) return keyword(t, key);
 
-    if(match(uri, re.css)) return css(t);
-    if(match(uri, re.robots)) return robots(t);
-    if(match(uri, re.favicon)) return favicon(t);
+    if (match<bool>(uri, "css"))         return css(t);
+    if (match<bool>(uri, "robots.txt"))  return robots(t);
+    if (match<bool>(uri, "favicon.ico")) return favicon(t);
 
     return resp404(t, lib);
 }
