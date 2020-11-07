@@ -9,6 +9,8 @@
 
 #include "root.h"
 #include "allergy/index.h"
+#include "allergy/calendar.h"
+#include "allergy/keyword.h"
 
 #include <iosfwd>
 #include <string>
@@ -70,13 +72,13 @@ private:
 
     Response* frontpage(const timespec& t) const;
     Response* by_date(const timespec& t) const;
-    Response* year(const timespec& t, unsigned yyyy) const;
-    Response* month(const timespec& t, unsigned yyyy, unsigned mm) const;
+    Response* calendar(const timespec& t, const allergy::Year&) const;
+    Response* calendar(const timespec& t, const allergy::Month&) const;
     Response* redirect(const timespec& t, const std::string& s) const;
     Response* photo(const timespec& t, const allergy::Photo& p) const;
     Response* thumbnail(const timespec& t, const allergy::Photo& p) const;
     Response* keywords(const timespec& t) const;
-    Response* keyword(const timespec& t, const std::string& s) const;
+    Response* keyword(const timespec& t, const allergy::Key&) const;
     Response* robots(const timespec& t) const;
     Response* css(const timespec& t) const;
     Response* favicon(const timespec& t) const;

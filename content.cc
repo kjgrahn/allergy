@@ -23,8 +23,6 @@ namespace {
 	return regex_match(s, m, re);
     }
 
-    unsigned to_int(const std::string& s) { return std::stoul(s); }
-
     bool wrong_host(const Blob&) { return false; }
 
     template <class ErrorPage>
@@ -75,7 +73,7 @@ Patterns::Patterns()
     : frontpage("/|/index.html"),
       by_date  ("/by-date"),
       year     ("/(\\d{4})"),
-      month    ("/(\\d{4})-(\\d{2})"),
+      month    ("/(\\d{4}-\\d{2})"),
       photo    ("/(\\d{4}-\\d{2}-\\d{2}_.+\\.jpg)"),
       thumb    ("/thumb/(\\d{4}-\\d{2}-\\d{2}_.+\\.jpg)"),
       key      ("/key(words)?"),
@@ -126,10 +124,8 @@ Response* Content::response_of(const Request& req, const timespec& t) const
 
     std::smatch m;
 
-    if(match(uri, re.year, m)) return year(t, to_int(m[1]));
-    if(match(uri, re.month, m)) return month(t,
-					     to_int(m[1]),
-					     to_int(m[2]));
+    if(match(uri, re.year, m)) return calendar(t, allergy::Year{m[1]});
+    if(match(uri, re.month, m)) return calendar(t, allergy::Month{m[1]});
 
     if(match(uri, re.photo, m)) return photo(t, allergy::Photo(m[1]));
     if(match(uri, re.thumb, m)) return thumbnail(t, allergy::Photo(m[1]));
@@ -137,7 +133,7 @@ Response* Content::response_of(const Request& req, const timespec& t) const
     if(match(uri, re.key)) return redirect(t, "/key/");
     if(match(uri, re.keywords)) return keywords(t);
 
-    if(match(uri, re.keyword, m)) return keyword(t, m[1]);
+    if(match(uri, re.keyword, m)) return keyword(t, allergy::Key{m[1]});
 
     if(match(uri, re.css)) return css(t);
     if(match(uri, re.robots)) return robots(t);
@@ -148,8 +144,8 @@ Response* Content::response_of(const Request& req, const timespec& t) const
 
 Response* Content::frontpage(const timespec& t) const { return resp404(t, lib); }
 Response* Content::by_date(const timespec& t) const { return resp404(t, lib); }
-Response* Content::year(const timespec& t, unsigned) const { return resp404(t, lib); }
-Response* Content::month(const timespec& t, unsigned, unsigned) const { return resp404(t, lib); }
+Response* Content::calendar(const timespec& t, const allergy::Year&) const { return resp404(t, lib); }
+Response* Content::calendar(const timespec& t, const allergy::Month&) const { return resp404(t, lib); }
 Response* Content::redirect(const timespec& t, const std::string&) const { return resp404(t, lib); }
 
 Response* Content::photo(const timespec& t, const allergy::Photo& p) const
@@ -183,7 +179,7 @@ Response* Content::thumbnail(const timespec& t, const allergy::Photo& p) const
 }
 
 Response* Content::keywords(const timespec& t) const { return resp404(t, lib); }
-Response* Content::keyword(const timespec& t, const std::string&) const { return resp404(t, lib); }
+Response* Content::keyword(const timespec& t, const allergy::Key&) const { return resp404(t, lib); }
 Response* Content::robots(const timespec& t) const { return open<response::File>(t, lib, lib, "robots.txt", "text/plain"); }
 Response* Content::css(const timespec& t) const { return open<response::File>(t, lib, lib, "css", "text/css"); }
 Response* Content::favicon(const timespec& t) const { return resp404(t, lib); }

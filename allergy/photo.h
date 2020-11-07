@@ -40,6 +40,7 @@ namespace allergy {
 	std::ostream& put(std::ostream& os) const;
 
 	bool valid() const { return quarter; }
+	explicit operator bool() const { return valid(); }
 	std::string dir() const;
 	std::string path() const;
 

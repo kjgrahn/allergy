@@ -71,12 +71,12 @@ namespace {
 	}
     }
 
-    void invert(std::map<std::string, std::vector<unsigned>>& keys,
+    void invert(std::map<Key, std::vector<unsigned>>& keys,
 		const std::vector<Entry>& ee)
     {
 	unsigned n = 0;
 	for (const Entry& e: ee) {
-	    for (const std::string& k: e.keywords) {
+	    for (const Key& k: e.keywords) {
 		keys[k].push_back(n);
 	    }
 	    n++;
@@ -147,27 +147,27 @@ std::vector<Entry> Index::all() const
     return v;
 }
 
-std::vector<Entry> Index::year(const std::string& s) const
+std::vector<Entry> Index::in(const Year& key) const
 {
-    auto p = [&s] (const Entry& e) { return e.timestamp.year == s; };
+    auto p = [&key] (const Entry& e) { return e.timestamp.year == key; };
     return get(*this, p);
 }
 
-std::vector<Entry> Index::month(const std::string& s) const
+std::vector<Entry> Index::in(const Month& key) const
 {
-    auto p = [&s] (const Entry& e) { return e.timestamp.month == s; };
+    auto p = [&key] (const Entry& e) { return e.timestamp.month == key; };
     return get(*this, p);
 }
 
-std::vector<Entry> Index::day(const std::string& s) const
+std::vector<Entry> Index::on(const Day& key) const
 {
-    auto p = [&s] (const Entry& e) { return e.timestamp.date == s; };
+    auto p = [&key] (const Entry& e) { return e.timestamp.date == key; };
     return get(*this, p);
 }
 
-std::vector<Entry> Index::key(const std::string& s) const
+std::vector<Entry> Index::key(const Key& key) const
 {
-    auto it = by.key.find(s);
+    auto it = by.key.find(key);
     if (it==by.key.end()) return {};
 
     std::vector<Entry> v;

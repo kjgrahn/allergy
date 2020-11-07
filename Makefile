@@ -90,6 +90,7 @@ libtest.a: test/test_glob.o
 libtest.a: test/test_regex.o
 libtest.a: allergy/test/test_index.o
 libtest.a: allergy/test/test_timestamp.o
+libtest.a: allergy/test/test_calendar.o
 libtest.a: allergy/test/test_keys.o
 libtest.a: allergy/test/test_photo.o
 libtest.a: allergy/test/test_files.o

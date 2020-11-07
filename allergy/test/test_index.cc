@@ -335,7 +335,7 @@ namespace allergy {
 			  "2021-01-01 12:00",
 			  "2019-01-01 12:00"});
 		const Index ix {ss};
-		assert_entries(ix.index.year("2020"),
+		assert_entries(ix.index.in(Year{"2020"}),
 			 {"2020-01-01 12:00",
 			  "2020-05-16 12:00",
 			  "2020-12-31 12:00"});
@@ -352,7 +352,7 @@ namespace allergy {
 			  "2020-08-01 12:00",
 			  "2020-09-01 12:00"});
 		const Index ix {ss};
-		assert_entries(ix.index.month("2020-08"),
+		assert_entries(ix.index.in(Month{"2020-08"}),
 			       {"2020-08-01 12:00",
 				"2020-08-01 12:01",
 				"2020-08-02 12:00"});
@@ -371,7 +371,7 @@ namespace allergy {
 			  "2020-09-26 11:59",
 			  "1980-08-01 12:00"});
 		const Index ix {ss};
-		assert_entries(ix.index.day("2020-09-26"),
+		assert_entries(ix.index.on(Day{"2020-09-26"}),
 			       {"2020-09-26 11:59",
 				"2020-09-26 12:00",
 				"2020-09-26 12:01"});
@@ -391,16 +391,16 @@ namespace allergy {
 				     "2020-09-26 14:25\n"
 				     "[bar][baz]\n");
 		const Index ix {ss};
-		assert_entries(ix.index.key("foo"),
+		assert_entries(ix.index.key(Key{"foo"}),
 			       {"2020-09-26 14:23",
 				"2020-09-26 14:24"});
-		assert_entries(ix.index.key("bar"),
+		assert_entries(ix.index.key(Key{"bar"}),
 			       {"2020-09-26 14:23",
 				"2020-09-26 14:24",
 				"2020-09-26 14:25"});
-		assert_entries(ix.index.key("baz"),
+		assert_entries(ix.index.key(Key{"baz"}),
 			       {"2020-09-26 14:25"});
-		assert_entries(ix.index.key("bat"), {});
+		assert_entries(ix.index.key(Key{"bat"}), {});
 	    }
 	}
     }

@@ -9,6 +9,9 @@
 #include <cstdlib>
 
 using allergy::Timestamp;
+using allergy::Day;
+using allergy::Month;
+using allergy::Year;
 
 namespace {
     unsigned strtou(const char* p, const char** end)
@@ -40,18 +43,18 @@ Timestamp::Timestamp(const std::string& s)
     const char* end;
     const unsigned n = strtou(p, &end);
     if(*end!='-' || !in_range(1800, n, 3000)) return;
-    year.assign(p0, end);
+    year = {p0, end};
 
     p = end+1;
     const unsigned mm = strtou(p, &end);
     if(*end!='-' || !in_range(1, mm, 12)) return;
-    month.assign(p0, end);
+    month = {p0, end};
 
     p = end+1;
     const unsigned dd = strtou(p, &end);
     if(!in_range(1, dd, 31)) return;
     if(*end && !isspace(*end)) return;
-    date.assign(p0, end);
+    date = {p0, end};
 
     str = s;
 }
@@ -60,3 +63,36 @@ std::ostream& allergy::operator<< (std::ostream& os, const Timestamp& val)
 {
     return os << val.str;
 }
+
+Day::Day(const char* a, const char* b)
+    : val{a, b}
+{
+    if (b-a != 10) { val.clear(); return; }
+    if (a[4] != '-') { val.clear(); return; }
+    if (a[7] != '-') { val.clear(); return; }
+}
+
+Day::Day(const std::string& s)
+    : Day {s.c_str(), s.c_str() + s.size()}
+{}
+
+Month::Month(const char* a, const char* b)
+    : val{a, b}
+{
+    if (b-a != 7) { val.clear(); return; }
+    if (a[4] != '-') { val.clear(); return; }
+}
+
+Month::Month(const std::string& s)
+    : Month {s.c_str(), s.c_str() + s.size()}
+{}
+
+Year::Year(const char* a, const char* b)
+    : val{a, b}
+{
+    if (b-a != 4) { val.clear(); return; }
+}
+
+Year::Year(const std::string& s)
+    : Year {s.c_str(), s.c_str() + s.size()}
+{}

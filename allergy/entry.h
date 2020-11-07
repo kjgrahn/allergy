@@ -10,10 +10,11 @@
 #include "keys.h"
 #include "photo.h"
 #include "timestamp.h"
+#include "keyword.h"
 
 #include <string>
 #include <vector>
-#include <unordered_set>
+#include <set>
 #include <iosfwd>
 
 namespace allergy {
@@ -37,7 +38,7 @@ namespace allergy {
 	Photo filename;
 	Timestamp timestamp;
 	std::string text;
-	std::unordered_set<std::string> keywords;
+	std::set<Key> keywords;
     };
 
     template <class It>
@@ -54,7 +55,7 @@ namespace allergy {
 	    if(i!=begin) text += '\n';
 	    text += keys.str();
 	    for(const std::string& key : keys) {
-		keywords.insert(key);
+		keywords.emplace(key);
 	    }
 	}
 	if (text=="ibid" && prev) {

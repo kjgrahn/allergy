@@ -27,9 +27,9 @@ namespace allergy {
 	    const Timestamp ts("2016-08-14 09:18");
 	    orchis::assert_true(ts.valid());
 	    orchis::assert_eq(ts.str, "2016-08-14 09:18");
-	    orchis::assert_eq(ts.year, "2016");
-	    orchis::assert_eq(ts.month, "2016-08");
-	    orchis::assert_eq(ts.date, "2016-08-14");
+	    orchis::assert_eq(ts.year, allergy::Year{"2016"});
+	    orchis::assert_eq(ts.month, allergy::Month{"2016-08"});
+	    orchis::assert_eq(ts.date, allergy::Day{"2016-08-14"});
 	}
 
 	void invalid(TC)

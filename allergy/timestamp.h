@@ -7,6 +7,8 @@
 #ifndef ALLERGY_TIMESTAMP_H
 #define ALLERGY_TIMESTAMP_H
 
+#include "calendar.h"
+
 #include <string>
 #include <iosfwd>
 
@@ -25,9 +27,9 @@ namespace allergy {
 	bool operator== (const Timestamp& other) const { return str==other.str; }
 	bool operator<  (const Timestamp& other) const { return str<other.str; }
 
-	std::string year;
-	std::string month;
-	std::string date;
+	Year  year;
+	Month month;
+	Day   date;
 	std::string str;
     };
 

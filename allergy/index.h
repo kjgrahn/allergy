@@ -8,6 +8,7 @@
 #define ALLERGY_INDEX_H
 
 #include "entry.h"
+#include "keyword.h"
 
 #include <iosfwd>
 #include <vector>
@@ -37,17 +38,17 @@ namespace allergy {
 
 	std::vector<Entry> all() const;
 
-	std::vector<Entry> year(const std::string& s) const;
-	std::vector<Entry> month(const std::string& s) const;
-	std::vector<Entry> day(const std::string& s) const;
+	std::vector<Entry> in(const Year& key) const;
+	std::vector<Entry> in(const Month& key) const;
+	std::vector<Entry> on(const Day& key) const;
 
-	std::vector<Entry> key(const std::string& s) const;
+	std::vector<Entry> key(const Key& k) const;
 
     private:
 	std::vector<Entry> entries;
 	struct {
 	    std::map<Photo, unsigned> name;
-	    std::map<std::string, std::vector<unsigned>> key;
+	    std::map<Key, std::vector<unsigned>> key;
 	} by;
     };
 }
