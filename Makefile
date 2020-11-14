@@ -117,7 +117,7 @@ tests: test.o liballergy.a libtest.a
 .PHONY: tags TAGS
 tags: TAGS
 TAGS:
-	etags *.cc *.h
+	ctags -eR . --extra=q
 
 depend:
 	makedepend -- $(CXXFLAGS) $(CPPFLAGS) -- -Y -I. {,test/}*.cc allergy/{,test/}*.cc
