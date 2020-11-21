@@ -8,6 +8,7 @@
 #include "request.h"
 #include "response.h"
 #include "status.h"
+#include "log.h"
 #include "allergy/thumbnail.h"
 
 #include <iostream>
@@ -148,8 +149,10 @@ Response* Content::thumbnail(const timespec& t, const allergy::Photo& p) const
     const int fd = open(thumb, p);
     if (fd==-1 && errno==ENOENT) {
 	if (!allergy::thumbnail(root, thumb, p)) {
+	    Warning(Syslog::log) << p << ": failed to thumbnail";
 	    return resp404(t, lib);
 	}
+	Info(Syslog::log) << p << ": thumbnailed";
 	return open<response::Image>(t, thumb, lib, p);
     }
     return open<response::Image>(t, thumb, lib, fd);
