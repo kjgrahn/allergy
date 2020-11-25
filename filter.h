@@ -53,7 +53,8 @@
 namespace Filter {
 
     /**
-     * Plain or identity filter; write data verbatim.
+     * Plain or identity filter; write data verbatim. Has a
+     * sendfile(2) interface as an extra.
      */
     class Plain {
     public:
@@ -82,6 +83,8 @@ namespace Filter {
 	bool end(int fd, const Blob& a) {
 	    return backlog.write(fd, a)==0;
 	}
+
+	ssize_t sendfile(int fd, int src, size_t n);
 
     private:
 	Backlog& backlog;

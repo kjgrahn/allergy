@@ -10,6 +10,15 @@
 #include <cassert>
 #include <errno.h>
 #include <sys/uio.h>
+#include <sys/sendfile.h>
+
+
+using Filter::Plain;
+
+ssize_t Plain::sendfile(int fd, int src, size_t n)
+{
+    return ::sendfile(fd, src, nullptr, n);
+}
 
 
 using Filter::Chunked;
