@@ -40,14 +40,10 @@ namespace {
 			  &val, sizeof val) == 0;
     }
 
-    bool setbuf(int fd, int rx, int tx)
+    bool setbuf(int fd, int rx)
     {
-	int err;
-	err = setsockopt(fd, SOL_SOCKET, SO_SNDBUF,
-			 &tx, sizeof tx);
-	if(err) return false;
-	err = setsockopt(fd, SOL_SOCKET, SO_RCVBUF,
-			 &rx, sizeof rx);
+	int err = setsockopt(fd, SOL_SOCKET, SO_RCVBUF,
+			     &rx, sizeof rx);
 	return !err;
     }
 
@@ -110,7 +106,7 @@ namespace {
 
 	freeaddrinfo(result);
 
-	if(!rp || listen(fd, 10)==-1) {
+	if(!rp || !setbuf(fd, 8192) || listen(fd, 10)==-1) {
 	    err << "socket error: " << strerror(errno) << '\n';
 	    return -1;
 	}
