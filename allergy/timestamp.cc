@@ -7,6 +7,7 @@
 #include <iostream>
 #include <cctype>
 #include <cstdlib>
+#include <cstring>
 
 using allergy::Timestamp;
 using allergy::Day;
@@ -64,12 +65,30 @@ std::ostream& allergy::operator<< (std::ostream& os, const Timestamp& val)
     return os << val.str;
 }
 
+namespace {
+
+    template <class It>
+    bool match(It a, const It b, const char* p)
+    {
+	if (std::distance(a, b) != std::strlen(p)) return false;
+	while (a!=b) {
+	    if (*p=='n') {
+		if (!std::isdigit(static_cast<unsigned char>(*a))) return false;
+	    }
+	    else {
+		if (*p != *a) return false;
+	    }
+	    p++;
+	    a++;
+	}
+	return true;
+    }
+}
+
 Day::Day(const char* a, const char* b)
     : val{a, b}
 {
-    if (b-a != 10) { val.clear(); return; }
-    if (a[4] != '-') { val.clear(); return; }
-    if (a[7] != '-') { val.clear(); return; }
+    if (!match(a, b, "nnnn-nn-nn")) val.clear();
 }
 
 Day::Day(const std::string& s)
@@ -79,8 +98,7 @@ Day::Day(const std::string& s)
 Month::Month(const char* a, const char* b)
     : val{a, b}
 {
-    if (b-a != 7) { val.clear(); return; }
-    if (a[4] != '-') { val.clear(); return; }
+    if (!match(a, b, "nnnn-nn")) val.clear();
 }
 
 Month::Month(const std::string& s)
@@ -90,7 +108,7 @@ Month::Month(const std::string& s)
 Year::Year(const char* a, const char* b)
     : val{a, b}
 {
-    if (b-a != 4) { val.clear(); return; }
+    if (!match(a, b, "nnnn")) val.clear();
 }
 
 Year::Year(const std::string& s)

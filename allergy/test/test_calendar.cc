@@ -73,11 +73,11 @@ namespace allergy {
 	    assert_invalid("  ");
 	    assert_invalid("2020-111");
 	    assert_invalid("2020-1");
+	    assert_invalid("2020-0b");
 	}
 
 	void invalid2(TC)
 	{
-	    assert_invalid("2020-0b");
 	    assert_invalid("2020-00");
 	    assert_invalid("2020-13");
 	}
@@ -110,12 +110,13 @@ namespace allergy {
 	    assert_invalid("2020-11-071");
 	    assert_invalid("2020-11-0");
 	    assert_invalid("2020:11:07");
+	    assert_invalid("2020-11-ab");
 	}
 
 	void invalid2(TC)
 	{
-	    assert_invalid("2020-11-ab");
 	    assert_invalid("2020-11-00");
+	    assert_invalid("2020-02-30");
 	    assert_invalid("2020-11-40");
 	}
     }
