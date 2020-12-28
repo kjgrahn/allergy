@@ -66,5 +66,26 @@ namespace allergy {
     inline std::ostream& operator<< (std::ostream& os, const Day& val)   { return val.put(os); }
     inline std::ostream& operator<< (std::ostream& os, const Month& val) { return val.put(os); }
     inline std::ostream& operator<< (std::ostream& os, const Year& val)  { return val.put(os); }
+
+    /**
+     * A week-by-week calendar, starting at a month boundary and
+     * lasting a number of months.  Kind of like cal(1) with the
+     * -A option.
+     *
+     * Don't choose weird years, accept that weeks start on Monday,
+     * and don't try to span New Year.
+     */
+    class Calendar {
+    public:
+	Calendar(unsigned year, unsigned mm, unsigned months);
+
+	bool get(std::array<unsigned char, 7>& week);
+
+    private:
+	unsigned mm;
+	unsigned dd;
+	const unsigned year;
+	const unsigned mend;
+    };
 }
 #endif

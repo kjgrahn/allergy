@@ -123,4 +123,190 @@ namespace allergy {
 	    assert_invalid("2020-11-40");
 	}
     }
+
+    namespace cal {
+
+	void calendar(std::ostream& os, unsigned yyyy, unsigned mm,
+		      unsigned count = 4)
+	{
+	    Calendar c {yyyy, mm, count};
+	    std::array<unsigned char, 7> week;
+	    while (c.get(week)) {
+		char pad = 0;
+		for (unsigned char n: week) {
+		    if (pad) os.put(pad);
+		    pad = ' ';
+		    char buf[3];
+		    std::snprintf(buf, sizeof buf, "%2.0hhu", n);
+		    os << buf;
+		}
+		os.put('\n');
+	    }
+	}
+
+	using orchis::assert_eq;
+
+	void seventy(TC)
+	{
+	    std::ostringstream oss;
+	    calendar(oss, 1970, 1);
+	    assert_eq(oss.str(),
+		      "          1  2  3  4\n"
+		      " 5  6  7  8  9 10 11\n"
+		      "12 13 14 15 16 17 18\n"
+		      "19 20 21 22 23 24 25\n"
+		      "26 27 28 29 30 31  1\n"
+		      " 2  3  4  5  6  7  8\n"
+		      " 9 10 11 12 13 14 15\n"
+		      "16 17 18 19 20 21 22\n"
+		      "23 24 25 26 27 28  1\n"
+		      " 2  3  4  5  6  7  8\n"
+		      " 9 10 11 12 13 14 15\n"
+		      "16 17 18 19 20 21 22\n"
+		      "23 24 25 26 27 28 29\n"
+		      "30 31  1  2  3  4  5\n"
+		      " 6  7  8  9 10 11 12\n"
+		      "13 14 15 16 17 18 19\n"
+		      "20 21 22 23 24 25 26\n"
+		      "27 28 29 30         \n");
+	}
+
+	void twothousand(TC)
+	{
+	    std::ostringstream oss;
+	    calendar(oss, 2000, 1);
+	    assert_eq(oss.str(),
+		      "                1  2\n"
+		      " 3  4  5  6  7  8  9\n"
+		      "10 11 12 13 14 15 16\n"
+		      "17 18 19 20 21 22 23\n"
+		      "24 25 26 27 28 29 30\n"
+		      "31  1  2  3  4  5  6\n"
+		      " 7  8  9 10 11 12 13\n"
+		      "14 15 16 17 18 19 20\n"
+		      "21 22 23 24 25 26 27\n"
+		      "28 29  1  2  3  4  5\n"
+		      " 6  7  8  9 10 11 12\n"
+		      "13 14 15 16 17 18 19\n"
+		      "20 21 22 23 24 25 26\n"
+		      "27 28 29 30 31  1  2\n"
+		      " 3  4  5  6  7  8  9\n"
+		      "10 11 12 13 14 15 16\n"
+		      "17 18 19 20 21 22 23\n"
+		      "24 25 26 27 28 29 30\n");
+	}
+
+	void twentytwenty(TC)
+	{
+	    std::ostringstream oss;
+	    calendar(oss, 2020, 9);
+	    assert_eq(oss.str(),
+		      "    1  2  3  4  5  6\n"
+		      " 7  8  9 10 11 12 13\n"
+		      "14 15 16 17 18 19 20\n"
+		      "21 22 23 24 25 26 27\n"
+		      "28 29 30  1  2  3  4\n"
+		      " 5  6  7  8  9 10 11\n"
+		      "12 13 14 15 16 17 18\n"
+		      "19 20 21 22 23 24 25\n"
+		      "26 27 28 29 30 31  1\n"
+		      " 2  3  4  5  6  7  8\n"
+		      " 9 10 11 12 13 14 15\n"
+		      "16 17 18 19 20 21 22\n"
+		      "23 24 25 26 27 28 29\n"
+		      "30  1  2  3  4  5  6\n"
+		      " 7  8  9 10 11 12 13\n"
+		      "14 15 16 17 18 19 20\n"
+		      "21 22 23 24 25 26 27\n"
+		      "28 29 30 31         \n");
+	}
+
+	namespace days {
+
+	    void mon(TC)
+	    {
+		std::ostringstream oss;
+		calendar(oss, 1973, 10, 1);
+		assert_eq(oss.str(),
+			  " 1  2  3  4  5  6  7\n"
+			  " 8  9 10 11 12 13 14\n"
+			  "15 16 17 18 19 20 21\n"
+			  "22 23 24 25 26 27 28\n"
+			  "29 30 31            \n");
+	    }
+
+	    void tue(TC)
+	    {
+		std::ostringstream oss;
+		calendar(oss, 1976, 6, 1);
+		assert_eq(oss.str(),
+			  "    1  2  3  4  5  6\n"
+			  " 7  8  9 10 11 12 13\n"
+			  "14 15 16 17 18 19 20\n"
+			  "21 22 23 24 25 26 27\n"
+			  "28 29 30            \n");
+	    }
+
+	    void wed(TC)
+	    {
+		std::ostringstream oss;
+		calendar(oss, 1979, 8, 1);
+		assert_eq(oss.str(),
+			  "       1  2  3  4  5\n"
+			  " 6  7  8  9 10 11 12\n"
+			  "13 14 15 16 17 18 19\n"
+			  "20 21 22 23 24 25 26\n"
+			  "27 28 29 30 31      \n");
+	    }
+
+	    void thu(TC)
+	    {
+		std::ostringstream oss;
+		calendar(oss, 1982, 4, 1);
+		assert_eq(oss.str(),
+			  "          1  2  3  4\n"
+			  " 5  6  7  8  9 10 11\n"
+			  "12 13 14 15 16 17 18\n"
+			  "19 20 21 22 23 24 25\n"
+			  "26 27 28 29 30      \n");
+	    }
+
+	    void fri(TC)
+	    {
+		std::ostringstream oss;
+		calendar(oss, 2022, 4, 1);
+		assert_eq(oss.str(),
+			  "             1  2  3\n"
+			  " 4  5  6  7  8  9 10\n"
+			  "11 12 13 14 15 16 17\n"
+			  "18 19 20 21 22 23 24\n"
+			  "25 26 27 28 29 30   \n");
+	    }
+
+	    void sat(TC)
+	    {
+		std::ostringstream oss;
+		calendar(oss, 2025, 11, 1);
+		assert_eq(oss.str(),
+			  "                1  2\n"
+			  " 3  4  5  6  7  8  9\n"
+			  "10 11 12 13 14 15 16\n"
+			  "17 18 19 20 21 22 23\n"
+			  "24 25 26 27 28 29 30\n");
+	    }
+
+	    void sun(TC)
+	    {
+		std::ostringstream oss;
+		calendar(oss, 2028, 10, 1);
+		assert_eq(oss.str(),
+			  "                   1\n"
+			  " 2  3  4  5  6  7  8\n"
+			  " 9 10 11 12 13 14 15\n"
+			  "16 17 18 19 20 21 22\n"
+			  "23 24 25 26 27 28 29\n"
+			  "30 31               \n");
+	    }
+	}
+    }
 }

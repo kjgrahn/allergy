@@ -152,3 +152,66 @@ std::ostream& Year::put(std::ostream& os) const
     std::snprintf(buf, sizeof buf, "%4hu", val);
     return os << buf;
 }
+
+namespace {
+
+    /**
+     * The weekday of year-01-01.
+     */
+    unsigned weekday(const unsigned year)
+    {
+	unsigned n = 3;
+	for (unsigned y = 1970; y < year; y++) {
+	    n += 1 + leapyear(y);
+	}
+	return n % 7;
+    }
+
+    /**
+     * The weekday of year-mm-01, from 0 (Monday) to 6 (Sunday). My
+     * weeks start on Monday.
+     */
+    unsigned weekday(unsigned year, unsigned mm)
+    {
+	static const std::array<unsigned char, 12> offs {0,3,3,6, 1,4,6,2, 5,0,3,5};
+	static const std::array<unsigned char, 12> leap {0,3,4,0, 2,5,0,3, 6,1,4,6};
+	unsigned n = leapyear(year) ? leap[mm-1] : offs[mm-1];
+	return (weekday(year) + n) % 7;
+    }
+}
+
+using allergy::Calendar;
+
+Calendar::Calendar(unsigned year, unsigned mm, unsigned months)
+    : mm {mm},
+      dd {1},
+      year {year},
+      mend {mm+months}
+{}
+
+/**
+ * Get the next week, or return false.
+ */
+bool Calendar::get(std::array<unsigned char, 7>& week)
+{
+    if (mm==mend) return false;
+
+    auto it = begin(week);
+    week.fill(0);
+
+    if (dd==1) {
+	it += weekday(year, mm);
+    }
+
+    while (it!=end(week)) {
+	*it++ = dd;
+	dd++;
+	if (dd > days(year, mm)) {
+	    dd = 1;
+	    mm++;
+	    if (mm==mend) break;
+	}
+    }
+
+    return true;
+}
