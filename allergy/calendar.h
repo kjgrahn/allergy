@@ -18,10 +18,13 @@ namespace allergy {
 	Day() = default;
 	explicit Day(const std::string&);
 	Day(const char*, const char*);
+	Day(unsigned year, unsigned mm, unsigned dd);
+
 	explicit operator bool() const { return val[0] && val[1] && val[2]; }
 	bool operator== (const Day& other) const { return val==other.val; }
 	bool operator<  (const Day& other) const { return val<other.val; }
 
+	unsigned mday() const { return val[2]; }
 	std::ostream& put(std::ostream& os) const;
 
     private:
@@ -79,7 +82,7 @@ namespace allergy {
     public:
 	Calendar(unsigned year, unsigned mm, unsigned months);
 
-	bool get(std::array<unsigned char, 7>& week);
+	bool get(std::array<Day, 7>& week);
 
     private:
 	unsigned mm;

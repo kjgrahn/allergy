@@ -93,13 +93,23 @@ namespace allergy {
 	{
 	    const Day val(s);
 	    orchis::assert_false(val);
+	    orchis::assert_false(val.mday());
+	}
+
+	void assert_invalid(unsigned yyyy, unsigned mm, unsigned dd)
+	{
+	    const Day val {yyyy, mm, dd};
+	    orchis::assert_false(val);
+	    orchis::assert_false(val.mday());
 	}
 
 	void simple(TC)
 	{
 	    const Day val("2020-11-07");
-	    orchis::assert_eq(val, val);
+	    const Day val2(2020, 11, 07);
+	    orchis::assert_eq(val, val2);
 	    orchis::assert_true(val);
+	    orchis::assert_eq(val2.mday(), 7);
 	}
 
 	void invalid(TC)
@@ -121,6 +131,10 @@ namespace allergy {
 	    assert_invalid("2020-11-00");
 	    assert_invalid("2020-02-30");
 	    assert_invalid("2020-11-40");
+
+	    assert_invalid(2020, 11, 00);
+	    assert_invalid(2020, 02, 30);
+	    assert_invalid(2020, 11, 40);
 	}
     }
 
@@ -130,14 +144,14 @@ namespace allergy {
 		      unsigned count = 4)
 	{
 	    Calendar c {yyyy, mm, count};
-	    std::array<unsigned char, 7> week;
+	    std::array<Day, 7> week;
 	    while (c.get(week)) {
 		char pad = 0;
-		for (unsigned char n: week) {
+		for (const Day day: week) {
 		    if (pad) os.put(pad);
 		    pad = ' ';
 		    char buf[3];
-		    std::snprintf(buf, sizeof buf, "%2.0hhu", n);
+		    std::snprintf(buf, sizeof buf, "%2.0u", day.mday());
 		    os << buf;
 		}
 		os.put('\n');

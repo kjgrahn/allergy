@@ -106,6 +106,13 @@ Day::Day(const std::string& s)
     : Day {s.c_str(), s.c_str() + s.size()}
 {}
 
+Day::Day(unsigned year, unsigned mm, unsigned dd)
+    : val {year, mm, dd}
+{
+    if (!in<unsigned, 1, 12>(mm)) val.fill(0);
+    if (dd==0 || dd > days(year, mm)) val.fill(0);
+}
+
 std::ostream& Day::put(std::ostream& os) const
 {
     char buf[11];
@@ -192,19 +199,19 @@ Calendar::Calendar(unsigned year, unsigned mm, unsigned months)
 /**
  * Get the next week, or return false.
  */
-bool Calendar::get(std::array<unsigned char, 7>& week)
+bool Calendar::get(std::array<Day, 7>& week)
 {
     if (mm==mend) return false;
 
     auto it = begin(week);
-    week.fill(0);
+    week.fill({});
 
     if (dd==1) {
 	it += weekday(year, mm);
     }
 
     while (it!=end(week)) {
-	*it++ = dd;
+	*it++ = {year, mm, dd};
 	dd++;
 	if (dd > days(year, mm)) {
 	    dd = 1;
