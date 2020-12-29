@@ -58,6 +58,7 @@ liballergy.a: entity/sendfile.o
 liballergy.a: allergy/index.o
 liballergy.a: allergy/entry.o
 liballergy.a: allergy/timestamp.o
+liballergy.a: allergy/calendar.o
 liballergy.a: allergy/keys.o
 liballergy.a: allergy/photo.o
 liballergy.a: allergy/files...o

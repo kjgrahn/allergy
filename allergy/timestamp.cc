@@ -7,7 +7,6 @@
 #include <iostream>
 #include <cctype>
 #include <cstdlib>
-#include <cstring>
 
 using allergy::Timestamp;
 using allergy::Day;
@@ -64,53 +63,3 @@ std::ostream& allergy::operator<< (std::ostream& os, const Timestamp& val)
 {
     return os << val.str;
 }
-
-namespace {
-
-    template <class It>
-    bool match(It a, const It b, const char* p)
-    {
-	if (std::distance(a, b) != std::strlen(p)) return false;
-	while (a!=b) {
-	    if (*p=='n') {
-		if (!std::isdigit(static_cast<unsigned char>(*a))) return false;
-	    }
-	    else {
-		if (*p != *a) return false;
-	    }
-	    p++;
-	    a++;
-	}
-	return true;
-    }
-}
-
-Day::Day(const char* a, const char* b)
-    : val{a, b}
-{
-    if (!match(a, b, "nnnn-nn-nn")) val.clear();
-}
-
-Day::Day(const std::string& s)
-    : Day {s.c_str(), s.c_str() + s.size()}
-{}
-
-Month::Month(const char* a, const char* b)
-    : val{a, b}
-{
-    if (!match(a, b, "nnnn-nn")) val.clear();
-}
-
-Month::Month(const std::string& s)
-    : Month {s.c_str(), s.c_str() + s.size()}
-{}
-
-Year::Year(const char* a, const char* b)
-    : val{a, b}
-{
-    if (!match(a, b, "nnnn")) val.clear();
-}
-
-Year::Year(const std::string& s)
-    : Year {s.c_str(), s.c_str() + s.size()}
-{}

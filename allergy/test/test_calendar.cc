@@ -37,6 +37,7 @@ namespace allergy {
 
 	    assert_invalid("");
 	    assert_invalid("  ");
+	    assert_invalid("2020-01-01");
 	    assert_invalid("20201");
 	    assert_invalid("202");
 	}
@@ -66,11 +67,12 @@ namespace allergy {
 
 	void invalid(TC)
 	{
-	    const Month y;
-	    orchis::assert_false(y);
+	    const Month m;
+	    orchis::assert_false(m);
 
 	    assert_invalid("");
 	    assert_invalid("  ");
+	    assert_invalid("2020-11-12");
 	    assert_invalid("2020-111");
 	    assert_invalid("2020-1");
 	    assert_invalid("2020-0b");
@@ -102,11 +104,12 @@ namespace allergy {
 
 	void invalid(TC)
 	{
-	    const Day y;
-	    orchis::assert_false(y);
+	    const Day d;
+	    orchis::assert_false(d);
 
 	    assert_invalid("");
 	    assert_invalid("  ");
+	    assert_invalid("2020-11-07-23");
 	    assert_invalid("2020-11-071");
 	    assert_invalid("2020-11-0");
 	    assert_invalid("2020:11:07");

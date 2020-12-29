@@ -7,6 +7,7 @@
 
 #include <string>
 #include <iostream>
+#include <array>
 
 namespace allergy {
 
@@ -17,11 +18,14 @@ namespace allergy {
 	Day() = default;
 	explicit Day(const std::string&);
 	Day(const char*, const char*);
-	explicit operator bool() const { return !val.empty(); }
+	explicit operator bool() const { return val[0] && val[1] && val[2]; }
 	bool operator== (const Day& other) const { return val==other.val; }
 	bool operator<  (const Day& other) const { return val<other.val; }
 
-	std::string val;
+	std::ostream& put(std::ostream& os) const;
+
+    private:
+	std::array<unsigned short, 3> val = {0, 0, 0};
     };
 
     /**
@@ -32,11 +36,14 @@ namespace allergy {
 	Month() = default;
 	explicit Month(const std::string&);
 	Month(const char*, const char*);
-	explicit operator bool() const { return !val.empty(); }
+	explicit operator bool() const { return val[0] && val[1]; }
 	bool operator== (const Month& other) const { return val==other.val; }
 	bool operator<  (const Month& other) const { return val<other.val; }
 
-	std::string val;
+	std::ostream& put(std::ostream& os) const;
+
+    private:
+	std::array<unsigned short, 2> val = {0, 0};
     };
 
     /**
@@ -46,15 +53,18 @@ namespace allergy {
 	Year() = default;
 	explicit Year(const std::string&);
 	Year(const char*, const char*);
-	explicit operator bool() const { return !val.empty(); }
+	explicit operator bool() const { return val; }
 	bool operator== (const Year& other) const { return val==other.val; }
 	bool operator<  (const Year& other) const { return val<other.val; }
 
-	std::string val;
+	std::ostream& put(std::ostream& os) const;
+
+    private:
+	unsigned short val = 0;
     };
 
-    inline std::ostream& operator<< (std::ostream& os, const Day& val)   { return os << val.val; }
-    inline std::ostream& operator<< (std::ostream& os, const Month& val) { return os << val.val; }
-    inline std::ostream& operator<< (std::ostream& os, const Year& val)  { return os << val.val; }
+    inline std::ostream& operator<< (std::ostream& os, const Day& val)   { return val.put(os); }
+    inline std::ostream& operator<< (std::ostream& os, const Month& val) { return val.put(os); }
+    inline std::ostream& operator<< (std::ostream& os, const Year& val)  { return val.put(os); }
 }
 #endif
