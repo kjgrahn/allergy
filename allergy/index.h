@@ -44,6 +44,11 @@ namespace allergy {
 
 	std::vector<Entry> key(const Key& k) const;
 
+	struct {
+	    Year begin;
+	    Year end;
+	} years;
+
     private:
 	std::vector<Entry> entries;
 	struct {

@@ -8,23 +8,30 @@
 
 #include "files...h"
 #include "index.h"
+#include "page.h"
 
 int main(int argc, char ** argv)
 {
     const std::string prog = argv[0];
     const std::string usage = "usage: "
 	+ prog +
-	" file ...";
+	" [--index] file ...";
     const char optstring[] = "";
     const struct option long_options[] = {
+	{"index",    	   0, 0, 'i'},
 	{"help",    	   0, 0, 'h'},
 	{0, 0, 0, 0}
     };
+
+    bool do_index = false;
 
     int ch;
     while((ch = getopt_long(argc, argv,
 			    optstring, &long_options[0], 0)) != -1) {
 	switch(ch) {
+	case 'i':
+	    do_index = true;
+	    break;
 	case 'h':
 	    std::cout << usage << '\n';
 	    return 0;
@@ -43,6 +50,11 @@ int main(int argc, char ** argv)
 
     Files files(argv+optind, argv+argc);
     const allergy::Index ix(std::cerr, files);
+
+    if (do_index) {
+	allergy::page::Index{ix}.put(std::cout);
+	return 0;
+    }
 
     const char* sep = "";
     for (const allergy::Entry& e: ix.all()) {

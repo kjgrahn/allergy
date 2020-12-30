@@ -134,6 +134,12 @@ Month::Month(const std::string& s)
     : Month {s.c_str(), s.c_str() + s.size()}
 {}
 
+Month::Month(unsigned year, unsigned mm)
+    : val {year, mm}
+{
+    if (!in<unsigned, 1, 12>(mm)) val.fill(0);
+}
+
 std::ostream& Month::put(std::ostream& os) const
 {
     char buf[8];
@@ -152,6 +158,13 @@ Year::Year(const char* a, const char* b)
 Year::Year(const std::string& s)
     : Year {s.c_str(), s.c_str() + s.size()}
 {}
+
+std::array<Month, 12> Year::months() const
+{
+    std::array<Month, 12> res;
+    for (unsigned n=0; n<12; n++) res[n] = {val, n+1};
+    return res;
+}
 
 std::ostream& Year::put(std::ostream& os) const
 {

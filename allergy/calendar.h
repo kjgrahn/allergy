@@ -38,7 +38,9 @@ namespace allergy {
     struct Month {
 	Month() = default;
 	explicit Month(const std::string&);
+	Month(unsigned year, unsigned mm);
 	Month(const char*, const char*);
+
 	explicit operator bool() const { return val[0] && val[1]; }
 	bool operator== (const Month& other) const { return val==other.val; }
 	bool operator<  (const Month& other) const { return val<other.val; }
@@ -55,10 +57,14 @@ namespace allergy {
     struct Year {
 	Year() = default;
 	explicit Year(const std::string&);
+	explicit Year(unsigned short yyyy);
 	Year(const char*, const char*);
+
 	explicit operator bool() const { return val; }
 	bool operator== (const Year& other) const { return val==other.val; }
 	bool operator<  (const Year& other) const { return val<other.val; }
+	Year operator++ (int) { auto prev = *this; val++; return prev; }
+	std::array<Month, 12> months() const;
 
 	std::ostream& put(std::ostream& os) const;
 

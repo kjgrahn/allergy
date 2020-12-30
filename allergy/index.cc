@@ -113,6 +113,18 @@ Index::Index(std::ostream& err, Files& in)
 
     invert(err, by.name, entries);
     invert(by.key, entries);
+
+    if (!entries.empty()) {
+	Year min = entries.front().timestamp.year;
+	Year max = min;
+	for (const Entry& e: entries) {
+	    max = std::max(max, e.timestamp.year);
+	    min = std::min(min, e.timestamp.year);
+	}
+	years.begin = min;
+	years.end = max;
+	years.end++;
+    }
 }
 
 namespace {

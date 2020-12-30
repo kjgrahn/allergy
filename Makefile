@@ -55,6 +55,7 @@ liballergy.a: allergy/thumbnail.o
 liballergy.a: entity/string.o
 liballergy.a: entity/file.o
 liballergy.a: entity/sendfile.o
+liballergy.a: allergy/page.o
 liballergy.a: allergy/index.o
 liballergy.a: allergy/entry.o
 liballergy.a: allergy/timestamp.o
