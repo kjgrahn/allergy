@@ -15,15 +15,17 @@ int main(int argc, char ** argv)
     const std::string prog = argv[0];
     const std::string usage = "usage: "
 	+ prog +
-	" [--index] file ...";
+	" [--index] [--year yyyy] file ...";
     const char optstring[] = "";
     const struct option long_options[] = {
 	{"index",    	   0, 0, 'i'},
+	{"year",    	   1, 0, 'y'},
 	{"help",    	   0, 0, 'h'},
 	{0, 0, 0, 0}
     };
 
     bool do_index = false;
+    allergy::Year year;
 
     int ch;
     while((ch = getopt_long(argc, argv,
@@ -31,6 +33,9 @@ int main(int argc, char ** argv)
 	switch(ch) {
 	case 'i':
 	    do_index = true;
+	    break;
+	case 'y':
+	    year = allergy::Year {optarg};
 	    break;
 	case 'h':
 	    std::cout << usage << '\n';
@@ -53,6 +58,11 @@ int main(int argc, char ** argv)
 
     if (do_index) {
 	allergy::page::Index{ix}.put(std::cout);
+	return 0;
+    }
+
+    if (year) {
+	allergy::page::Year{ix, year}.put(std::cout);
 	return 0;
     }
 

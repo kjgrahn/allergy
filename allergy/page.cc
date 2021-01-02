@@ -143,3 +143,97 @@ void allergy::page::Index::put(std::ostream& os) const
 	"</body>\n"
 	"</html>\n";
 }
+
+namespace {
+
+    char intensity(unsigned n)
+    {
+	if (n > 40) return 'f';
+	if (n > 20) return 'e';
+	if (n > 10) return 'd';
+	if (n > 5)  return 'c';
+	if (n > 2)  return 'b';
+	if (n > 0)  return 'a';
+	return {};
+    }
+
+    const char* monthname(const allergy::Day day)
+    {
+	switch (day.mon()) {
+	case  1: return "jan";
+	case  2: return "feb";
+	case  3: return "mar";
+	case  4: return "apr";
+	case  5: return "maj";
+	case  6: return "jun";
+	case  7: return "jul";
+	case  8: return "aug";
+	case  9: return "sep";
+	case 10: return "okt";
+	case 11: return "nov";
+	case 12: return "dec";
+	default: return nullptr;
+	}
+    }
+
+    std::ostream& hput(std::ostream& os, allergy::Day day, unsigned n)
+    {
+	const char ch = intensity(n);
+	if (!ch) return os << " <td>" << day.mday();
+
+	return os << "<td class='" << ch
+		  << "'><a href='/" << day << "'>" << day.mday() << "</a>";
+    }
+
+    std::ostream& hput(std::ostream& os, const allergy::Index& ix,
+		       unsigned yyyy, unsigned quarter)
+    {
+	os << "<table class='cal'>\n"
+	    "<caption>" << yyyy << 'Q' << quarter << "</caption>\n"
+	    "<tbody>\n";
+
+	allergy::Calendar calendar {yyyy, 1 + (quarter-1)*3, 3};
+	std::array<allergy::Day, 7> week;
+
+	while (calendar.get(week)) {
+
+	    const char* month = nullptr;
+	    os << "<tr>";
+	    for (allergy::Day day : week) {
+		if (!day) {
+		    os << " <td>";
+		}
+		else {
+		    unsigned n = ix.on(day).size();
+		    hput(os, day, n);
+
+		    if (day.first()) month = monthname(day);
+		}
+	    }
+	    if (month) os << " <th>" << month;
+	    os.put('\n');
+	}
+
+	return os << "</table>\n\n";
+    }
+}
+
+void allergy::page::Year::put(std::ostream& os) const
+{
+    preamble(os, yyyy);
+
+    os << "<body>\n"
+	"\n"
+	"<p>\n";
+    hput(os, ix, yyyy.val, 1);
+    os.put('\n');
+    hput(os, ix, yyyy.val, 2);
+    os.put('\n');
+    hput(os, ix, yyyy.val, 3);
+    os.put('\n');
+    hput(os, ix, yyyy.val, 4);
+
+    os << "\n"
+	"</body>\n"
+	"</html>\n";
+}

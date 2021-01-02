@@ -24,7 +24,10 @@ namespace allergy {
 	bool operator== (const Day& other) const { return val==other.val; }
 	bool operator<  (const Day& other) const { return val<other.val; }
 
+	unsigned mon()  const { return val[1]; }
 	unsigned mday() const { return val[2]; }
+	bool first() const { return *this && mday()==1; }
+
 	std::ostream& put(std::ostream& os) const;
 
     private:
@@ -68,7 +71,6 @@ namespace allergy {
 
 	std::ostream& put(std::ostream& os) const;
 
-    private:
 	unsigned short val = 0;
     };
 
