@@ -1,4 +1,33 @@
-BODY {
-	background-color: rgb(255,224,160);
-	color: black
+body {
+    background-color: rgb(255,224,160);
+    color: black
+}
+table.cal td    {
+    text-align: right
+}
+table.cal td.a {
+    background-color: rgb(255,214,150)
+}
+table.cal td.b {
+    background-color: rgb(255,204,140)
+}
+table.cal td.c {
+    background-color: rgb(255,194,130)
+}
+table.cal td.d {
+    background-color: rgb(255,184,120)
+}
+table.cal td.e {
+    background-color: rgb(255,174,110)
+}
+table.cal td.f {
+    background-color: rgb(255,124, 70)
+}
+table.cal {
+    display: inline-block;
+    background: rgb(255,234,180);
+    border: 1px solid black
+}
+table.cal :link {
+    text-decoration: inherit;
 }
