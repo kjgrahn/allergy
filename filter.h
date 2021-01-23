@@ -110,6 +110,7 @@ namespace Filter {
 
 	bool write(int fd) { return next.write(fd); }
 	bool write(int fd, const Blob& a);
+	bool write_end(int fd, const Blob& a);
 	bool end(int fd);
 
     private:

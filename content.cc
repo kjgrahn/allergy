@@ -10,6 +10,7 @@
 #include "status.h"
 #include "log.h"
 #include "allergy/thumbnail.h"
+#include "allergy/page.h"
 
 #include <iostream>
 
@@ -120,9 +121,27 @@ Response* Content::response_of(const Request& req, const timespec& t) const
     return resp404(t, lib);
 }
 
-Response* Content::frontpage(const timespec& t) const { return resp404(t, lib); }
+namespace {
+
+    template <class Page, class ... Args>
+    Response* generated(const timespec& t, Args&& ... argv)
+    {
+	return new response::Generated<Page> {t, argv ... };
+    }
+}
+
+Response* Content::frontpage(const timespec& t) const
+{
+    return generated<allergy::page::Frontpage>(t, index);
+}
+
 Response* Content::by_date(const timespec& t) const { return resp404(t, lib); }
-Response* Content::calendar(const timespec& t, const allergy::Year&) const { return resp404(t, lib); }
+
+Response* Content::calendar(const timespec& t, const allergy::Year& yyyy) const
+{
+    return generated<allergy::page::Year>(t, index, yyyy);
+}
+
 Response* Content::calendar(const timespec& t, const allergy::Month&) const { return resp404(t, lib); }
 Response* Content::redirect(const timespec& t, const std::string&) const { return resp404(t, lib); }
 

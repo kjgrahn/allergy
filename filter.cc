@@ -39,6 +39,19 @@ bool Chunked<Next>::write(int fd, const Blob& a)
 		      crlf);
 }
 
+template<class Next>
+bool Chunked<Next>::write_end(int fd, const Blob& a)
+{
+    char buf[8+2+1];
+    const int n = std::sprintf(buf, "%x\r\n", unsigned(a.size()));
+    return next.write(fd,
+		      Blob(buf, n),
+		      a,
+		      Blob {"\r\n"
+			    "0\r\n"
+			    "\r\n", 7});
+}
+
 
 template<class Next>
 bool Chunked<Next>::end(int fd)
