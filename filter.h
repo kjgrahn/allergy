@@ -64,6 +64,8 @@ namespace Filter {
 	Plain(const Plain&) = delete;
 	Plain& operator= (const Plain&) = delete;
 
+	static constexpr bool chunked = false;
+
 	bool write(int fd) {
 	    return backlog.write(fd)==0;
 	}
@@ -104,6 +106,8 @@ namespace Filter {
 	Chunked(const Chunked&) = delete;
 	Chunked& operator= (const Chunked&) = delete;
 
+	static constexpr bool chunked = true;
+
 	bool write(int fd) { return next.write(fd); }
 	bool write(int fd, const Blob& a);
 	bool end(int fd);
@@ -125,6 +129,8 @@ namespace Filter {
 	{}
 	Zlib(const Zlib&) = delete;
 	Zlib& operator= (const Zlib&) = delete;
+
+	static constexpr bool chunked = false;
 
 	bool write(int fd);
 	bool write(int fd, const Blob& a);

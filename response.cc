@@ -15,10 +15,15 @@ bool Headers::tick(int fd)
 }
 
 std::ostream& Headers::general_headers(std::ostream& oss,
-				       const timespec& ts) const
+				       const timespec& ts,
+				       bool chunked) const
 {
     static DateConv dateconv;
-    return oss << "Date: " << dateconv.format(ts.tv_sec) << "\r\n";
+    oss << "Date: " << dateconv.format(ts.tv_sec) << "\r\n";
+    if (chunked) {
+	oss << "Transfer-Encoding: chunked" << "\r\n";
+    }
+    return oss;
 }
 
 std::ostream& Headers::response_headers(std::ostream& oss) const

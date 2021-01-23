@@ -99,7 +99,7 @@ namespace response {
 	{
 	    std::ostringstream oss;
 	    oss << "HTTP/1.1 " << status.text << "\r\n";
-	    general_headers(oss, ts);
+	    general_headers(oss, ts, body.chunked);
 	    response_headers(oss);
 	    body.entity_headers(oss) << "\r\n";
 	    text = entity::String{oss};
@@ -113,7 +113,8 @@ namespace response {
 	Filter::P filter;
 
 	std::ostream& general_headers(std::ostream& oss,
-				      const timespec& ts) const;
+				      const timespec& ts,
+				      bool chunked) const;
 	std::ostream& response_headers(std::ostream& oss) const;
     };
 
@@ -130,6 +131,8 @@ namespace response {
 
 	bool tick(int fd) { return entity.tick(fd, filter); }
 	bool done() const { return entity.done(); }
+
+	static constexpr bool chunked = F::chunked;
 
 	std::ostream& entity_headers(std::ostream& oss) const
 	{
