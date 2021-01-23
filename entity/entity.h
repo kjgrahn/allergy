@@ -22,10 +22,6 @@ namespace entity {
      *
      * An entity can stream its entity headers [7.1] and feed its
      * entity-body through a filter using tick() and done().
-     *
-     * The inclusion of 'status_code' makes this slightly more than
-     * an entity, but most simply say "200 OK"; an obvious exception
-     * being 404 pages.
      */
     struct Entity {
 	Entity() = default;
