@@ -92,7 +92,7 @@ namespace {
     }
 }
 
-void allergy::page::Index::put(std::ostream& os) const
+void allergy::page::Index::put(std::ostream& os, const Chunk) const
 {
     preamble(os, "Foton");
 
@@ -218,22 +218,20 @@ namespace {
     }
 }
 
-void allergy::page::Year::put(std::ostream& os) const
+void allergy::page::Year::put(std::ostream& os, const Chunk chunk) const
 {
-    preamble(os, yyyy);
+    if (chunk.first()) {
+	preamble(os, yyyy);
 
-    os << "<body>\n"
-	"\n"
-	"<p>\n";
-    hput(os, ix, yyyy.val, 1);
-    os.put('\n');
-    hput(os, ix, yyyy.val, 2);
-    os.put('\n');
-    hput(os, ix, yyyy.val, 3);
-    os.put('\n');
-    hput(os, ix, yyyy.val, 4);
+	os << "<body>\n"
+	      "\n"
+	      "<p>\n";
+    }
 
-    os << "\n"
-	"</body>\n"
-	"</html>\n";
+    hput(os, ix, yyyy.val, chunk.val());
+
+    if (chunk.last()) {
+	os << "</body>\n"
+	      "</html>\n";
+    }
 }

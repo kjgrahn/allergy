@@ -10,6 +10,18 @@
 #include "index.h"
 #include "page.h"
 
+namespace {
+
+    template <class Page>
+    void put(std::ostream& os, const Page& ix)
+    {
+	typename Page::Chunk chunk;
+	while (!chunk.end()) {
+	    ix.put(os, chunk++);
+	}
+    }
+}
+
 int main(int argc, char ** argv)
 {
     const std::string prog = argv[0];
@@ -57,12 +69,12 @@ int main(int argc, char ** argv)
     const allergy::Index ix(std::cerr, files);
 
     if (do_index) {
-	allergy::page::Index{ix}.put(std::cout);
+	put(std::cout, allergy::page::Index{ix});
 	return 0;
     }
 
     if (year) {
-	allergy::page::Year{ix, year}.put(std::cout);
+	put(std::cout, allergy::page::Year{ix, year});
 	return 0;
     }
 
