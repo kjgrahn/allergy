@@ -10,6 +10,6 @@ using namespace allergy::page;
 
 container::Chunk::Chunk(unsigned size, size_t seq_size)
     : size {size},
-      n {std::max(size_t{1}, (seq_size + size - 1) / size)},
+      n {std::max(1u, unsigned((seq_size + size - 1) / size))},
       i {0}
 {}

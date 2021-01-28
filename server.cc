@@ -15,8 +15,6 @@
 
 namespace {
 
-    static const unsigned LFD = ~0;
-
     unsigned insert(std::vector<Server::Entry>& v)
     {
 	unsigned i;

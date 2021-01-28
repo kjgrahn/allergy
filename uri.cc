@@ -72,7 +72,7 @@ namespace {
 
 Uri::Uri(const char* a, const char* b)
     : a{a}, b{b},
-      percent {std::count(a, b, '%')}
+      percent(std::count(a, b, '%'))
 {
     auto vi = v.begin();
     auto q = a;

@@ -85,6 +85,14 @@ namespace {
 	if (acc < limit) return acc;
 	return 0;
     }
+
+    /**
+     * Shorthand, because the compilers complain.
+     */
+    unsigned short narrow(unsigned n)
+    {
+	return static_cast<unsigned short>(n);
+    }
 }
 
 using allergy::Day;
@@ -107,7 +115,9 @@ Day::Day(const std::string& s)
 {}
 
 Day::Day(unsigned year, unsigned mm, unsigned dd)
-    : val {year, mm, dd}
+    : val {narrow(year),
+	   narrow(mm),
+	   narrow(dd)}
 {
     if (!in<unsigned, 1, 12>(mm)) val.fill(0);
     if (dd==0 || dd > days(year, mm)) val.fill(0);
@@ -139,7 +149,8 @@ Month::Month(const std::string& s)
 {}
 
 Month::Month(unsigned year, unsigned mm)
-    : val {year, mm}
+    : val {narrow(year),
+	   narrow(mm)}
 {
     if (!in<unsigned, 1, 12>(mm)) val.fill(0);
 }

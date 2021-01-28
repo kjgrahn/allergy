@@ -62,8 +62,9 @@ void Syslog::flush(int prio)
     else {
 	char nl = '\n';
 	auto header = timestamp();
+	size_t len = pptr() - pbase();
 	iovec v[3] = {{header.data(), header.size()},
-		      {pbase(), pptr() - pbase()},
+		      {pbase(), len},
 		      {&nl, 1}};
 	writev(1, v, 3);
     }
