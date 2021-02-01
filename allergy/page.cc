@@ -92,7 +92,7 @@ namespace {
     }
 }
 
-void allergy::page::Index::put(std::ostream& os, const Chunk) const
+void allergy::page::Frontpage::put(std::ostream& os, const Chunk) const
 {
     preamble(os, "Foton");
 

@@ -38,9 +38,9 @@ namespace allergy {
 	/**
 	 * The main index page, /.
 	 */
-	class Index {
+	class Frontpage {
 	public:
-	    explicit Index(const allergy::Index& ix) : ix{ix} {}
+	    explicit Frontpage(const allergy::Index& ix) : ix{ix} {}
 	    using Chunk = page::Chunk<1>;
 
 	    void put(std::ostream& os, Chunk n) const;

@@ -69,7 +69,7 @@ int main(int argc, char ** argv)
     const allergy::Index ix(std::cerr, files);
 
     if (do_index) {
-	put(std::cout, allergy::page::Index{ix});
+	put(std::cout, allergy::page::Frontpage{ix});
 	return 0;
     }
 

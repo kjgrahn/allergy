@@ -78,7 +78,7 @@ namespace allergy {
 	    orchis::assert_eq(count(haystack, needle), n);
 	}
 
-	namespace index {
+	namespace front {
 
 	    void simple(TC)
 	    {
@@ -86,11 +86,11 @@ namespace allergy {
 		generate(ss, {"2020-01-01", "2020-01-01", "2020-02-01",
 			      "2022-05-01", "2022-08-01"});
 		const helper::Index ix {ss};
-		const page::Index page {ix.index};
+		const page::Frontpage page {ix.index};
 
 		std::ostringstream os;
 
-		page::Index::Chunk chunk;
+		page::Frontpage::Chunk chunk;
 		while (!chunk.end()) {
 		    page.put(os, chunk++);
 		}
