@@ -157,6 +157,14 @@ namespace {
 	return {};
     }
 
+    const std::string monthurl(const allergy::Day day)
+    {
+	char buf[9];
+	std::snprintf(buf, sizeof buf, "/%04u-%02u",
+		      day.year(), day.mon());
+	return buf;
+    }
+
     const char* monthname(const allergy::Day day)
     {
 	switch (day.mon()) {
@@ -197,7 +205,7 @@ namespace {
 
 	while (calendar.get(week)) {
 
-	    const char* month = nullptr;
+	    allergy::Day first;
 	    os << "<tr>";
 	    for (allergy::Day day : week) {
 		if (!day) {
@@ -207,10 +215,11 @@ namespace {
 		    unsigned n = ix.on(day).size();
 		    hput(os, day, n);
 
-		    if (day.first()) month = monthname(day);
+		    if (day.first()) first = day;
 		}
 	    }
-	    if (month) os << " <th>" << month;
+	    if (first) os << " <th><a href='" << monthurl(first) << "'>"
+			  << monthname(first) << "</a>";
 	    os.put('\n');
 	}
 
