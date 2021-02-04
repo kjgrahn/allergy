@@ -157,33 +157,6 @@ namespace {
 	return {};
     }
 
-    const std::string monthurl(const allergy::Day day)
-    {
-	char buf[9];
-	std::snprintf(buf, sizeof buf, "/%04u-%02u",
-		      day.year(), day.mon());
-	return buf;
-    }
-
-    const char* monthname(const allergy::Day day)
-    {
-	switch (day.mon()) {
-	case  1: return "jan";
-	case  2: return "feb";
-	case  3: return "mar";
-	case  4: return "apr";
-	case  5: return "maj";
-	case  6: return "jun";
-	case  7: return "jul";
-	case  8: return "aug";
-	case  9: return "sep";
-	case 10: return "okt";
-	case 11: return "nov";
-	case 12: return "dec";
-	default: return nullptr;
-	}
-    }
-
     std::ostream& hput(std::ostream& os, allergy::Day day, unsigned n)
     {
 	const char ch = intensity(n);
@@ -194,18 +167,18 @@ namespace {
     }
 
     std::ostream& hput(std::ostream& os, const allergy::Index& ix,
-		       unsigned yyyy, unsigned quarter)
+		       allergy::Year yyyy, unsigned quarter)
     {
 	os << "<table class='cal'>\n"
 	    "<caption>" << yyyy << 'Q' << quarter << "</caption>\n"
 	    "<tbody>\n";
 
-	allergy::Calendar calendar {yyyy, 1 + (quarter-1)*3, 3};
+	allergy::Calendar calendar {yyyy.value(), 1 + (quarter-1)*3, 3};
 	std::array<allergy::Day, 7> week;
 
 	while (calendar.get(week)) {
 
-	    allergy::Day first;
+	    allergy::Month month;
 	    os << "<tr>";
 	    for (allergy::Day day : week) {
 		if (!day) {
@@ -215,11 +188,11 @@ namespace {
 		    unsigned n = ix.on(day).size();
 		    hput(os, day, n);
 
-		    if (day.first()) first = day;
+		    if (day.first()) month = day.month();
 		}
 	    }
-	    if (first) os << " <th><a href='" << monthurl(first) << "'>"
-			  << monthname(first) << "</a>";
+	    if (month) os << " <th><a href='" << month.url() << "'>"
+			  << month.name() << "</a>";
 	    os.put('\n');
 	}
 
@@ -237,7 +210,7 @@ void allergy::page::Year::put(std::ostream& os, const Chunk chunk) const
 	      "<p>\n";
     }
 
-    hput(os, ix, yyyy.val, chunk.val());
+    hput(os, ix, yyyy, chunk.val());
 
     if (chunk.last()) {
 	os << "</body>\n"

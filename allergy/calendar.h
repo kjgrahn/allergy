@@ -11,6 +11,9 @@
 
 namespace allergy {
 
+    struct Month;
+    struct Year;
+
     /**
      * A certain day (e.g. "2020-11-06").
      */
@@ -24,11 +27,12 @@ namespace allergy {
 	bool operator== (const Day& other) const { return val==other.val; }
 	bool operator<  (const Day& other) const { return val<other.val; }
 
-	unsigned year() const { return val[0]; }
-	unsigned mon()  const { return val[1]; }
+	Year year() const;
+	Month month() const;
 	unsigned mday() const { return val[2]; }
 	bool first() const { return *this && mday()==1; }
 
+	std::string url() const;
 	std::ostream& put(std::ostream& os) const;
 
     private:
@@ -49,6 +53,10 @@ namespace allergy {
 	bool operator== (const Month& other) const { return val==other.val; }
 	bool operator<  (const Month& other) const { return val<other.val; }
 
+	const char* name() const;
+	Year year() const;
+
+	std::string url() const;
 	std::ostream& put(std::ostream& os) const;
 
     private:
@@ -61,19 +69,26 @@ namespace allergy {
     struct Year {
 	Year() = default;
 	explicit Year(const std::string&);
-	explicit Year(unsigned short yyyy);
+	explicit Year(unsigned short yyyy) : val {yyyy} {};
 	Year(const char*, const char*);
 
 	explicit operator bool() const { return val; }
 	bool operator== (const Year& other) const { return val==other.val; }
 	bool operator<  (const Year& other) const { return val<other.val; }
+	Year operator-- (int) { auto prev = *this; val--; return prev; }
 	Year operator++ (int) { auto prev = *this; val++; return prev; }
 	std::array<Month, 12> months() const;
 
+	unsigned value() const { return val; }
+	std::string url() const;
 	std::ostream& put(std::ostream& os) const;
 
+    private:
 	unsigned short val = 0;
     };
+
+    inline Year prev(Year val) { val--; return val; }
+    inline Year next(Year val) { val++; return val; }
 
     inline std::ostream& operator<< (std::ostream& os, const Day& val)   { return val.put(os); }
     inline std::ostream& operator<< (std::ostream& os, const Month& val) { return val.put(os); }

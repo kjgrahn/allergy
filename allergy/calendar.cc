@@ -113,6 +113,10 @@ Day::Day(unsigned year, unsigned mm, unsigned dd)
     if (dd==0 || dd > days(year, mm)) val.fill(0);
 }
 
+Year Day::year() const { return Year {val[0]}; }
+
+Month Day::month() const { return Month {val[0], val[1]}; }
+
 std::ostream& Day::put(std::ostream& os) const
 {
     char buf[11];
@@ -140,6 +144,35 @@ Month::Month(unsigned year, unsigned mm)
     if (!in<unsigned, 1, 12>(mm)) val.fill(0);
 }
 
+const char* Month::name() const
+{
+    switch (val[1]) {
+    case  1: return "jan";
+    case  2: return "feb";
+    case  3: return "mar";
+    case  4: return "apr";
+    case  5: return "maj";
+    case  6: return "jun";
+    case  7: return "jul";
+    case  8: return "aug";
+    case  9: return "sep";
+    case 10: return "okt";
+    case 11: return "nov";
+    case 12: return "dec";
+    default: return nullptr;
+    }
+}
+
+Year Month::year() const { return Year {val[0]}; }
+
+std::string Month::url() const
+{
+    char buf[9];
+    std::snprintf(buf, sizeof buf, "/%4hu-%02hu",
+		  val[0], val[1]);
+    return buf;
+}
+
 std::ostream& Month::put(std::ostream& os) const
 {
     char buf[8];
@@ -164,6 +197,13 @@ std::array<Month, 12> Year::months() const
     std::array<Month, 12> res;
     for (unsigned n=0; n<12; n++) res[n] = {val, n+1};
     return res;
+}
+
+std::string Year::url() const
+{
+    char buf[6];
+    std::snprintf(buf, sizeof buf, "/%4hu", val);
+    return buf;
 }
 
 std::ostream& Year::put(std::ostream& os) const

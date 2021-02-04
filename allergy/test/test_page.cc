@@ -138,6 +138,10 @@ namespace allergy {
 		assert_contains(html, "2021-04-30");
 		assert_contains(html, "2021-12-24");
 
+		// prev/next links
+		assert_contains(html, "2020");
+		assert_contains(html, "2022");
+
 		assert_contains(html, "</table>", 4);
 		assert_contains(html, "</html>");
 	    }
