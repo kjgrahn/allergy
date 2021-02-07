@@ -53,6 +53,7 @@ liballergy.a: chunk.o
 liballergy.a: deflate.o
 liballergy.a: response.o
 liballergy.a: join.o
+liballergy.a: split.o
 liballergy.a: glob.o
 liballergy.a: allergy/thumbnail.o
 liballergy.a: entity/string.o
@@ -100,6 +101,7 @@ libtest.a: test/test_cache.o
 libtest.a: test/test_date.o
 libtest.a: test/test_lineparse.o
 libtest.a: test/test_join.o
+libtest.a: test/split.o
 libtest.a: test/test_glob.o
 libtest.a: test/test_regex.o
 libtest.a: allergy/test/test_index.o
