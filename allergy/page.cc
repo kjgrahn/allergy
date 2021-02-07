@@ -73,7 +73,9 @@ namespace {
     }
 
     template <class Title>
-    void preamble(std::ostream& os, const Title& title)
+    void preamble(std::ostream& os, const Title& title,
+		  const std::string& prev = "",
+		  const std::string& next = "")
     {
 	os << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\""
 	    " \"http://www.w3.org/TR/html4/strict.dtd\">\n";
@@ -83,9 +85,15 @@ namespace {
 	    "<head>\n"
 	    "<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>\n"
 	    "<meta http-equiv='Content-Language' content='sv'>\n"
-	    "<link rev='made' href='mailto:grahn@snipabacken.se'>\n"
-	    "<link rel='stylesheet' href='css' type='text/css'>\n"
-	    "\n"
+	    "<link rev='made'       href='mailto:grahn@snipabacken.se'>\n"
+	    "<link rel='stylesheet' href='css' type='text/css'>\n";
+	if (prev.size()) {
+	    os << "<link rel='prev' href='" << prev << "'>\n";
+	}
+	if (next.size()) {
+	    os << "<link rel='next' href='" << next << "'>\n";
+	}
+	os << "\n"
 	    "<title>" << title << "</title>\n"
 	    "\n"
 	    "</head>\n";
@@ -203,7 +211,9 @@ namespace {
 void allergy::page::Year::put(std::ostream& os, const Chunk chunk) const
 {
     if (chunk.first()) {
-	preamble(os, yyyy);
+	preamble(os, yyyy,
+		 prev(yyyy).url(),
+		 next(yyyy).url());
 
 	os << "<body>\n"
 	      "\n"
