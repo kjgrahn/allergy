@@ -23,6 +23,10 @@ namespace splitjoin {
     {
 	const auto v = split(delim, s);
 	orchis::assert_eq(join('+', v), ref);
+
+	if (s.empty()) return;
+	const auto w = split(delim, s.data(), s.data() + s.size());
+	orchis::assert_eq(join('+', w), ref);
     }
 
     void empty(TC)

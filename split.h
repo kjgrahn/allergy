@@ -15,6 +15,8 @@ std::vector<std::string> split(const char* a, const char* b,
 
 std::vector<std::string> split(const std::string& delimiter,
 			       const std::string& s);
+std::vector<std::string> split(const std::string& delimiter,
+			       const char* a, const char* b);
 
 std::string join(char sep,
 		 const std::vector<std::string>& v);

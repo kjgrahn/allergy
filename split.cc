@@ -94,10 +94,16 @@ std::vector<std::string> split(const char* a, const char* b,
 std::vector<std::string> split(const std::string& delimiter,
 			       const std::string& s)
 {
+    auto a = s.data();
+    auto b = a + s.size();
+    return split(delimiter, a, b);
+}
+
+std::vector<std::string> split(const std::string& delimiter,
+			       const char* a, const char* b)
+{
     std::vector<std::string> acc;
 
-    auto a = begin(s);
-    const auto b = end(s);
     while (a!=b) {
 	auto c = std::search(a, b, begin(delimiter), end(delimiter));
 	acc.emplace_back(a, c);
