@@ -31,3 +31,18 @@ table.cal {
 table.cal :link {
     text-decoration: inherit;
 }
+div.gallery div {
+  margin: 5px;
+  border: 1px solid black;
+  background: rgb(40, 40, 40);
+  float: left;
+  width:  140px;
+  height: 140px
+}
+div.gallery div:hover {
+  border: 1px solid red
+}
+div.gallery div img {
+  max-width:  100%;
+  max-height: 100%
+}
