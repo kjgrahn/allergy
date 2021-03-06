@@ -30,6 +30,15 @@ namespace allergy {
 	    orchis::assert_true(val);
 	}
 
+	void next(TC)
+	{
+	    Year val("2020");
+	    orchis::assert_eq(val++, Year {"2020"});
+	    orchis::assert_eq(val,   Year {"2021"});
+	    orchis::assert_eq(val--, Year {"2021"});
+	    orchis::assert_eq(val,   Year {"2020"});
+	}
+
 	void invalid(TC)
 	{
 	    const Year y;
