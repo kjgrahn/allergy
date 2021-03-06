@@ -74,6 +74,17 @@ namespace allergy {
 	    orchis::assert_true(val);
 	}
 
+	void next(TC)
+	{
+	    Month val("2020-11");
+	    orchis::assert_eq(val++, Month {"2020-11"});
+	    orchis::assert_eq(val,   Month {"2020-12"});
+	    val++;
+	    orchis::assert_eq(val,   Month {"2021-01"});
+	    orchis::assert_eq(val--, Month {"2021-01"});
+	    orchis::assert_eq(val,   Month {"2020-12"});
+	}
+
 	void invalid(TC)
 	{
 	    const Month m;

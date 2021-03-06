@@ -52,6 +52,8 @@ namespace allergy {
 	explicit operator bool() const { return val[0] && val[1]; }
 	bool operator== (const Month& other) const { return val==other.val; }
 	bool operator<  (const Month& other) const { return val<other.val; }
+	Month operator-- (int);
+	Month operator++ (int);
 
 	const char* name() const;
 	Year year() const;
@@ -62,6 +64,9 @@ namespace allergy {
     private:
 	std::array<unsigned short, 2> val = {0, 0};
     };
+
+    inline Month prev(Month val) { val--; return val; }
+    inline Month next(Month val) { val++; return val; }
 
     /**
      * A year (e.g. "2020") parsed from a string, or else invalid.

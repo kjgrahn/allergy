@@ -144,6 +144,32 @@ Month::Month(unsigned year, unsigned mm)
     if (!in<unsigned, 1, 12>(mm)) val.fill(0);
 }
 
+Month Month::operator-- (int)
+{
+    auto prev = *this;
+    if (val[1]==1) {
+	val[0]--;
+	val[1] = 12;
+    }
+    else {
+	val[1]--;
+    }
+    return prev;
+}
+
+Month Month::operator++ (int)
+{
+    auto prev = *this;
+    if (val[1]==12) {
+	val[0]++;
+	val[1] = 1;
+    }
+    else {
+	val[1]++;
+    }
+    return prev;
+}
+
 const char* Month::name() const
 {
     switch (val[1]) {
