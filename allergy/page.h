@@ -24,6 +24,7 @@ namespace allergy {
 	    explicit Frontpage(const allergy::Index& ix) : ix{ix} {}
 	    using Chunk = page::Chunk<1>;
 
+	    Chunk begin() const { return {}; }
 	    void put(std::ostream& os, Chunk n) const;
 
 	private:
@@ -41,11 +42,31 @@ namespace allergy {
 	    {}
 	    using Chunk = page::Chunk<4, 1>;
 
+	    Chunk begin() const { return {}; }
 	    void put(std::ostream& os, Chunk n) const;
 
 	private:
 	    const allergy::Index& ix;
 	    const allergy::Year yyyy;
+	};
+
+	/**
+	 * A month page, /yyyy-mm.
+	 */
+	class Month {
+	public:
+	    Month(const allergy::Index& ix, allergy::Month month)
+		: ee {ix.in(month)},
+		  month {month}
+	    {}
+	    using Chunk = page::container::Chunk;
+
+	    Chunk begin() const;
+	    void put(std::ostream& os, Chunk n) const;
+
+	private:
+	    const std::vector<allergy::Entry> ee;
+	    const allergy::Month month;
 	};
     }
 }

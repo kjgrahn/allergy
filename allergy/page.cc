@@ -137,7 +137,7 @@ void allergy::page::Frontpage::put(std::ostream& os, const Chunk) const
 	os << "<tr><th>";
 	hput(os, year.yyyy);
 
-	auto p = begin(year.msum);
+	auto p = std::begin(year.msum);
 	for (const allergy::Month m : year.yyyy.months()) {
 	    os << " <td>";
 	    hput(os, m, *p++);
@@ -224,6 +224,44 @@ void allergy::page::Year::put(std::ostream& os, const Chunk chunk) const
 
     if (chunk.last()) {
 	os << "</body>\n"
+	      "</html>\n";
+    }
+}
+
+namespace {
+
+    std::string url(const allergy::Entry& e) { return e.filename.url(); }
+    std::string thumburl(const allergy::Entry& e) { return e.filename.thumburl(); }
+
+    void thumbdiv(std::ostream& os, const allergy::Entry& e)
+    {
+	os << "<div><a href='" << url(e) << "'>"
+	      "<img alt='' src='" << thumburl(e) << "'></a></div>\n";
+    }
+}
+
+allergy::page::Month::Chunk allergy::page::Month::begin() const
+{
+    return {20, ee};
+}
+
+void allergy::page::Month::put(std::ostream& os, const Chunk chunk) const
+{
+    if (chunk.first()) {
+	preamble(os, month,
+		 prev(month).url(),
+		 next(month).url());
+
+	os << "<body>\n"
+	      "\n"
+	      "<div class='gallery'>\n";
+    }
+
+    for (const auto& e : chunk.val(ee)) thumbdiv(os, e);
+
+    if (chunk.last()) {
+	os << "</div>\n"
+	      "</body>\n"
 	      "</html>\n";
     }
 }

@@ -90,7 +90,7 @@ namespace allergy {
 
 		std::ostringstream os;
 
-		page::Frontpage::Chunk chunk;
+		page::Frontpage::Chunk chunk = page.begin();
 		while (!chunk.end()) {
 		    page.put(os, chunk++);
 		}
@@ -121,7 +121,7 @@ namespace allergy {
 
 		std::ostringstream os;
 
-		page::Year::Chunk chunk;
+		page::Year::Chunk chunk = page.begin();
 		while (!chunk.end()) {
 		    page.put(os, chunk++);
 		}

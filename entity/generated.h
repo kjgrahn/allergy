@@ -20,7 +20,8 @@ namespace entity {
     public:
 	template <class ... Args>
 	Generated(Args&& ... argv)
-	    : src {argv ...}
+	    : src {argv ...},
+	      chunk {src.begin()}
 	{}
 
 	std::ostream& headers(std::ostream& os) const;

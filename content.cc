@@ -142,7 +142,11 @@ Response* Content::calendar(const timespec& t, const allergy::Year& yyyy) const
     return generated<allergy::page::Year>(t, index, yyyy);
 }
 
-Response* Content::calendar(const timespec& t, const allergy::Month&) const { return resp404(t, lib); }
+Response* Content::calendar(const timespec& t, const allergy::Month& month) const
+{
+    return generated<allergy::page::Month>(t, index, month);
+}
+
 Response* Content::redirect(const timespec& t, const std::string&) const { return resp404(t, lib); }
 
 Response* Content::photo(const timespec& t, const allergy::Photo& p) const
