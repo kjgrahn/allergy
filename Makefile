@@ -100,6 +100,7 @@ libtest.a: allergy/test/test_timestamp.o
 libtest.a: allergy/test/test_calendar.o
 libtest.a: allergy/test/test_keys.o
 libtest.a: allergy/test/test_photo.o
+libtest.a: allergy/test/test_chunk.o
 libtest.a: allergy/test/test_files.o
 	$(AR) $(ARFLAGS) $@ $^
 
