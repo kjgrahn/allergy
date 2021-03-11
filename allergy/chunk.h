@@ -7,6 +7,8 @@
 #ifndef ALLERGY_ALLERGY_CHUNK_H
 #define ALLERGY_ALLERGY_CHUNK_H
 
+#include <vector>
+
 namespace allergy {
 
     namespace page {
@@ -30,6 +32,47 @@ namespace allergy {
 	private:
 	    unsigned n = 0;
 	};
+
+	namespace container {
+
+	    /**
+	     * For pages which mostly show sequences, e.g. a gallery. Lets
+	     * you decide a chunk size and divides the sequence into
+	     * chunks.
+	     *
+	     * E.g. with chunk size 10 and 23 entries you get three chunks:
+	     * 0--9, 10--19, 20--22.
+	     */
+	    struct Chunk {
+		template <class C>
+		Chunk(unsigned size, const C& c)
+		    : Chunk {size, c.size()}
+		{}
+
+		Chunk operator++(int) { auto old = *this; i++; return old; }
+		bool end() const { return i==n; }
+		bool first() const { return i==0; }
+		bool last() const  { return i+1==n; }
+
+		template <class C>
+		std::vector<typename C::value_type> val(const C& c) const;
+
+	    private:
+		Chunk(unsigned size, size_t seq_size);
+
+		const unsigned size;
+		const unsigned n;
+		unsigned i;
+	    };
+
+	    template <class C>
+	    std::vector<typename C::value_type> Chunk::val(const C& c) const
+	    {
+		auto a = std::begin(c) + i * size;
+		auto b = last() ? std::end(c) : a + size;
+		return {a, b};
+	    }
+	}
     }
 }
 
