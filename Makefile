@@ -8,6 +8,7 @@ SHELL=/bin/bash
 INSTALLBASE=/usr/local
 CXXFLAGS=-Wall -Wextra -pedantic -std=c++11 -g -Os -Wold-style-cast
 CPPFLAGS=
+ARFLAGS=rTP
 
 .PHONY: all
 all: allergyd
@@ -63,7 +64,7 @@ liballergy.a: allergy/calendar.o
 liballergy.a: allergy/keys.o
 liballergy.a: allergy/photo.o
 liballergy.a: allergy/files...o
-	$(AR) -r $@ $^
+	$(AR) $(ARFLAGS) $@ $^
 
 backlog.o: CXXFLAGS+=-Wno-old-style-cast
 deflate.o: CXXFLAGS+=-Wno-old-style-cast
@@ -100,7 +101,7 @@ libtest.a: allergy/test/test_calendar.o
 libtest.a: allergy/test/test_keys.o
 libtest.a: allergy/test/test_photo.o
 libtest.a: allergy/test/test_files.o
-	$(AR) -r $@ $^
+	$(AR) $(ARFLAGS) $@ $^
 
 test/%.o: CPPFLAGS+=-I.
 allergy/test/%.o: CPPFLAGS+=-I.
