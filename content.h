@@ -52,6 +52,7 @@ private:
     Response* by_date(const timespec& t) const;
     Response* calendar(const timespec& t, const allergy::Year&) const;
     Response* calendar(const timespec& t, const allergy::Month&) const;
+    Response* calendar(const timespec& t, const allergy::Day&) const;
     Response* redirect(const timespec& t, const std::string& s) const;
     Response* photo(const timespec& t, const allergy::Photo& p) const;
     Response* thumbnail(const timespec& t, const allergy::Photo& p) const;

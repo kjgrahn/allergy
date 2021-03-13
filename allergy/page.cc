@@ -265,3 +265,27 @@ void allergy::page::Month::put(std::ostream& os, const Chunk chunk) const
 	      "</html>\n";
     }
 }
+
+allergy::page::Day::Chunk allergy::page::Day::begin() const
+{
+    return {20, ee};
+}
+
+void allergy::page::Day::put(std::ostream& os, const Chunk chunk) const
+{
+    if (chunk.first()) {
+	preamble(os, day);
+
+	os << "<body>\n"
+	      "\n"
+	      "<div class='gallery'>\n";
+    }
+
+    for (const auto& e : chunk.val(ee)) thumbdiv(os, e);
+
+    if (chunk.last()) {
+	os << "</div>\n"
+	      "</body>\n"
+	      "</html>\n";
+    }
+}

@@ -104,6 +104,7 @@ Response* Content::response_of(const Request& req, const timespec& t) const
 
     if (auto year  = match<allergy::Year>(uri))  return calendar(t, year);
     if (auto month = match<allergy::Month>(uri)) return calendar(t, month);
+    if (auto day   = match<allergy::Day>(uri))   return calendar(t, day);
 
     if (auto name = match<allergy::Photo>(uri))          return photo(t, name);
     if (auto name = match<allergy::Photo>(uri, "thumb")) return thumbnail(t, name);
@@ -145,6 +146,11 @@ Response* Content::calendar(const timespec& t, const allergy::Year& yyyy) const
 Response* Content::calendar(const timespec& t, const allergy::Month& month) const
 {
     return generated<allergy::page::Month>(t, index, month);
+}
+
+Response* Content::calendar(const timespec& t, const allergy::Day& day) const
+{
+    return generated<allergy::page::Day>(t, index, day);
 }
 
 Response* Content::redirect(const timespec& t, const std::string&) const { return resp404(t, lib); }

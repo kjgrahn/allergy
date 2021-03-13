@@ -68,6 +68,25 @@ namespace allergy {
 	    const std::vector<allergy::Entry> ee;
 	    const allergy::Month month;
 	};
+
+	/**
+	 * A day page, /yyyy-mm-dd.
+	 */
+	class Day {
+	public:
+	    Day(const allergy::Index& ix, allergy::Day day)
+		: ee {ix.on(day)},
+		  day {day}
+	    {}
+	    using Chunk = page::container::Chunk;
+
+	    Chunk begin() const;
+	    void put(std::ostream& os, Chunk n) const;
+
+	private:
+	    const std::vector<allergy::Entry> ee;
+	    const allergy::Day day;
+	};
     }
 }
 
