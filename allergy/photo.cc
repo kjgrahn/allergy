@@ -113,6 +113,16 @@ std::string Photo::path() const
     return dir() + "/" + val;
 }
 
+std::string Photo::url() const
+{
+    return "/" + val;
+}
+
+std::string Photo::thumburl() const
+{
+    return "/thumb/" + val;
+}
+
 int Photo::open(const Root& root) const
 {
     return root.open(path());

@@ -28,10 +28,11 @@ namespace allergy {
 
 	void quarter(TC)
 	{
-	    auto assert_quarter = [] (const char* q, const char* s) {
+	    auto assert_quarter = [] (const std::string& q, const char* s) {
 				      const Photo p {s};
 				      orchis::assert_true(p.valid());
 				      orchis::assert_eq(p.dir(), q);
+				      orchis::assert_eq(p.path(), q + '/' + s);
 				  };
 
 	    assert_quarter("2020.1", "2020-01-01_0001.jpg");
@@ -61,6 +62,14 @@ namespace allergy {
 	    assert_invalid("2020-07-24_0001.gif");
 	}
 
+	void url(TC)
+	{
+	    const Photo p {"2020-07-24_0001.jpg"};
+	    orchis::assert_true(p.valid());
+	    assert_eq(p.url(), "/2020-07-24_0001.jpg");
+	    assert_eq(p.thumburl(), "/thumb/2020-07-24_0001.jpg");
+	}
+
 	namespace legacy {
 
 	    void valid(TC)
@@ -77,10 +86,11 @@ namespace allergy {
 
 	    void quarter(TC)
 	    {
-		auto assert_quarter = [] (const char* q, const char* s) {
+		auto assert_quarter = [] (const std::string& q, const char* s) {
 		    const Photo p {s};
 		    orchis::assert_true(p.valid());
 		    orchis::assert_eq(p.dir(), q);
+		    orchis::assert_eq(p.path(), q + '/' + s);
 		};
 
 		assert_quarter("2020.1", "200101_0001.jpg");

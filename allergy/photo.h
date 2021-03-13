@@ -44,6 +44,9 @@ namespace allergy {
 	std::string dir() const;
 	std::string path() const;
 
+	std::string url() const;
+	std::string thumburl() const;
+
 	int open(const Root& root) const;
 
     private:
