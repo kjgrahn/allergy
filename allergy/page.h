@@ -22,7 +22,7 @@ namespace allergy {
 	class Frontpage {
 	public:
 	    explicit Frontpage(const allergy::Index& ix) : ix{ix} {}
-	    using Chunk = page::Chunk<1>;
+	    using Chunk = page::Chunk<2>;
 
 	    Chunk begin() const { return {}; }
 	    void put(std::ostream& os, Chunk n) const;

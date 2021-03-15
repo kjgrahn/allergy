@@ -100,56 +100,61 @@ namespace {
     }
 }
 
-void allergy::page::Frontpage::put(std::ostream& os, const Chunk) const
+void allergy::page::Frontpage::put(std::ostream& os, const Chunk chunk) const
 {
-    preamble(os, "Foton");
+    if (chunk.first()) {
+	preamble(os, "Foton");
 
-    os << "<body>\n"
-	"\n"
-	"<p>\n"
-	"Mina samlade foton (sedan jag skaffade digitalkamera) med beskrivningar.\n"
-	"De ligger ute här mest för att jag själv, och släkt och vänner, ska kunna se dem.\n"
-	"Dessutom för att det är praktiskt att kunna sortera dem på nyckelord,\n"
-	"till exempel se alla foton på <em>svartoxbär</em>, eller katter, eller gräsänder.\n"
-	"\n"
-	"<table>\n"
-	"<caption>Foton per år och månad</caption>\n"
-	"<thead>\n"
-	"<tr><td> <th>jan <th>feb <th>mar <th>apr <th>maj <th>jun\n"
-	"         <th>jul <th>aug <th>sep <th>okt <th>nov <th>dec\n";
-
-    const Years years {ix};
-
-    os << "<tfoot>\n"
-	"<tr><td>";
-
-    for (unsigned n : years.msum) {
-	os << " <td>";
-	hput(os, n);
+	os << "<body>\n"
+	      "\n"
+	      "<p>\n"
+	      "Mina samlade foton (sedan jag skaffade digitalkamera) med beskrivningar.\n"
+	      "De ligger ute här mest för att jag själv, och släkt och vänner, ska kunna se dem.\n"
+	      "Dessutom för att det är praktiskt att kunna sortera dem på nyckelord,\n"
+	      "till exempel se alla foton på <em>svartoxbär</em>, eller katter, eller gräsänder.\n"
+	      "\n"
+	      "<h1>Foton per år och månad</h1>\n"
+	      "\n"
+	      "<table class='cal'>\n"
+	      "<thead>\n"
+	      "<tr><td> <th>jan <th>feb <th>mar <th>apr <th>maj <th>jun\n"
+	      "         <th>jul <th>aug <th>sep <th>okt <th>nov <th>dec\n";
     }
 
-    os << " <th>";
-    hput(os, sum(years.msum)) << '\n';
+    if (chunk.last()) {
+	const Years years {ix};
 
-    os << "<tbody>\n";
+	os << "<tfoot>\n"
+	      "<tr><td>";
 
-    for (const auto& year : years.years) {
-	os << "<tr><th>";
-	hput(os, year.yyyy);
-
-	auto p = std::begin(year.msum);
-	for (const allergy::Month m : year.yyyy.months()) {
+	for (unsigned n : years.msum) {
 	    os << " <td>";
-	    hput(os, m, *p++);
+	    hput(os, n);
 	}
-	os << " <th>";
-	hput(os, sum(year.msum)) << '\n';
-    }
 
-    os << "</table>\n"
-	"\n"
-	"</body>\n"
-	"</html>\n";
+	os << " <th>";
+	hput(os, sum(years.msum)) << '\n';
+
+	os << "<tbody>\n";
+
+	for (const auto& year : years.years) {
+	    os << "<tr><th>";
+	    hput(os, year.yyyy);
+
+	    auto p = std::begin(year.msum);
+	    for (const allergy::Month m : year.yyyy.months()) {
+		os << " <td>";
+		hput(os, m, *p++);
+	    }
+	    os << " <th>";
+	    hput(os, sum(year.msum)) << '\n';
+	}
+
+	os << "</table>\n"
+	      "\n"
+	      "</body>\n"
+	      "</html>\n";
+    }
 }
 
 namespace {
