@@ -2,7 +2,7 @@ body {
     background-color: rgb(255,224,160);
     color: black
 }
-table.cal td    {
+table.cal td, th {
     text-align: right
 }
 table.cal td.a {
