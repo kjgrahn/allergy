@@ -70,6 +70,7 @@ liballergy.a: allergy/files...o
 backlog.o: CXXFLAGS+=-Wno-old-style-cast
 deflate.o: CXXFLAGS+=-Wno-old-style-cast
 httpd.o: CXXFLAGS+=-Wno-old-style-cast
+log.o: CXXFLAGS+=-std=c++14
 
 allergyd: httpd.o liballergy.a
 	$(CXX) $(CXXFLAGS) -o $@ httpd.o -L. -lallergy -lrt -lz
