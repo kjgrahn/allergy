@@ -81,7 +81,7 @@ namespace {
 	std::ostringstream oss;
 	oss << "cjpeg" << nil
 	    << "-qual" << nil
-	    << "10" << nil
+	    << "20" << nil
 	    << "-optimize" << nil
 	    << "-progressive" << nil
 	    << "-outfile" << nil
