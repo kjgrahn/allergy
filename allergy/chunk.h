@@ -8,6 +8,7 @@
 #define ALLERGY_ALLERGY_CHUNK_H
 
 #include <vector>
+#include <cstdlib>
 
 namespace allergy {
 
