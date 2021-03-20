@@ -7,37 +7,24 @@
 #include <orchis.h>
 
 namespace {
-    void eq(const allergy::Keys& k,
-	    const char* s)
+
+    template <class It>
+    std::string join(const char* sep, It a, It b)
     {
-	orchis::assert_eq(k.str(), s);
-	allergy::Keys::const_iterator i = k.begin();
-	orchis::assert_(i==k.end());
+	std::string s;
+	for (It i=a; i!=b; i++) {
+	    if (i!=a) s += sep;
+	    s += *i;
+	}
+	return s;
     }
 
     void eq(const allergy::Keys& k,
 	    const char* s,
-	    const char* k1)
+	    const char* kk = "")
     {
 	orchis::assert_eq(k.str(), s);
-	allergy::Keys::const_iterator i = k.begin();
-	orchis::assert_(i!=k.end());
-	orchis::assert_eq(*i++, k1);
-	orchis::assert_(i==k.end());
-    }
-
-    void eq(const allergy::Keys& k,
-	    const char* s,
-	    const char* k1,
-	    const char* k2)
-    {
-	orchis::assert_eq(k.str(), s);
-	allergy::Keys::const_iterator i = k.begin();
-	orchis::assert_(i!=k.end());
-	orchis::assert_eq(*i++, k1);
-	orchis::assert_(i!=k.end());
-	orchis::assert_eq(*i++, k2);
-	orchis::assert_(i==k.end());
+	orchis::assert_eq(join("/", k.begin(), k.end()), kk);
     }
 }
 
@@ -46,10 +33,6 @@ namespace allergy {
     namespace keys {
 
 	using orchis::TC;
-
-	using orchis::assert_eq;
-	using orchis::assert_;
-
 
 	void construct(TC)
 	{
@@ -73,36 +56,31 @@ namespace allergy {
 	    void a(TC)
 	    {
 		const Keys k("foo [bar] baz");
-		eq(k, "foo bar baz",
-		   "bar");
+		eq(k, "foo bar baz", "bar");
 	    }
 
 	    void b(TC)
 	    {
 		const Keys k("foo [bar] baz [bat]");
-		eq(k, "foo bar baz bat",
-		   "bar", "bat");
+		eq(k, "foo bar baz bat", "bar/bat");
 	    }
 
 	    void c(TC)
 	    {
 		const Keys k("foo [bar] baz [bat] fred");
-		eq(k, "foo bar baz bat fred",
-		   "bar", "bat");
+		eq(k, "foo bar baz bat fred", "bar/bat");
 	    }
 
 	    void d(TC)
 	    {
 		const Keys k("foo[]bar");
-		eq(k, "foobar",
-		   "");
+		eq(k, "foobar", "");
 	    }
 
 	    void e(TC)
 	    {
 		const Keys k("foo[][]bar");
-		eq(k, "foobar",
-		   "", "");
+		eq(k, "foobar", "/");
 	    }
 
 	    void f(TC)
@@ -110,20 +88,18 @@ namespace allergy {
 		const Keys k("[foo]");
 		eq(k, "foo", "foo");
 	    }
-	}
 
-	void nested(TC)
-	{
-	    const Keys k("[Vartofta-[Asaka]]");
-	    eq(k, "Vartofta-Asaka",
-	       "Asaka", "Vartofta-Asaka");
-	}
+	    void nested(TC)
+	    {
+		const Keys k("[Vartofta-[Asaka]]");
+		eq(k, "Vartofta-Asaka", "Asaka/Vartofta-Asaka");
+	    }
 
-	void misnested(TC)
-	{
-	    const Keys k("foo] bar [b [az]");
-	    eq(k, "foo] bar b az",
-	       "az", "b az");
+	    void misnested(TC)
+	    {
+		const Keys k("foo] bar [b [az]");
+		eq(k, "foo] bar b az", "az/b az");
+	    }
 	}
 
 	namespace curly {
@@ -137,13 +113,13 @@ namespace allergy {
 	    void b(TC)
 	    {
 		const Keys k("{foo}{bar}");
-		eq(k, "", "foo", "bar");
+		eq(k, "", "foo/bar");
 	    }
 
 	    void c(TC)
 	    {
 		const Keys k("[foo]{bar}");
-		eq(k, "foo", "foo", "bar");
+		eq(k, "foo", "foo/bar");
 	    }
 	}
     }
