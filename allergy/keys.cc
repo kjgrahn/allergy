@@ -20,15 +20,14 @@ namespace {
 		    std::vector<std::string>& bits);
 
     private:
-	typedef std::vector<std::string> vs;
-	vs v;
-	vs done;
+	std::vector<std::string> v;
+	std::vector<std::string> done;
     };
 
     void TextStack::put(char ch)
     {
-	for(vs::iterator i = v.begin(); i!=v.end(); i++) {
-	    i->push_back(ch);
+	for(std::string& s : v) {
+	    s.push_back(ch);
 	}
     }
 
@@ -51,7 +50,7 @@ namespace {
     void TextStack::report(std::string& s,
 			   std::vector<std::string>& bits)
     {
-	vs::iterator i = v.begin();
+	auto i = v.begin();
 	std::swap(s, *i++);
 	std::swap(bits, done);
 	bits.insert(bits.end(), i, v.end());
