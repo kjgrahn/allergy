@@ -1,4 +1,4 @@
-/* Copyright (c) 2014 Jörgen Grahn
+/* Copyright (c) 2014, 2021 Jörgen Grahn
  * All rights reserved.
  *
  */
@@ -9,41 +9,56 @@ using allergy::Keys;
 
 namespace {
 
+    /**
+     * State machine for parsing Keys strings.  At any point in time
+     * we're either:
+     * - just copying
+     * - copying, and copying N levels of [keys]
+     * - not copying, and copying a {key}
+     */
     class TextStack {
     public:
 	TextStack() : v(1) {}
 	void put(char ch);
-	void open();
-	void close(char ch);
-
 	void report(std::string& s,
 		    std::vector<std::string>& bits);
 
     private:
 	std::vector<std::string> v;
 	std::vector<std::string> done;
+	bool curly = false;
     };
 
-    void TextStack::put(char ch)
+    void TextStack::put(const char ch)
     {
-	for(std::string& s : v) {
-	    s.push_back(ch);
-	}
-    }
+	const bool square = v.size() > 1;
 
-    void TextStack::open()
-    {
-	v.push_back("");
-    }
-
-    void TextStack::close(char ch)
-    {
-	if(v.size()==1) {
-	    put(ch);
-	}
-	else {
+	auto pop = [this] () {
 	    done.push_back(v.back());
 	    v.pop_back();
+	};
+
+	if (curly) {
+	    if (ch=='}') {
+		pop();
+		curly = false;
+	    }
+	    else {
+		v[1].push_back(ch);
+	    }
+	}
+	else if (ch=='[') {
+	    v.push_back("");
+	}
+	else if (square && ch==']') {
+	    pop();
+	}
+	else if (!square && ch=='{') {
+	    v.push_back("");
+	    curly = true;
+	}
+	else {
+	    for(std::string& s : v) s.push_back(ch);
 	}
     }
 
@@ -63,18 +78,7 @@ Keys::Keys(const std::string& str)
     const char* p = str.data();
     const char* const q = p + str.size();
     TextStack stack;
-    while(p!=q) {
-	if(*p=='[') {
-	    stack.open();
-	}
-	else if(*p==']') {
-	    stack.close(']');
-	}
-	else {
-	    stack.put(*p);
-	}
-	p++;
-    }
+    for (char ch: str) stack.put(ch);
     stack.report(s, bits);
 }
 

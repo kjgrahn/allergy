@@ -1,6 +1,6 @@
 /* -*- c++ -*-
  *
- * Copyright (c) 2014 Jörgen Grahn
+ * Copyright (c) 2014, 2021 Jörgen Grahn
  * All rights reserved.
  *
  */
@@ -14,14 +14,16 @@ namespace allergy {
 
     /**
      * From string 's', extract [[bracketed] keys, even nested
-     * ones]. Also extract and remove keys in {angle brackets}.
+     * ones]. Also extract and remove keys in {curly brackets}.
      *
      * Unterminated keys are terminated by the end of the string:
      * "[foo[bar" and "[foo[bar]]" give the same result.
      *
-     * The ordering of keys is undefined.
+     * Curly {keys} do not nest and are not included in the main text.
+     * Instead, a sequence of {keys} {and} {whitespace} is replaced
+     * by a space, or a newline if there was one in the sequence.
      *
-     * XXX Explain semantics of curly brackets.
+     * The ordering of keys is undefined.
      */
     class Keys {
     public:

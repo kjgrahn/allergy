@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Jörgen Grahn.
+ * Copyright (C) 2014, 2021 Jörgen Grahn.
  * All rights reserved.
  */
 #include <allergy/keys.h>
@@ -51,6 +51,14 @@ namespace allergy {
 	    eq(k, "foo");
 	}
 
+	void linebreaks(TC)
+	{
+	    Keys k("foo \n"
+		   " bar \n"
+		   "baz\n");
+	    eq(k, "foo \n bar \nbaz\n");
+	}
+
 	namespace keyed {
 
 	    void a(TC)
@@ -100,6 +108,12 @@ namespace allergy {
 		const Keys k("foo] bar [b [az]");
 		eq(k, "foo] bar b az", "az/b az");
 	    }
+
+	    void curly(TC)
+	    {
+		const Keys k("foo [bar{baz}]");
+		eq(k, "foo bar{baz}", "bar{baz}");
+	    }
 	}
 
 	namespace curly {
@@ -120,6 +134,41 @@ namespace allergy {
 	    {
 		const Keys k("[foo]{bar}");
 		eq(k, "foo", "foo/bar");
+	    }
+
+	    namespace whitespace {
+
+		void a(TC)
+		{
+		    const Keys k("foo {bar}");
+		    eq(k, "foo", "bar");
+		}
+
+		void b(TC)
+		{
+		    const Keys k("{bar} foo");
+		    eq(k, "foo", "bar");
+		}
+
+		void c(TC)
+		{
+		    const Keys k("foo {bar} baz");
+		    eq(k, "foo baz", "bar");
+		}
+
+		void d(TC)
+		{
+		    const Keys k("foo {bar} {baz} bat");
+		    eq(k, "foo bat", "bar/baz");
+		}
+
+		void e(TC)
+		{
+		    const Keys k("foo\n"
+				 "{bar} {baz}\n"
+				 "{bat}\n");
+		    eq(k, "foo\n", "bar/baz/bat");
+		}
 	    }
 	}
     }
