@@ -5,11 +5,10 @@
 #ifndef ALLERGY_URI_H
 #define ALLERGY_URI_H
 
-#include "blob.h"
-
 #include <string>
 #include <array>
 #include <iosfwd>
+#include <cstring>
 
 /**
  * A HTTP Request-URI [5.1.2] as received in a request.
@@ -22,7 +21,7 @@
  * which happens to be empty).
  *
  * Supports simple matches like /foo/bar/T, where T is a user-defined
- * type.
+ * type with a T(begin, end) constructor.
  */
 class Uri {
 public:
