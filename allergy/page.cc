@@ -98,6 +98,20 @@ namespace {
 	    "\n"
 	    "</head>\n";
     }
+
+    void epilogue(std::ostream& os)
+    {
+	os << "<div class='badges'>\n"
+	      "  <a href='http://validator.w3.org/check/referer'>\n"
+	      "  <img src='http://validator.w3.org/images/vh401.png'\n"
+	      "       alt='Valid HTML 4.01!' height=31 width=88></a>\n"
+	      "  <a href='http://jigsaw.w3.org/css-validator/check/referer'>\n"
+	      "  <img src='http://jigsaw.w3.org/css-validator/images/vcss.png'\n"
+	      "       alt='Valid CSS!' height=31 width=88></a>\n"
+	      "</div>\n"
+	      "</body>\n"
+	      "</html>\n";
+    }
 }
 
 void allergy::page::Frontpage::put(std::ostream& os, const Chunk chunk) const
@@ -150,10 +164,7 @@ void allergy::page::Frontpage::put(std::ostream& os, const Chunk chunk) const
 	    hput(os, sum(year.msum)) << '\n';
 	}
 
-	os << "</table>\n"
-	      "\n"
-	      "</body>\n"
-	      "</html>\n";
+	epilogue(os << "</table>\n");
     }
 }
 
@@ -228,8 +239,7 @@ void allergy::page::Year::put(std::ostream& os, const Chunk chunk) const
     hput(os, ix, yyyy, chunk.val());
 
     if (chunk.last()) {
-	os << "</body>\n"
-	      "</html>\n";
+	epilogue(os);
     }
 }
 
@@ -265,9 +275,7 @@ void allergy::page::Month::put(std::ostream& os, const Chunk chunk) const
     for (const auto& e : chunk.val(ee)) thumbdiv(os, e);
 
     if (chunk.last()) {
-	os << "</div>\n"
-	      "</body>\n"
-	      "</html>\n";
+	epilogue(os << "</div>\n");
     }
 }
 
@@ -289,8 +297,6 @@ void allergy::page::Day::put(std::ostream& os, const Chunk chunk) const
     for (const auto& e : chunk.val(ee)) thumbdiv(os, e);
 
     if (chunk.last()) {
-	os << "</div>\n"
-	      "</body>\n"
-	      "</html>\n";
+	epilogue(os << "</div>\n");
     }
 }
