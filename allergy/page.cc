@@ -86,7 +86,7 @@ namespace {
 	    "<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>\n"
 	    "<meta http-equiv='Content-Language' content='sv'>\n"
 	    "<link rev='made'       href='mailto:grahn@snipabacken.se'>\n"
-	    "<link rel='stylesheet' href='css' type='text/css'>\n";
+	    "<link rel='stylesheet' href='/css' type='text/css'>\n";
 	if (prev.size()) {
 	    os << "<link rel='prev' href='" << prev << "'>\n";
 	}
@@ -291,6 +291,29 @@ void allergy::page::Day::put(std::ostream& os, const Chunk chunk) const
 
 	os << "<body>\n"
 	      "\n"
+	      "<div class='gallery'>\n";
+    }
+
+    for (const auto& e : chunk.val(ee)) thumbdiv(os, e);
+
+    if (chunk.last()) {
+	epilogue(os << "</div>\n");
+    }
+}
+
+allergy::page::Keyword::Chunk allergy::page::Keyword::begin() const
+{
+    return {20, ee};
+}
+
+void allergy::page::Keyword::put(std::ostream& os, const Chunk chunk) const
+{
+    if (chunk.first()) {
+	preamble(os, key);
+
+	os << "<body>\n"
+	      "\n"
+	      "<h1>" << key << "</h1>\n"
 	      "<div class='gallery'>\n";
     }
 

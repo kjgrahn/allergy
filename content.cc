@@ -188,7 +188,12 @@ Response* Content::thumbnail(const timespec& t, const allergy::Photo& p) const
 }
 
 Response* Content::keywords(const timespec& t) const { return resp404(t, lib); }
-Response* Content::keyword(const timespec& t, const allergy::Key&) const { return resp404(t, lib); }
+
+Response* Content::keyword(const timespec& t, const allergy::Key& key ) const
+{
+    return generated<allergy::page::Keyword>(t, index, key);
+}
+
 Response* Content::robots(const timespec& t) const { return open<response::File>(t, lib, lib, "robots.txt", "text/plain"); }
 Response* Content::css(const timespec& t) const { return open<response::File>(t, lib, lib, "css", "text/css"); }
 Response* Content::favicon(const timespec& t) const { return resp404(t, lib); }

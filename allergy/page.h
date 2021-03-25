@@ -87,6 +87,25 @@ namespace allergy {
 	    const std::vector<allergy::Entry> ee;
 	    const allergy::Day day;
 	};
+
+	/**
+	 * A keyword page, /key/keyword.
+	 */
+	class Keyword {
+	public:
+	    Keyword(const allergy::Index& ix, const allergy::Key& key)
+		: ee {ix.key(key)},
+		  key {key}
+	    {}
+	    using Chunk = page::container::Chunk;
+
+	    Chunk begin() const;
+	    void put(std::ostream& os, Chunk n) const;
+
+	private:
+	    const std::vector<allergy::Entry> ee;
+	    const allergy::Key key;
+	};
     }
 }
 
