@@ -81,6 +81,19 @@ bool History::wedged(unsigned s, const timespec& t) const
     }
 }
 
+namespace {
+
+    /**
+     * Format a shortish time delta as seconds and milliseconds.
+     */
+    std::ostream& fmt(std::ostream& os, const timespec& ts)
+    {
+	const double f = ts.tv_sec + ts.tv_nsec/1e9;
+	char buf[10];
+	std::snprintf(buf, sizeof buf, "%.3f", f);
+	return os << buf;
+    }
+}
 
 /**
  * Print as:
@@ -90,8 +103,7 @@ bool History::wedged(unsigned s, const timespec& t) const
 std::ostream& History::put(std::ostream& os) const
 {
     const timespec age = now() - t0;
-    const float fage = age.tv_sec + age.tv_nsec/1e9;
-    os << '[' << fage << 's';
+    fmt(os << '[', age) << 's';
     os << ", " << e/2 << " req";
     if(idle()) os << ", idle";
     return os << ']';
