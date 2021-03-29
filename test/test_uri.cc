@@ -11,6 +11,7 @@ namespace uri {
 
     using orchis::assert_true;
     using orchis::assert_false;
+    using orchis::assert_eq;
     using orchis::TC;
 
     void create(TC)
@@ -33,6 +34,27 @@ namespace uri {
 
 	std::ostream& operator<< (std::ostream& os, const Seg& val) { return os << val; }
 
+	void assert_seg(const Uri& uri, const char* seg)
+	{
+	    auto m = match<Seg>(uri);
+	    assert_true(m);
+	    assert_eq(m, seg);
+	}
+
+	void assert_seg(const Uri& uri, const char* a, const char* seg)
+	{
+	    auto m = match<Seg>(uri, a);
+	    assert_true(m);
+	    assert_eq(m, seg);
+	}
+
+	void assert_seg(const Uri& uri, const char* a, const char* b, const char* seg)
+	{
+	    auto m = match<Seg>(uri, a, b);
+	    assert_true(m);
+	    assert_eq(m, seg);
+	}
+
 	void empty(TC)
 	{
 	    const std::string s = "/";
@@ -53,7 +75,7 @@ namespace uri {
 	    const Uri uri {s};
 
 	    assert_true(match<bool>(uri, "foo"));
-	    assert_true(match<Seg>(uri));
+	    assert_seg(uri, "foo");
 
 	    assert_false(match<bool>(uri, "bar"));
 	    assert_false(match<bool>(uri, "foo", ""));
@@ -76,7 +98,7 @@ namespace uri {
 	    const Uri uri {s};
 
 	    assert_true(match<bool>(uri, "foo", "bar"));
-	    assert_true(match<Seg>(uri, "foo"));
+	    assert_seg(uri, "foo", "bar");
 
 	    assert_false(match<bool>(uri, "foo", "bat"));
 	}
@@ -86,7 +108,7 @@ namespace uri {
 	    const std::string s = "/foo//baz";
 	    const Uri uri {s};
 
-	    assert_true(match<Seg>(uri, "foo", ""));
+	    assert_seg(uri, "foo", "", "baz");
 
 	    assert_false(match<bool>(uri, "foo", ""));
 	}
