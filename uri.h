@@ -19,6 +19,8 @@
  * and extraction like /foo/bar/T, where T is a user-defined type with
  * a T(begin, end) constructor.
  *
+ * Unlike Uri, T must own its data.
+ *
  * While doing this, we don't expose any percent-encoding [RFC 3986, 2.1]:
  * calling code sees "AC/DC", not "AC%2FDC".
  *
@@ -36,7 +38,10 @@ public:
 
     void put(std::ostream& os) const;
 
+    // true iff there are n segments
     bool segments(size_t n) const { return n+1==vn; }
+
+    // true iff the nth segment is [a..b)
     bool segment(const char* a, const char* b, size_t n) const;
     bool segment(const char* s, size_t n) const { return segment(s, s + std::strlen(s), n); }
 
@@ -46,6 +51,11 @@ public:
 	if (n+1 >= vn) return nil<T>();
 	auto c = a + v[n] + 1;
 	auto d = a + v[n+1];
+	if (!percent) return T {c, d};
+
+	const auto s = decode(c, d);
+	c = s.data();
+	d = c + s.size();
 	return T {c, d};
     }
 
@@ -55,9 +65,12 @@ public:
 private:
     const char* const a;
     const char* const b;
+    const bool percent;
 
     std::array<unsigned, 5> v;
     unsigned vn;
+
+    static std::string decode(const char* a, const char* b);
 };
 
 std::ostream& operator<< (std::ostream& os, const Uri& val);

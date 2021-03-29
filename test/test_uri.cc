@@ -112,6 +112,76 @@ namespace uri {
 	    assert_false(match<bool>(uri, "foo", ""));
 	}
 
+	namespace percent {
+
+	    void simple(TC)
+	    {
+		const std::string s = "/f%6Fo";
+		const Uri uri {s};
+		assert_true(match<bool>(uri, "foo"));
+		assert_seg(uri, "foo");
+	    }
+
+	    void full(TC)
+	    {
+		const std::string s = "/%66%6F%6F";
+		const Uri uri {s};
+		assert_true(match<bool>(uri, "foo"));
+		assert_seg(uri, "foo");
+	    }
+
+	    void lower(TC)
+	    {
+		const std::string s = "/f%6fo";
+		const Uri uri {s};
+		assert_true(match<bool>(uri, "foo"));
+		assert_seg(uri, "foo");
+	    }
+
+	    void slash(TC)
+	    {
+		const std::string s = "/f%2Foo/b%2Far";
+		const Uri uri {s};
+		assert_true(match<bool>(uri, "f/oo", "b/ar"));
+		assert_seg(uri, "f/oo", "b/ar");
+	    }
+
+	    void longseg(TC)
+	    {
+		const std::string s {"/123456789%20abc%20def"
+		                     "/123456789%20abc%20def"
+		                     "/123456789%20abc%20def"};
+		const Uri uri {s};
+		assert_seg(uri,
+			   "123456789 abc def",
+			   "123456789 abc def",
+			   "123456789 abc def");
+	    }
+
+	    void utf8(TC)
+	    {
+		const std::string s = "/w/index.php?title=%F0%9F%92%BE&redirect=no";
+		const Uri uri {s};
+		auto seg = match<std::string>(uri, "w");
+		return;
+		assert_seg(uri, "w", "index.php?title=\xF0\x9F\x92\xBE&redirect=no");
+	    }
+
+	    void broken(TC)
+	    {
+		for (std::string s: {"/f%",
+				     "/f%6",
+				     "/f%6g",
+				     "/f%%%"}) {
+		    /* These don't have to have well-defined semantics,
+		     * apart from keeping to the Uri interface.
+		     */
+		    const Uri uri {s};
+		    const std::string seg = match<std::string>(uri);
+		}
+	    }
+	}
+
 	namespace unsupported {
 
 	    void empty(TC)
