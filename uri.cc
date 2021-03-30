@@ -22,25 +22,29 @@ Uri::Uri(const char* a, const char* b)
     vn = std::distance(v.begin(), vi);
 }
 
-bool Uri::operator== (const std::string& s) const
+/**
+ * Print the URI verbatim.
+ */
+void Uri::put(std::ostream& os) const
 {
-    return size() == s.size() && std::equal(begin(), end(), s.begin());
+    os.write(a, b-a);
 }
 
 /**
- * True if there is a segment 'n' matching 's'.
+ * True if there is a segment 'n' matching [sa, sb).
  */
-bool Uri::segment(const char* const a, const char* const b,
+bool Uri::segment(const char* const sa, const char* const sb,
 		  const size_t n) const
 {
     if (n+1 >= vn) return false;
-    auto c = begin() + v[n] + 1;
-    auto d = begin() + v[n+1];
-    if (std::distance(a, b) != std::distance(c, d)) return false;
-    return std::equal(a, b, c);
+    auto c = a + v[n] + 1;
+    auto d = a + v[n+1];
+    if (std::distance(sa, sb) != std::distance(c, d)) return false;
+    return std::equal(sa, sb, c);
 }
 
 std::ostream& operator<< (std::ostream& os, const Uri& val)
 {
-    return os.write(val.begin(), val.size());
+    val.put(os);
+    return os;
 }

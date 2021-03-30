@@ -1,5 +1,4 @@
-/*
- * Copyright (C) 2012, 2013 Jörgen Grahn.
+/* Copyright (C) 2012, 2013, 2021 Jörgen Grahn.
  * All rights reserved.
  */
 #include <request.h>
@@ -48,7 +47,8 @@ namespace req {
 	assert_(req.complete);
 	assert_(!req.broken);
 	assert_eq(req.method, Request::GET);
-	assert_eq(req.request_uri(), "/pub/WWW/TheProject.html");
+	assert_eq(match<std::string>(req.request_uri(), "pub", "WWW"),
+		  "TheProject.html");
 	assert_eq(req.version, Request::HTTP11);
 	assert_header(req, Request::Host, "www.w3.org");
 	assert_no_header(req, Request::Accept);
@@ -71,7 +71,8 @@ namespace req {
 	assert_(req.complete);
 	assert_(!req.broken);
 	assert_eq(req.method, Request::GET);
-	assert_eq(req.request_uri(), "/contentfile/imagecrop/1.7867487?cropid=f169w225");
+	assert_eq(match<std::string>(req.request_uri(), "contentfile", "imagecrop"),
+		  "1.7867487?cropid=f169w225");
 	assert_eq(req.version, Request::HTTP11);
 	assert_header(req, Request::Cache_Control, "no-cache");
 	assert_header(req, Request::Accept_Language, "en,sv;q=0.9");
@@ -124,12 +125,12 @@ namespace req {
 	void simple(TC)
 	{
 	    Request req;
-	    add(req, "GET foo HTTP/1.1");
+	    add(req, "GET /foo HTTP/1.1");
 	    add(req, "");
 	    assert_(req.complete);
 	    assert_(!req.broken);
 	    assert_eq(req.method, Request::GET);
-	    assert_eq(req.request_uri(), "foo");
+	    assert_eq(match<std::string>(req.request_uri()), "foo");
 	    assert_eq(req.version, Request::HTTP11);
 	}
 
@@ -137,12 +138,12 @@ namespace req {
 	{
 	    Request req;
 	    /* extension; the method is really case-sensitive [5.1.1] */
-	    add(req, "get foo Http/1.1");
+	    add(req, "get /foo Http/1.1");
 	    add(req, "");
 	    assert_(req.complete);
 	    assert_(!req.broken);
 	    assert_eq(req.method, Request::GET);
-	    assert_eq(req.request_uri(), "foo");
+	    assert_eq(match<std::string>(req.request_uri()), "foo");
 	    assert_eq(req.version, Request::HTTP11);
 	}
 
@@ -150,36 +151,49 @@ namespace req {
 	{
 	    Request req;
 	    /* extension; unclear to me if the Request-URI can contain spaces */
-	    add(req, "GET foo bar baz HTTP/1.1");
+	    add(req, "GET /foo bar baz HTTP/1.1");
 	    add(req, "");
 	    assert_(req.complete);
 	    assert_(!req.broken);
 	    assert_eq(req.method, Request::GET);
-	    assert_eq(req.request_uri(), "foo bar baz");
+	    assert_eq(match<std::string>(req.request_uri()), "foo bar baz");
+	    assert_eq(req.version, Request::HTTP11);
+	}
+
+	void percent(TC)
+	{
+	    Request req;
+	    /* extension; unclear to me if the Request-URI can contain spaces */
+	    add(req, "GET /foo%20bar%20baz HTTP/1.1");
+	    add(req, "");
+	    assert_(req.complete);
+	    assert_(!req.broken);
+	    assert_eq(req.method, Request::GET);
+	    assert_eq(match<std::string>(req.request_uri()), "foo bar baz");
 	    assert_eq(req.version, Request::HTTP11);
 	}
 
 	void unknown(TC)
 	{
 	    Request req;
-	    add(req, "FOO foo HTTP/1.2");
+	    add(req, "FOO /foo HTTP/1.2");
 	    add(req, "");
 	    assert_(req.complete);
 	    assert_(!req.broken);
 	    assert_eq(req.method, Request::UNKNOWN);
-	    assert_eq(req.request_uri(), "foo");
+	    assert_eq(match<std::string>(req.request_uri()), "foo");
 	    assert_eq(req.version, Request::UNKNOWN);
 	}
 
 	void spacing(TC)
 	{
 	    Request req;
-	    add(req, "  PUT   foo bar  HTTP/1.0  ");
+	    add(req, "  PUT   /foo  HTTP/1.0  ");
 	    add(req, "");
 	    assert_(req.complete);
 	    assert_(!req.broken);
 	    assert_eq(req.method, Request::PUT);
-	    assert_eq(req.request_uri(), "foo bar");
+	    assert_eq(match<std::string>(req.request_uri()), "foo");
 	    assert_eq(req.version, Request::HTTP10);
 	}
     }
@@ -189,7 +203,7 @@ namespace req {
 	void simple(TC)
 	{
 	    Request req;
-	    add(req, "GET foo HTTP/1.1");
+	    add(req, "GET /foo HTTP/1.1");
 	    add(req, "Accept-Encoding: gzip, deflate");
 	    add(req, "");
 	    assert_(req.complete); assert_(!req.broken);
@@ -200,7 +214,7 @@ namespace req {
 	void spacing(TC)
 	{
 	    Request req;
-	    add(req, "GET foo HTTP/1.1");
+	    add(req, "GET /foo HTTP/1.1");
 	    add(req, "Accept-Encoding :   gzip, deflate   ");
 	    add(req, "");
 	    assert_(req.complete); assert_(!req.broken);
@@ -211,7 +225,7 @@ namespace req {
 	void unknown(TC)
 	{
 	    Request req;
-	    add(req, "GET foo HTTP/1.1");
+	    add(req, "GET /foo HTTP/1.1");
 	    add(req, "Foo: bar");
 	    add(req, "Accept-Encoding: gzip, deflate");
 	    add(req, "Foo: bar");
@@ -224,7 +238,7 @@ namespace req {
 	void empty(TC)
 	{
 	    Request req;
-	    add(req, "GET foo HTTP/1.1");
+	    add(req, "GET /foo HTTP/1.1");
 	    add(req, "Accept:");
 	    add(req, "Accept-Encoding: gzip, deflate");
 	    add(req, "Accept:");
@@ -237,7 +251,7 @@ namespace req {
 	void nonheader(TC)
 	{
 	    Request req;
-	    add(req, "GET foo HTTP/1.1");
+	    add(req, "GET /foo HTTP/1.1");
 	    add(req, "Accept:");
 	    add(req, "Accept-Encoding = gzip, deflate");
 	    add(req, "Accept:");
@@ -249,7 +263,7 @@ namespace req {
 	void unknown_cont(TC)
 	{
 	    Request req;
-	    add(req, "GET foo HTTP/1.1");
+	    add(req, "GET /foo HTTP/1.1");
 	    add(req, "Foo: bar");
 	    add(req, "     baz");
 	    add(req, "Accept-Encoding: gzip, deflate");
@@ -264,7 +278,7 @@ namespace req {
 	void continuation(TC)
 	{
 	    Request req;
-	    add(req, "GET foo HTTP/1.1");
+	    add(req, "GET /foo HTTP/1.1");
 	    add(req, "Accept-Encoding: gzip,   ");
 	    add(req, "                 deflate ");
 	    add(req, "Connection:      Keep-Alive");
@@ -278,7 +292,7 @@ namespace req {
 	void pseudo_cont(TC)
 	{
 	    Request req;
-	    add(req, "GET foo HTTP/1.1");
+	    add(req, "GET /foo HTTP/1.1");
 	    /* probably illegal, but harmless to support */
 	    add(req, "  Accept-Encoding: gzip, deflate");
 	    add(req, "");
@@ -290,7 +304,7 @@ namespace req {
 	void combine(TC)
 	{
 	    Request req;
-	    add(req, "GET foo HTTP/1.1");
+	    add(req, "GET /foo HTTP/1.1");
 	    add(req, "Accept-Encoding: gzip");
 	    add(req, "Accept-Encoding: deflate");
 	    add(req, "Accept-Encoding: foo");
@@ -305,7 +319,7 @@ namespace req {
 	void combine_tricky(TC)
 	{
 	    Request req;
-	    add(req, "GET foo HTTP/1.1");
+	    add(req, "GET /foo HTTP/1.1");
 	    add(req, "Accept-Encoding: gzip");
 	    add(req, "Accept-Encoding: deflate");
 	    add(req, "Connection:      Keep-Alive");

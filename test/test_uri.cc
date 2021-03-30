@@ -18,7 +18,6 @@ namespace uri {
     {
 	const std::string s = "/foo/bar";
 	const Uri uri {s};
-	assert_true(uri.size());
 	assert_false(uri.empty());
     }
 

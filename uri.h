@@ -15,25 +15,26 @@
  *
  * Doesn't own its data (typically a Request does).
  *
- * Only what's needed for our purposes: assumed to be on the form
- * "/a/b/c/d/..." and we look at segments between slashes (or after
- * the last slash; an URI which ends with a slash ends with a segment
- * which happens to be empty).
+ * Only what's needed for our purposes: supports simple string matches
+ * and extraction like /foo/bar/T, where T is a user-defined type with
+ * a T(begin, end) constructor.
  *
- * Supports simple matches like /foo/bar/T, where T is a user-defined
- * type with a T(begin, end) constructor.
+ * While doing this, we don't expose any percent-encoding [RFC 3986, 2.1]:
+ * calling code sees "AC/DC", not "AC%2FDC".
+ *
+ * The URI is assumed to be on the form "/a/b/c/d/..." and we look at
+ * segments between slashes (or after the last slash; an URI which
+ * ends with a slash ends with a segment which happens to be empty).
+ *
  */
 class Uri {
 public:
     Uri(const char* a, const char* b);
     Uri(const std::string& s) : Uri{s.data(), s.data() + s.size()} {}
-    bool operator== (const std::string& s) const;
 
-    const char* begin() const { return a; }
-    const char*   end() const { return b; }
+    bool empty() const { return b==a; }
 
-    size_t size() const { return b - a; }
-    bool  empty() const { return !size(); }
+    void put(std::ostream& os) const;
 
     bool segments(size_t n) const { return n+1==vn; }
     bool segment(const char* a, const char* b, size_t n) const;
@@ -43,8 +44,8 @@ public:
     T make(size_t n) const
     {
 	if (n+1 >= vn) return nil<T>();
-	auto c = begin() + v[n] + 1;
-	auto d = begin() + v[n+1];
+	auto c = a + v[n] + 1;
+	auto d = a + v[n+1];
 	return T {c, d};
     }
 
