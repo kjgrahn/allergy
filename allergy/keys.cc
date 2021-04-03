@@ -4,6 +4,8 @@
  */
 #include "keys.h"
 
+#include <cstdlib>
+
 using allergy::Keys;
 
 
@@ -70,6 +72,39 @@ namespace {
 	std::swap(bits, done);
 	bits.insert(bits.end(), i, v.end());
     }
+
+    bool isspace(char ch)
+    {
+	return std::isspace(static_cast<unsigned char>(ch));
+    }
+
+    /**
+     * Squash sequences of whitespace in 's', into a space,
+     * or a newline if there were newlines in the sequence.
+     */
+    std::string squash(const std::string& s0)
+    {
+	auto max = [] (char a, char b) {
+	    if (a=='\n') return a;
+	    if (b=='\n') return b;
+	    return ' ';
+	};
+
+	std::string s;
+
+	char sp = 0;
+	for (const char ch: s0) {
+	    if (isspace(ch)) {
+		sp = max(sp, ch);
+	    }
+	    else {
+		if (sp && s.size()) s.push_back(sp);
+		sp = 0;
+		s.push_back(ch);
+	    }
+	}
+	return s;
+    }
 }
 
 
@@ -79,7 +114,9 @@ Keys::Keys(const std::string& str)
     const char* const q = p + str.size();
     TextStack stack;
     for (char ch: str) stack.put(ch);
-    stack.report(s, bits);
+    std::string s0 = s;
+    stack.report(s0, bits);
+    s = squash(s0);
 }
 
 Keys::const_iterator Keys::begin() const

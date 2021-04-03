@@ -56,7 +56,10 @@ namespace allergy {
 	    Keys k("foo \n"
 		   " bar \n"
 		   "baz\n");
-	    eq(k, "foo \n bar \nbaz\n");
+	    eq(k,
+	       "foo\n"
+	       "bar\n"
+	       "baz");
 	}
 
 	namespace keyed {
@@ -167,8 +170,22 @@ namespace allergy {
 		    const Keys k("foo\n"
 				 "{bar} {baz}\n"
 				 "{bat}\n");
-		    eq(k, "foo\n", "bar/baz/bat");
+		    eq(k, "foo", "bar/baz/bat");
 		}
+
+		void f(TC)
+		{
+		    const Keys k("foo {bar}\n"
+				 " {baz} bat\n");
+		    eq(k, "foo\nbat", "bar/baz");
+		}
+
+		void g(TC)
+		{
+		    const Keys k("{ b ar} foo");
+		    eq(k, "foo", " b ar");
+		}
+
 	    }
 	}
     }

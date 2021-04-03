@@ -12,6 +12,8 @@
 #include "timestamp.h"
 #include "keyword.h"
 
+#include "../join.h"
+
 #include <string>
 #include <vector>
 #include <set>
@@ -50,14 +52,12 @@ namespace allergy {
 	: filename(filename),
 	  timestamp(timestamp)
     {
-	for(It i=begin; i!=end; i++) {
-	    const Keys keys(*i);
-	    if(i!=begin) text += '\n';
-	    text += keys.str();
-	    for(const std::string& key : keys) {
-		keywords.emplace(key);
-	    }
+	const Keys keys {util::join("\n", begin, end)};
+	text = keys.str();
+	for(const std::string& key : keys) {
+	    keywords.emplace(key);
 	}
+
 	if (text=="ibid" && prev) {
 	    text = prev->text;
 	    keywords = prev->keywords;

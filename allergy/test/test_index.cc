@@ -168,8 +168,8 @@ namespace allergy {
 			 "2020-05-16_0262.jpg",
 			 "2020-05-16 14:11",
 			 "foo\n"
-			 " bar\n"
-			 " baz");
+			 "bar\n"
+			 "baz");
 	    assert_end(it, ix);
 	}
 

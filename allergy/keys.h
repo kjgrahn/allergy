@@ -21,7 +21,12 @@ namespace allergy {
      *
      * Curly {keys} do not nest and are not included in the main text.
      * Instead, a sequence of {keys} {and} {whitespace} is replaced
-     * by a space, or a newline if there was one in the sequence.
+     * by a space, or a newline if there was one in the sequence,
+     * or nothing at the start or end of the string.
+     *
+     *    In fact, for now all sequences of whitespace are squashed
+     *    from the main text. When the text will end up on a HTML
+     *    page, non-verbatim, this doesn't make much of a difference.
      *
      * The ordering of keys is undefined.
      */
