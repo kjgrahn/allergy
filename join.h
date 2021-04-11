@@ -9,6 +9,7 @@
 
 #include <string>
 #include <iostream>
+#include <sstream>
 #include <vector>
 
 namespace util {
@@ -30,6 +31,15 @@ namespace util {
 	    os << *i;
 	}
 	return os;
+    }
+
+    template <class Iter>
+    std::string join(const char * const delim,
+		     const Iter first, const Iter last)
+    {
+	std::ostringstream oss;
+	join_to(oss, delim, first, last);
+	return oss.str();
     }
 }
 
