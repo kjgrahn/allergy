@@ -163,7 +163,6 @@ namespace req {
 	void percent(TC)
 	{
 	    Request req;
-	    /* extension; unclear to me if the Request-URI can contain spaces */
 	    add(req, "GET /foo%20bar%20baz HTTP/1.1");
 	    add(req, "");
 	    assert_(req.complete);
