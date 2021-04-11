@@ -31,7 +31,7 @@ namespace uri {
 	    std::string s;
 	};
 
-	std::ostream& operator<< (std::ostream& os, const Seg& val) { return os << val; }
+	std::ostream& operator<< (std::ostream& os, const Seg& val) { return os << val.s; }
 
 	void assert_seg(const Uri& uri, const char* seg)
 	{
