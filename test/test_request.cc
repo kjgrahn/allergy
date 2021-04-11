@@ -137,15 +137,14 @@ namespace req {
 	    assert_eq(req.version, Property::HTTP11);
 	}
 
-	void case_sens(TC)
+	void case_sensitive(TC)
 	{
 	    Request req;
-	    /* extension; the method is really case-sensitive [5.1.1] */
 	    add(req, "get /foo Http/1.1");
 	    add(req, "");
 	    assert_true(req.complete);
 	    assert_false(req.broken);
-	    assert_eq(req.method, Property::GET);
+	    assert_eq(req.method, Property::UNKNOWN);
 	    assert_eq(match<std::string>(req.request_uri()), "foo");
 	    assert_eq(req.version, Property::HTTP11);
 	}
@@ -207,6 +206,17 @@ namespace req {
 	    Request req;
 	    add(req, "GET /foo HTTP/1.1");
 	    add(req, "Accept-Encoding: gzip, deflate");
+	    add(req, "");
+	    assert_true(req.complete); assert_false(req.broken);
+
+	    assert_header(req, Property::Accept_Encoding, "gzip, deflate");
+	}
+
+	void case_insensitive(TC)
+	{
+	    Request req;
+	    add(req, "GET /foo HTTP/1.1");
+	    add(req, "ACCEPT-ENCODING: gzip, deflate");
 	    add(req, "");
 	    assert_true(req.complete); assert_false(req.broken);
 

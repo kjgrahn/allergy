@@ -5,6 +5,7 @@
 #include "names.h"
 
 #include <sstream>
+#include <algorithm>
 
 namespace {
 
@@ -75,11 +76,52 @@ namespace {
 	Property::Content_Range,
 	Property::Content_Type,
     };
+
+    const Property case_sensitive[] {
+	Property::OPTIONS,
+	Property::GET,
+	Property::HEAD,
+	Property::POST,
+	Property::PUT,
+	Property::DELETE,
+	Property::TRACE,
+	Property::CONNECT,
+    };
+
+    bool is_case_sensitive(Property prop)
+    {
+	auto it = std::find(std::begin(case_sensitive),
+			    std::end(case_sensitive),
+			    prop);
+	return it != std::end(case_sensitive);
+    }
+
+    /**
+     * ASCII lowercase.  I don't want to use tolower(3) because it
+     * involves the locale fiasco.
+     */
+    char tolower(const char ch)
+    {
+	auto in = [ch] (char a, char b) {
+	    if (ch < a) return false;
+	    if (b < ch) return false;
+	    return true;
+	};
+
+	if (in('A', 'Z')) return ch - 'A' + 'a';
+	return ch;
+    }
+
+    std::string tolower(std::string s)
+    {
+	for (char& c: s) c = tolower(c);
+	return s;
+    }
 }
 
 
 /**
- * Look up [a..b), case-insensitively (XXX not implemented yet).
+ * Look up [a..b), case-insensitively when needed.
  * If the lookup fails UNKNOWN is returned.
  */
 Property Names::lookup(const char* a, const char* b) const
@@ -87,11 +129,11 @@ Property Names::lookup(const char* a, const char* b) const
     const std::string s(a, b);
     auto i = map.find(s);
     if(i==map.end()) {
-	return Property::UNKNOWN;
+	i = map.find(tolower(s));
+	if(i==map.end()) return Property::UNKNOWN;
     }
-    else {
-	return i->second;
-    }
+
+    return i->second;
 }
 
 
@@ -102,7 +144,12 @@ Names::Names()
     for (const Property prop : init) {
 	oss.str("");
 	oss << prop;
-	map[oss.str()] = prop;
+	const auto s = oss.str();
+	map[s] = prop;
+
+	if (is_case_sensitive(prop)) continue;
+
+	map[tolower(s)] = prop;
     }
 }
 

@@ -89,12 +89,9 @@ void Request::add(const char* a, const char* b)
 }
 
 
-/**
- * A whitespace-only line, after at least first_line().
- */
 void Request::first_line(const char* a, const char* const b)
 {
-    /* \s* (\S+) \s+ (.+) \s+ http/(\S+) \s* */
+    /* [5.1] Request-Line = Method SP Request-URI SP HTTP-Version CRLF */
     a = ws(a, b);
     const char* const meth = a;
     a = non_ws(a, b);
