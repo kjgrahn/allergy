@@ -1,6 +1,4 @@
-/* -*- c++ -*-
- *
- * Copyright (c) 2012, 2013 Jörgen Grahn
+/* Copyright (c) 2012, 2013, 2021 Jörgen Grahn
  * All rights reserved.
  *
  */
@@ -44,7 +42,7 @@
 class Request {
 public:
 
-    enum Property {
+    enum class Property {
 	UNKNOWN,
 	END,
 
@@ -103,8 +101,6 @@ public:
 	Content_Range,
 	Content_Type
     };
-    using Method = Property;
-    using HTTPVersion = Property;
 
     Request();
 
@@ -112,8 +108,8 @@ public:
 
     bool complete;
     bool broken;
-    Method method;
-    HTTPVersion version;
+    Property method;
+    Property version;
 
     Blob header(Property prop) const;
     Uri request_uri() const;
@@ -143,6 +139,6 @@ inline
 std::ostream& operator<< (std::ostream& os, const Request& val) {
     return val.put(os);
 }
-std::ostream& operator<< (std::ostream& os, const Request::Property& val);
+std::ostream& operator<< (std::ostream& os, Request::Property val);
 
 #endif

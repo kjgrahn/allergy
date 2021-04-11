@@ -1,4 +1,4 @@
-/* Copyright (c) 2013 Jörgen Grahn
+/* Copyright (c) 2013, 2021 Jörgen Grahn
  * All rights reserved.
  *
  */
@@ -56,21 +56,21 @@ namespace {
 
     using Parse::trimr;
 
-    Names names;
+    const Names names;
 }
 
 
 Request::Request()
     : complete(false),
       broken(false),
-      method(END),
-      version(UNKNOWN)
+      method(Property::END),
+      version(Property::UNKNOWN)
 {}
 
 
 void Request::add(const char* a, const char* b)
 {
-    if(method==END) {
+    if(method==Property::END) {
 	first_line(a, b);
     }
     else {
@@ -114,7 +114,7 @@ void Request::first_line(const char* a, const char* const b)
     }
 
     version = names.lookup(q, non_ws(q, b));
-    insert(Request_URI, uri, non_ws(p, b));
+    insert(Property::Request_URI, uri, non_ws(p, b));
 }
 
 
@@ -177,7 +177,7 @@ void Request::end_line(const char*, const char* const)
 {
     complete = true;
     broken = broken || v.size() > std::numeric_limits<unsigned short>::max();
-    insert(END, 0, 0);
+    insert(Property::END, 0, 0);
 }
 
 

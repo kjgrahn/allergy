@@ -1,4 +1,4 @@
-/* Copyright (c) 2017 Jörgen Grahn
+/* Copyright (c) 2017, 2021 Jörgen Grahn
  * All rights reserved.
  *
  */
@@ -90,7 +90,7 @@ bool Content::valid() const
 
 Response* Content::response_of(const Request& req, const timespec& t) const
 {
-    if(req.method != Request::Method::GET) return resp501(t, lib);
+    if(req.method != Request::Property::GET) return resp501(t, lib);
 
     const auto& host = req.header(Request::Property::Host);
     if(wrong_host(host)) return resp400(t, lib);

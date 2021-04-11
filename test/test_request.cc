@@ -9,13 +9,15 @@
 
 namespace {
 
+    using Property = Request::Property;
+
     void add(Request& req, const std::string& s)
     {
 	const char* p = s.c_str();
 	req.add(p, p+s.size());
     }
 
-    void assert_header(const Request& req, Request::Property prop,
+    void assert_header(const Request& req, Property prop,
 		       const std::string& val)
     {
 	const Blob v = req.header(prop);
@@ -23,7 +25,7 @@ namespace {
 	orchis::assert_eq(std::string(v.begin(), v.end()), val);
     }
 
-    void assert_no_header(const Request& req, Request::Property prop)
+    void assert_no_header(const Request& req, Property prop)
     {
 	const Blob v = req.header(prop);
 	orchis::assert_false(v);
@@ -47,12 +49,12 @@ namespace req {
 
 	assert_true(req.complete);
 	assert_false(req.broken);
-	assert_eq(req.method, Request::GET);
+	assert_eq(req.method, Property::GET);
 	assert_eq(match<std::string>(req.request_uri(), "pub", "WWW"),
 		  "TheProject.html");
-	assert_eq(req.version, Request::HTTP11);
-	assert_header(req, Request::Host, "www.w3.org");
-	assert_no_header(req, Request::Accept);
+	assert_eq(req.version, Property::HTTP11);
+	assert_header(req, Property::Host, "www.w3.org");
+	assert_no_header(req, Property::Accept);
     }
 
     void opera(TC)
@@ -71,13 +73,13 @@ namespace req {
 
 	assert_true(req.complete);
 	assert_false(req.broken);
-	assert_eq(req.method, Request::GET);
+	assert_eq(req.method, Property::GET);
 	assert_eq(match<std::string>(req.request_uri(), "contentfile", "imagecrop"),
 		  "1.7867487?cropid=f169w225");
-	assert_eq(req.version, Request::HTTP11);
-	assert_header(req, Request::Cache_Control, "no-cache");
-	assert_header(req, Request::Accept_Language, "en,sv;q=0.9");
-	assert_header(req, Request::Connection, "Keep-Alive");
+	assert_eq(req.version, Property::HTTP11);
+	assert_header(req, Property::Cache_Control, "no-cache");
+	assert_header(req, Property::Accept_Language, "en,sv;q=0.9");
+	assert_header(req, Property::Connection, "Keep-Alive");
     }
 
     namespace overflow {
@@ -130,9 +132,9 @@ namespace req {
 	    add(req, "");
 	    assert_true(req.complete);
 	    assert_false(req.broken);
-	    assert_eq(req.method, Request::GET);
+	    assert_eq(req.method, Property::GET);
 	    assert_eq(match<std::string>(req.request_uri()), "foo");
-	    assert_eq(req.version, Request::HTTP11);
+	    assert_eq(req.version, Property::HTTP11);
 	}
 
 	void case_sens(TC)
@@ -143,9 +145,9 @@ namespace req {
 	    add(req, "");
 	    assert_true(req.complete);
 	    assert_false(req.broken);
-	    assert_eq(req.method, Request::GET);
+	    assert_eq(req.method, Property::GET);
 	    assert_eq(match<std::string>(req.request_uri()), "foo");
-	    assert_eq(req.version, Request::HTTP11);
+	    assert_eq(req.version, Property::HTTP11);
 	}
 
 	void uri(TC)
@@ -156,9 +158,9 @@ namespace req {
 	    add(req, "");
 	    assert_true(req.complete);
 	    assert_false(req.broken);
-	    assert_eq(req.method, Request::GET);
+	    assert_eq(req.method, Property::GET);
 	    assert_eq(match<std::string>(req.request_uri()), "foo bar baz");
-	    assert_eq(req.version, Request::HTTP11);
+	    assert_eq(req.version, Property::HTTP11);
 	}
 
 	void percent(TC)
@@ -168,9 +170,9 @@ namespace req {
 	    add(req, "");
 	    assert_true(req.complete);
 	    assert_false(req.broken);
-	    assert_eq(req.method, Request::GET);
+	    assert_eq(req.method, Property::GET);
 	    assert_eq(match<std::string>(req.request_uri()), "foo bar baz");
-	    assert_eq(req.version, Request::HTTP11);
+	    assert_eq(req.version, Property::HTTP11);
 	}
 
 	void unknown(TC)
@@ -180,9 +182,9 @@ namespace req {
 	    add(req, "");
 	    assert_true(req.complete);
 	    assert_false(req.broken);
-	    assert_eq(req.method, Request::UNKNOWN);
+	    assert_eq(req.method, Property::UNKNOWN);
 	    assert_eq(match<std::string>(req.request_uri()), "foo");
-	    assert_eq(req.version, Request::UNKNOWN);
+	    assert_eq(req.version, Property::UNKNOWN);
 	}
 
 	void spacing(TC)
@@ -192,9 +194,9 @@ namespace req {
 	    add(req, "");
 	    assert_true(req.complete);
 	    assert_false(req.broken);
-	    assert_eq(req.method, Request::PUT);
+	    assert_eq(req.method, Property::PUT);
 	    assert_eq(match<std::string>(req.request_uri()), "foo");
-	    assert_eq(req.version, Request::HTTP10);
+	    assert_eq(req.version, Property::HTTP10);
 	}
     }
 
@@ -208,7 +210,7 @@ namespace req {
 	    add(req, "");
 	    assert_true(req.complete); assert_false(req.broken);
 
-	    assert_header(req, Request::Accept_Encoding, "gzip, deflate");
+	    assert_header(req, Property::Accept_Encoding, "gzip, deflate");
 	}
 
 	void spacing(TC)
@@ -219,7 +221,7 @@ namespace req {
 	    add(req, "");
 	    assert_true(req.complete); assert_false(req.broken);
 
-	    assert_header(req, Request::Accept_Encoding, "gzip, deflate");
+	    assert_header(req, Property::Accept_Encoding, "gzip, deflate");
 	}
 
 	void unknown(TC)
@@ -232,7 +234,7 @@ namespace req {
 	    add(req, "");
 	    assert_true(req.complete); assert_false(req.broken);
 
-	    assert_header(req, Request::Accept_Encoding, "gzip, deflate");
+	    assert_header(req, Property::Accept_Encoding, "gzip, deflate");
 	}
 
 	void empty(TC)
@@ -245,7 +247,7 @@ namespace req {
 	    add(req, "");
 	    assert_true(req.complete); assert_false(req.broken);
 
-	    assert_header(req, Request::Accept_Encoding, "gzip, deflate");
+	    assert_header(req, Property::Accept_Encoding, "gzip, deflate");
 	}
 
 	void nonheader(TC)
@@ -272,7 +274,7 @@ namespace req {
 	    add(req, "");
 	    assert_true(req.complete); assert_false(req.broken);
 
-	    assert_header(req, Request::Accept_Encoding, "gzip, deflate");
+	    assert_header(req, Property::Accept_Encoding, "gzip, deflate");
 	}
 
 	void continuation(TC)
@@ -285,8 +287,8 @@ namespace req {
 	    add(req, "");
 	    assert_true(req.complete); assert_false(req.broken);
 
-	    assert_header(req, Request::Accept_Encoding, "gzip, deflate");
-	    assert_header(req, Request::Connection, "Keep-Alive");
+	    assert_header(req, Property::Accept_Encoding, "gzip, deflate");
+	    assert_header(req, Property::Connection, "Keep-Alive");
 	}
 
 	void pseudo_cont(TC)
@@ -298,7 +300,7 @@ namespace req {
 	    add(req, "");
 	    assert_true(req.complete); assert_false(req.broken);
 
-	    assert_header(req, Request::Accept_Encoding, "gzip, deflate");
+	    assert_header(req, Property::Accept_Encoding, "gzip, deflate");
 	}
 
 	void combine(TC)
@@ -312,8 +314,8 @@ namespace req {
 	    add(req, "");
 	    assert_true(req.complete); assert_false(req.broken);
 
-	    assert_header(req, Request::Connection, "Keep-Alive");
-	    assert_header(req, Request::Accept_Encoding, "gzip, deflate, foo");
+	    assert_header(req, Property::Connection, "Keep-Alive");
+	    assert_header(req, Property::Accept_Encoding, "gzip, deflate, foo");
 	}
 
 	void combine_tricky(TC)
@@ -327,9 +329,9 @@ namespace req {
 	    add(req, "");
 	    assert_true(req.complete); assert_false(req.broken);
 
-	    assert_header(req, Request::Connection, "Keep-Alive");
+	    assert_header(req, Property::Connection, "Keep-Alive");
 	    /* documented deviation from the RFC */
-	    assert_header(req, Request::Accept_Encoding, "gzip, deflate");
+	    assert_header(req, Property::Accept_Encoding, "gzip, deflate");
 	}
     }
 }
