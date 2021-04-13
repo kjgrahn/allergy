@@ -2,7 +2,8 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<link rel="stylesheet" href="css" type="text/css">
+<link rel="stylesheet" href="/css" type="text/css">
+<link rel='icon'     href='/icon' type='image/svg+xml'>
 <title>404 Not Found</title>
 </head>
 

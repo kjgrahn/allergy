@@ -86,7 +86,8 @@ namespace {
 	    "<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>\n"
 	    "<meta http-equiv='Content-Language' content='sv'>\n"
 	    "<link rev='made'       href='mailto:grahn@snipabacken.se'>\n"
-	    "<link rel='stylesheet' href='/css' type='text/css'>\n";
+	    "<link rel='stylesheet' href='/css'  type='text/css'>\n"
+	    "<link rel='icon'       href='/icon' type='image/svg+xml'>\n";
 	if (prev.size()) {
 	    os << "<link rel='prev' href='" << prev << "'>\n";
 	}

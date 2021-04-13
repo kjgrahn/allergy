@@ -117,7 +117,7 @@ Response* Content::response_of(const Request& req, const timespec& t) const
 
     if (match<bool>(uri, "css"))         return css(t);
     if (match<bool>(uri, "robots.txt"))  return robots(t);
-    if (match<bool>(uri, "favicon.ico")) return favicon(t);
+    if (match<bool>(uri, "icon"))        return favicon(t);
 
     return resp404(t, lib);
 }
@@ -196,4 +196,4 @@ Response* Content::keyword(const timespec& t, const allergy::Key& key ) const
 
 Response* Content::robots(const timespec& t) const { return open<response::File>(t, lib, lib, "robots.txt", "text/plain"); }
 Response* Content::css(const timespec& t) const { return open<response::File>(t, lib, lib, "css", "text/css"); }
-Response* Content::favicon(const timespec& t) const { return resp404(t, lib); }
+Response* Content::favicon(const timespec& t) const { return open<response::File>(t, lib, lib, "icon", "image/svg+xml"); }
