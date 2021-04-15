@@ -41,12 +41,12 @@ namespace {
     }
 
     /**
-     * fd = open(root, T) and then R(fd), or a response::Error if the
+     * fd = open(root, T) and then R(fd), or a thrown Status<nnn> if the
      * file cannot be opened.
      */
     template <class R, class T, class ... Args>
     Response* open(const timespec& t,
-		   const Root& root, const Root& lib,
+		   const Root& root,
 		   const T& path, Args&& ... argv)
     {
 	int fd = open(root, path);
@@ -54,9 +54,9 @@ namespace {
 	    case EACCES: // don't give away that the file exists
 	    case ENOENT:
 	    case ENOTDIR:
-		return resp404(t, lib);
+		throw Status<404> {};
 	    default:
-		return resp500(t, lib);
+		throw Status<500> {};
 	}
 	return new R{t, fd, argv ...};
     }
@@ -97,27 +97,35 @@ Response* Content::response_of(const Request& req, const timespec& t) const
 
     const auto& uri = req.request_uri();
 
-    if (match<bool>(uri, ""))           return frontpage(t);
-    if (match<bool>(uri, "index.html")) return frontpage(t);
+    try {
+	if (match<bool>(uri, ""))           return frontpage(t);
+	if (match<bool>(uri, "index.html")) return frontpage(t);
 
-    if (match<bool>(uri, "by-date")) return by_date(t);
+	if (match<bool>(uri, "by-date")) return by_date(t);
 
-    if (auto year  = match<allergy::Year>(uri))  return calendar(t, year);
-    if (auto month = match<allergy::Month>(uri)) return calendar(t, month);
-    if (auto day   = match<allergy::Day>(uri))   return calendar(t, day);
+	if (auto year  = match<allergy::Year>(uri))  return calendar(t, year);
+	if (auto month = match<allergy::Month>(uri)) return calendar(t, month);
+	if (auto day   = match<allergy::Day>(uri))   return calendar(t, day);
 
-    if (auto name = match<allergy::Photo>(uri))          return photo(t, name);
-    if (auto name = match<allergy::Photo>(uri, "thumb")) return thumbnail(t, name);
+	if (auto name = match<allergy::Photo>(uri))          return photo(t, name);
+	if (auto name = match<allergy::Photo>(uri, "thumb")) return thumbnail(t, name);
 
-    if (match<bool>(uri, "keywords")) return redirect(t, "/key/");
-    if (match<bool>(uri, "key"))      return redirect(t, "/key/");
-    if (match<bool>(uri, "key", ""))  return keywords(t);
+	if (match<bool>(uri, "keywords")) return redirect(t, "/key/");
+	if (match<bool>(uri, "key"))      return redirect(t, "/key/");
+	if (match<bool>(uri, "key", ""))  return keywords(t);
 
-    if (auto key = match<allergy::Key>(uri, "key")) return keyword(t, key);
+	if (auto key = match<allergy::Key>(uri, "key")) return keyword(t, key);
 
-    if (match<bool>(uri, "css"))         return css(t);
-    if (match<bool>(uri, "robots.txt"))  return robots(t);
-    if (match<bool>(uri, "icon"))        return favicon(t);
+	if (match<bool>(uri, "css"))         return css(t);
+	if (match<bool>(uri, "robots.txt"))  return robots(t);
+	if (match<bool>(uri, "icon"))        return favicon(t);
+    }
+    catch (Status<404>) {
+	return resp404(t, lib);
+    }
+    catch (Status<500>) {
+	return resp500(t, lib);
+    }
 
     return resp404(t, lib);
 }
@@ -157,9 +165,9 @@ Response* Content::redirect(const timespec& t, const std::string&) const { retur
 
 Response* Content::photo(const timespec& t, const allergy::Photo& p) const
 {
-    if (!p.valid()) return resp404(t, lib);
-    if (!index.has(p)) return resp404(t, lib);
-    return open<response::Image>(t, root, lib, p);
+    if (!p.valid()) throw Status<404> {};
+    if (!index.has(p)) throw Status<404> {};
+    return open<response::Image>(t, root, p);
 }
 
 /**
@@ -172,19 +180,19 @@ Response* Content::photo(const timespec& t, const allergy::Photo& p) const
  */
 Response* Content::thumbnail(const timespec& t, const allergy::Photo& p) const
 {
-    if (!p.valid()) return resp404(t, lib);
-    if (!index.has(p)) return resp404(t, lib);
+    if (!p.valid()) throw Status<404> {};
+    if (!index.has(p)) throw Status<404> {};
 
     const int fd = open(thumb, p);
     if (fd==-1 && errno==ENOENT) {
 	if (!allergy::thumbnail(root, thumb, p)) {
 	    Warning(Syslog::log) << p << ": failed to thumbnail";
-	    return resp404(t, lib);
+	    throw Status<404> {};
 	}
 	Info(Syslog::log) << p << ": thumbnailed";
-	return open<response::Image>(t, thumb, lib, p);
+	return open<response::Image>(t, thumb, p);
     }
-    return open<response::Image>(t, thumb, lib, fd);
+    return open<response::Image>(t, thumb, fd);
 }
 
 Response* Content::keywords(const timespec& t) const { return resp404(t, lib); }
@@ -194,6 +202,6 @@ Response* Content::keyword(const timespec& t, const allergy::Key& key ) const
     return generated<allergy::page::Keyword>(t, index, key);
 }
 
-Response* Content::robots(const timespec& t) const { return open<response::File>(t, lib, lib, "robots.txt", "text/plain"); }
-Response* Content::css(const timespec& t) const { return open<response::File>(t, lib, lib, "css", "text/css"); }
-Response* Content::favicon(const timespec& t) const { return open<response::File>(t, lib, lib, "icon", "image/svg+xml"); }
+Response* Content::robots(const timespec& t) const { return open<response::File>(t, lib, "robots.txt", "text/plain"); }
+Response* Content::css(const timespec& t) const { return open<response::File>(t, lib, "css", "text/css"); }
+Response* Content::favicon(const timespec& t) const { return open<response::File>(t, lib,  "icon", "image/svg+xml"); }
