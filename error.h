@@ -26,7 +26,7 @@ std::ostream& operator<< (std::ostream& os, const SessionError& val)
 struct WriteError final: public SessionError {
     explicit WriteError(int err = 0) : err(err) {}
     int err;
-    void put(std::ostream& os) const;
+    void put(std::ostream& os) const override;
 };
 
 /**
@@ -36,7 +36,7 @@ struct WriteError final: public SessionError {
 struct EntityError final: public SessionError {
     explicit EntityError(int err = 0) : err(err) {}
     int err;
-    void put(std::ostream& os) const;
+    void put(std::ostream& os) const override;
 };
 
 
