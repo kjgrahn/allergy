@@ -6,6 +6,7 @@
 
 #include "index.h"
 #include "calendar.h"
+#include "../status.h"
 
 #include <iostream>
 #include <cstdio>
@@ -256,6 +257,13 @@ namespace {
     }
 }
 
+allergy::page::Month::Month(const allergy::Index& ix, allergy::Month month)
+    : ee {ix.in(month)},
+      month {month}
+{
+    if (ee.empty()) throw Status<404> {};
+}
+
 allergy::page::Month::Chunk allergy::page::Month::begin() const
 {
     return {20, ee};
@@ -280,6 +288,13 @@ void allergy::page::Month::put(std::ostream& os, const Chunk chunk) const
     }
 }
 
+allergy::page::Day::Day(const allergy::Index& ix, allergy::Day day)
+    : ee {ix.on(day)},
+      day {day}
+{
+    if (ee.empty()) throw Status<404> {};
+}
+
 allergy::page::Day::Chunk allergy::page::Day::begin() const
 {
     return {20, ee};
@@ -300,6 +315,13 @@ void allergy::page::Day::put(std::ostream& os, const Chunk chunk) const
     if (chunk.last()) {
 	epilogue(os << "</div>\n");
     }
+}
+
+allergy::page::Keyword::Keyword(const allergy::Index& ix, const allergy::Key& key)
+    : ee {ix.key(key)},
+      key {key}
+{
+    if (ee.empty()) throw Status<404> {};
 }
 
 allergy::page::Keyword::Chunk allergy::page::Keyword::begin() const

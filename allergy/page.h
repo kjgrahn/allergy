@@ -55,10 +55,8 @@ namespace allergy {
 	 */
 	class Month {
 	public:
-	    Month(const allergy::Index& ix, allergy::Month month)
-		: ee {ix.in(month)},
-		  month {month}
-	    {}
+	    Month(const allergy::Index& ix, allergy::Month month);
+
 	    using Chunk = page::container::Chunk;
 
 	    Chunk begin() const;
@@ -74,10 +72,8 @@ namespace allergy {
 	 */
 	class Day {
 	public:
-	    Day(const allergy::Index& ix, allergy::Day day)
-		: ee {ix.on(day)},
-		  day {day}
-	    {}
+	    Day(const allergy::Index& ix, allergy::Day day);
+
 	    using Chunk = page::container::Chunk;
 
 	    Chunk begin() const;
@@ -93,10 +89,8 @@ namespace allergy {
 	 */
 	class Keyword {
 	public:
-	    Keyword(const allergy::Index& ix, const allergy::Key& key)
-		: ee {ix.key(key)},
-		  key {key}
-	    {}
+	    Keyword(const allergy::Index& ix, const allergy::Key& key);
+
 	    using Chunk = page::container::Chunk;
 
 	    Chunk begin() const;
