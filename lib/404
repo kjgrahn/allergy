@@ -8,6 +8,8 @@
 </head>
 
 <body>
-<p>404 Not Found
+<p>
+<img src='/icon' width='50' height='50'>
+404 Not Found
 </body>
 </html>
