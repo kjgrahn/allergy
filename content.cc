@@ -110,6 +110,9 @@ Response* Content::response_of(const Request& req, const timespec& t) const
 	if (auto name = match<allergy::Photo>(uri))          return photo(t, name);
 	if (auto name = match<allergy::Photo>(uri, "thumb")) return thumbnail(t, name);
 
+	const auto ps = match<allergy::Day, allergy::Serial>(uri);
+	if (ps.first) return photopage(t, ps.first, ps.second);
+
 	if (match<bool>(uri, "keywords")) return redirect(t, "/key/");
 	if (match<bool>(uri, "key"))      return redirect(t, "/key/");
 	if (match<bool>(uri, "key", ""))  return keywords(t);
@@ -193,6 +196,13 @@ Response* Content::thumbnail(const timespec& t, const allergy::Photo& p) const
 	return open<response::Image>(t, thumb, p);
     }
     return open<response::Image>(t, thumb, fd);
+}
+
+Response* Content::photopage(const timespec& t,
+			     const allergy::Day& day,
+			     const allergy::Serial& serial) const
+{
+    return generated<allergy::page::Photo>(t, index, day, serial);
 }
 
 Response* Content::keywords(const timespec& t) const { return resp404(t, lib); }

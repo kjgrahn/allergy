@@ -56,6 +56,8 @@ private:
     Response* redirect(const timespec& t, const std::string& s) const;
     Response* photo(const timespec& t, const allergy::Photo& p) const;
     Response* thumbnail(const timespec& t, const allergy::Photo& p) const;
+    Response* photopage(const timespec& t, const allergy::Day&,
+			const allergy::Serial&) const;
     Response* keywords(const timespec& t) const;
     Response* keyword(const timespec& t, const allergy::Key&) const;
     Response* robots(const timespec& t) const;

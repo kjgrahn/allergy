@@ -49,6 +49,17 @@ div.gallery div img {
     max-height: 100%
 }
 
+body.photo ul {
+    width: 40em;
+    margin: 5px;
+    padding: 1ex;
+    list-style-type: none;
+    border: 1px solid black
+}
+img.photo {
+    width: 90%
+}
+
 div.badges {
   clear: left;
   margin-top: 10px;

@@ -146,5 +146,41 @@ namespace allergy {
 		assert_contains(html, "</html>");
 	    }
 	}
+
+	namespace photo {
+
+	    void simple(TC)
+	    {
+		std::stringstream ss;
+		ss << "2021-04-18_0155.jpg\n"
+		      "2021-04-18 14:49:08\n"
+		      "blommande [vide], [Toltorpsdalen]\n"
+		      "[Rosen & Sons]\n"
+		      "{Salix}\n"
+		      "\n"
+		      "2021-04-18_0156.jpg\n"
+		      "2021-04-18 14:49:09\n"
+		      "ibid\n" ;
+		const helper::Index ix {ss};
+		const page::Photo page {ix.index, {2021, 4, 18}, Serial{"0156"}};
+
+		std::ostringstream os;
+
+		page::Photo::Chunk chunk = page.begin();
+		while (!chunk.end()) {
+		    page.put(os, chunk++);
+		}
+
+		const auto html = os.str();
+		assert_contains(html, "<ul>");
+		assert_contains(html, "<li>", 4);
+		assert_contains(html, "<img class='photo'");
+		assert_contains(html, "vide");
+		assert_contains(html, "Toltorpsdalen");
+		assert_contains(html, "Rosen &amp; Sons");
+
+		assert_contains(html, "</html>");
+	    }
+	}
     }
 }

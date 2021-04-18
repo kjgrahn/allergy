@@ -34,6 +34,7 @@ namespace allergy {
 
 	std::ostream& put_pretty(std::ostream& os) const;
 	std::ostream& put(std::ostream& os) const;
+	std::ostream& put_short(std::ostream& os) const;
 
     private:
 	std::array<unsigned short, 3> val = {0, 0, 0};

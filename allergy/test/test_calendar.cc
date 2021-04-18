@@ -180,6 +180,15 @@ namespace allergy {
 			      "<a href='/2021-04'>4</a>."
 			      "<a href='/2021'>2021</a>");
 	}
+
+	void not_pretty(TC)
+	{
+	    std::ostringstream oss;
+	    const Day val{"2021-04-20"};
+	    val.put_short(oss);
+
+	    orchis::assert_eq(oss.str(), "210420");
+	}
     }
 
     namespace cal {

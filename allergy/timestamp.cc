@@ -54,7 +54,7 @@ Timestamp::Timestamp(const std::string& s)
     const unsigned dd = strtou(p, &end);
     if(!in_range(1, dd, 31)) return;
     if(*end && !isspace(*end)) return;
-    date = {p0, end};
+    day = {p0, end};
 
     str = s;
 }

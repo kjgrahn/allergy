@@ -6,6 +6,7 @@
 
 #include "index.h"
 #include "calendar.h"
+#include "../quote.h"
 #include "../status.h"
 
 #include <iostream>
@@ -290,7 +291,9 @@ void allergy::page::Month::put(std::ostream& os, const Chunk chunk) const
 
 allergy::page::Day::Day(const allergy::Index& ix, allergy::Day day)
     : ee {ix.on(day)},
-      day {day}
+      day {day},
+      prev {ix.prev(day)},
+      next {ix.next(day)}
 {
     if (ee.empty()) throw Status<404> {};
 }
@@ -303,7 +306,12 @@ allergy::page::Day::Chunk allergy::page::Day::begin() const
 void allergy::page::Day::put(std::ostream& os, const Chunk chunk) const
 {
     if (chunk.first()) {
-	preamble(os, day);
+
+	auto url = [] (allergy::Day d) {
+	    return d ? d.url() : "";
+	};
+
+	preamble(os, day, url(prev), url(next));
 
 	os << "<body>\n"
 	      "\n"
@@ -314,6 +322,35 @@ void allergy::page::Day::put(std::ostream& os, const Chunk chunk) const
 
     if (chunk.last()) {
 	epilogue(os << "</div>\n");
+    }
+}
+
+allergy::page::Photo::Photo(const Index& ix,
+			    allergy::Day day, const Serial& serial)
+    : e {ix.get(day, serial)}
+{}
+
+void allergy::page::Photo::put(std::ostream& os, Chunk chunk) const
+{
+    if (chunk.first()) {
+	preamble(os, e.filename);
+
+	os << "<body class='photo'>\n"
+	      "\n"
+	      "<ul>\n"
+	      "<li>" << e.filename << "\n"
+	      "<li>" << e.timestamp << "\n"
+	      "<li>";
+	e.timestamp.day.put_pretty(os) << "\n"
+	      "<li>" << quote(e.text) << "\n"
+	      "</ul>\n"
+	      "\n"
+	      "<p><img class='photo' alt='' src='" << url(e) << "'>\n"
+	      "\n";
+    }
+
+    if (chunk.last()) {
+	epilogue(os);
     }
 }
 

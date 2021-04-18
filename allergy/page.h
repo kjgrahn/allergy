@@ -82,6 +82,24 @@ namespace allergy {
 	private:
 	    const std::vector<allergy::Entry> ee;
 	    const allergy::Day day;
+	    const allergy::Day prev;
+	    const allergy::Day next;
+	};
+
+	/**
+	 * A per-photo page, /yyyy-mm-dd/serial.
+	 */
+	class Photo {
+	public:
+	    Photo(const Index& ix, allergy::Day day, const Serial& serial);
+
+	    using Chunk = page::Chunk<1>;
+
+	    Chunk begin() const { return {}; }
+	    void put(std::ostream& os, Chunk n) const;
+
+	private:
+	    const allergy::Entry e;
 	};
 
 	/**

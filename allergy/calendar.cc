@@ -121,11 +121,25 @@ std::ostream& Day::put_pretty(std::ostream& os) const
     return os;
 }
 
+/**
+ * ISO year-month-day.
+ */
 std::ostream& Day::put(std::ostream& os) const
 {
     char buf[11];
     std::snprintf(buf, sizeof buf, "%4hu-%02hu-%02hu",
 		  val[0], val[1], val[2]);
+    return os << buf;
+}
+
+/**
+ * Pre-Y2K yymmdd.
+ */
+std::ostream& Day::put_short(std::ostream& os) const
+{
+    char buf[7];
+    std::snprintf(buf, sizeof buf, "%02hu%02hu%02hu",
+		  val[0] % 100, val[1], val[2]);
     return os << buf;
 }
 

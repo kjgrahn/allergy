@@ -313,6 +313,53 @@ namespace allergy {
 		assert_false(ix.index.has(Photo{""}));
 	    }
 
+	    void get(TC)
+	    {
+		std::stringstream ss;
+		generate(ss,
+			 {"2020-05-16 14:11",
+			  "2020-05-16 14:12"});
+		const Index ix {ss};
+
+		const auto e = ix.index.get(Day{"2020-05-16"}, Serial{"101"});
+		assert_entry(&e,
+			     "2020-05-16_101.jpg",
+			     "2020-05-16 14:12",
+			     "");
+		try {
+		    ix.index.get(Day{"2020-05-16"}, Serial{"102"});
+		}
+		catch (...) {
+		    return;
+		}
+		throw orchis::Failure {};
+	    }
+
+	    void get_legacy(TC)
+	    {
+		std::stringstream ss;
+		ss << "200516_100.jpg\n"
+		      "2020-05-16 14:11\n"
+		      "foo\n"
+		      "\n"
+		      "200516_101.jpg\n"
+		      "2020-05-16 14:12\n";
+		const Index ix {ss};
+
+		const auto e = ix.index.get(Day{"2020-05-16"}, Serial{"100"});
+		assert_entry(&e,
+			     "200516_100.jpg",
+			     "2020-05-16 14:11",
+			     "foo");
+		try {
+		    ix.index.get(Day{"2020-05-16"}, Serial{"102"});
+		}
+		catch (...) {
+		    return;
+		}
+		throw orchis::Failure {};
+	    }
+
 	    void all(TC)
 	    {
 		std::stringstream ss;

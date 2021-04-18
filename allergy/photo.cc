@@ -6,7 +6,6 @@
 #include "../root.h"
 
 #include <cctype>
-#include <iostream>
 
 
 using allergy::Photo;

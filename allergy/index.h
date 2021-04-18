@@ -35,6 +35,7 @@ namespace allergy {
 	iterator end() const { return entries.end(); }
 
 	bool has(const Photo& p) const;
+	const Entry& get(const Day& day, const Serial& serial) const;
 
 	std::vector<Entry> all() const;
 

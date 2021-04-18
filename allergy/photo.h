@@ -1,6 +1,6 @@
 /* -*- c++ -*-
  *
- * Copyright (c) 2020 Jörgen Grahn
+ * Copyright (c) 2020, 2021 Jörgen Grahn
  * All rights reserved.
  *
  */
@@ -8,18 +8,28 @@
 #define ALLERGY_PHOTO_H
 
 #include <string>
-#include <iosfwd>
+#include <iostream>
 
 class Root;
 
 namespace allergy {
 
     /**
+     * The serial number of a Photo. A non-empty sequence of digits,
+     * but it could have been anything else which distinguishes photos
+     * from the same date and is reflected in the file name.
+     */
+    class Serial : public std::string {
+    public:
+	Serial(const char* a, const char* b) : std::string {a, b} {}
+	explicit Serial(const char* s) : std::string {s} {}
+    };
+
+    /**
      * A photo, from the perspective of finding it in the file system
      * based on the name in an URL.
      *
-     * A photo is named 'yyyy-mm-dd_serial.jpg', where 'serial' is
-     * also a non-empty sequence of digits. To avoid having thousands
+     * A photo is named 'yyyy-mm-dd_serial.jpg'. To avoid having thousands
      * of photos in one directory, we split them across directories
      * named "yyyy.q". Thus, the URL namespace becomes flatter than the
      * filesystem.

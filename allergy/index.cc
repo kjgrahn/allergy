@@ -5,8 +5,10 @@
 #include "index.h"
 
 #include "files...h"
+#include "../status.h"
 
 #include <iostream>
+#include <sstream>
 #include <algorithm>
 
 using namespace allergy;
@@ -152,6 +154,37 @@ bool Index::has(const Photo& p) const
     return by.name.count(p);
 }
 
+namespace {
+
+    Photo photo_of(const Day& day, const Serial& serial)
+    {
+	std::ostringstream oss;
+	day.put(oss) << '_' << serial << ".jpg";
+	return Photo {oss.str()};
+    }
+
+    Photo legacy_photo_of(const Day& day, const Serial& serial)
+    {
+	std::ostringstream oss;
+	day.put_short(oss) << '_' << serial << ".jpg";
+	return Photo {oss.str()};
+    }
+}
+
+/**
+ * Find the photo defined by a certain day and serial number, or
+ * throw (out of laziness I suppose) Status<404>.
+ */
+const Entry& Index::get(const Day& day, const Serial& serial) const
+{
+    auto it = by.name.find(photo_of(day, serial));
+    if (it==by.name.end()) {
+	it = by.name.find(legacy_photo_of(day, serial));
+    }
+    if (it==by.name.end()) throw Status<404> {};
+    return entries[it->second];
+}
+
 std::vector<Entry> Index::all() const
 {
     std::vector<Entry> v{begin(), end()};
@@ -162,19 +195,19 @@ std::vector<Entry> Index::all() const
 std::vector<Entry> Index::in(const Year& key) const
 {
     auto p = [&key] (const Entry& e) { return e.timestamp.year == key; };
-    return get(*this, p);
+    return ::get(*this, p);
 }
 
 std::vector<Entry> Index::in(const Month& key) const
 {
     auto p = [&key] (const Entry& e) { return e.timestamp.month == key; };
-    return get(*this, p);
+    return ::get(*this, p);
 }
 
 std::vector<Entry> Index::on(const Day& key) const
 {
-    auto p = [&key] (const Entry& e) { return e.timestamp.date == key; };
-    return get(*this, p);
+    auto p = [&key] (const Entry& e) { return e.timestamp.day == key; };
+    return ::get(*this, p);
 }
 
 std::vector<Entry> Index::key(const Key& key) const

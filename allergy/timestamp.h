@@ -29,7 +29,7 @@ namespace allergy {
 
 	Year  year;
 	Month month;
-	Day   date;
+	Day   day;
 	std::string str;
     };
 
