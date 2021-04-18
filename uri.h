@@ -1,4 +1,4 @@
-/* Copyright (c) 2020 Jörgen Grahn
+/* Copyright (c) 2020, 2021 Jörgen Grahn
  * All rights reserved.
  *
  */
@@ -8,6 +8,7 @@
 #include <string>
 #include <array>
 #include <iosfwd>
+#include <utility>
 #include <cstring>
 
 /**
@@ -98,6 +99,19 @@ T match(const Uri& uri, const char* a)
     if (!uri.segments(2)) return uri.nil<T>();
     if (!uri.segment(a, 0)) return uri.nil<T>();
     return uri.make<T>(1);
+}
+
+/**
+ * Returns the A and B in /A/B, or else {}, {}.
+ */
+template <class A, class B>
+std::pair<A, B> match(const Uri& uri)
+{
+    const auto nil = std::make_pair(uri.nil<A>(),
+				    uri.nil<B>());
+    if (!uri.segments(2)) return nil;
+    return std::make_pair(uri.make<A>(0),
+			  uri.make<B>(1));
 }
 
 template <> inline

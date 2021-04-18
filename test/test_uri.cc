@@ -112,6 +112,39 @@ namespace uri {
 	    assert_false(match<bool>(uri, "foo", ""));
 	}
 
+	namespace pair {
+
+	    void simple(TC)
+	    {
+		const std::string s = "/f%2Foo/b%2Far";
+		const Uri uri {s};
+
+		const auto m = match<Seg, std::string>(uri);
+		assert_eq(m.first, "f/oo");
+		assert_eq(m.second, "b/ar");
+	    }
+
+	    void too_short(TC)
+	    {
+		const std::string s = "/f%2Foo";
+		const Uri uri {s};
+
+		const auto m = match<Seg, std::string>(uri);
+		assert_false(m.first);
+		assert_eq(m.second.size(), 0);
+	    }
+
+	    void too_long(TC)
+	    {
+		const std::string s = "/f%2Foo/b%2Far/";
+		const Uri uri {s};
+
+		const auto m = match<Seg, std::string>(uri);
+		assert_false(m.first);
+		assert_eq(m.second.size(), 0);
+	    }
+	}
+
 	namespace percent {
 
 	    void simple(TC)
