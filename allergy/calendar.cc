@@ -127,6 +127,20 @@ Year Day::year() const { return Year {val[0]}; }
 
 Month Day::month() const { return Month {val[0], val[1]}; }
 
+/**
+ * In the classic swedish d.m.year format, with each part
+ * hyperlinked.
+ */
+std::ostream& Day::put_pretty(std::ostream& os) const
+{
+    const auto mm = month();
+    const auto yyyy = year();
+    os << "<a href='/"; put(os); os << "'>" << mday() << "</a>.";
+    os << "<a href='" << mm.url() << "'>" << mm.num() << "</a>.";
+    os << "<a href='" << yyyy.url() << "'>" << yyyy << "</a>";
+    return os;
+}
+
 std::ostream& Day::put(std::ostream& os) const
 {
     char buf[11];

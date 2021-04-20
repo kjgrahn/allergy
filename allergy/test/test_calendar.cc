@@ -55,6 +55,12 @@ namespace allergy {
 	{
 	    assert_invalid("202b");
 	}
+
+	void url(TC)
+	{
+	    orchis::assert_eq(Year{"2021"}.url(),
+			      "/2021");
+	}
     }
 
     namespace month {
@@ -102,6 +108,12 @@ namespace allergy {
 	{
 	    assert_invalid("2020-00");
 	    assert_invalid("2020-13");
+	}
+
+	void url(TC)
+	{
+	    orchis::assert_eq(Month{"2021-04"}.url(),
+			      "/2021-04");
 	}
     }
 
@@ -155,6 +167,18 @@ namespace allergy {
 	    assert_invalid(2020, 11, 00);
 	    assert_invalid(2020, 02, 30);
 	    assert_invalid(2020, 11, 40);
+	}
+
+	void pretty(TC)
+	{
+	    std::ostringstream oss;
+	    const Day val{"2021-04-20"};
+	    val.put_pretty(oss);
+
+	    orchis::assert_eq(oss.str(),
+			      "<a href='/2021-04-20'>20</a>."
+			      "<a href='/2021-04'>4</a>."
+			      "<a href='/2021'>2021</a>");
 	}
     }
 
