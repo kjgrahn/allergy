@@ -250,7 +250,7 @@ namespace {
 
     void thumbdiv(std::ostream& os, const allergy::Entry& e)
     {
-	os << "<div><a href='" << url(e) << "'>"
+	os << "<div><a href='" << pageurl(e) << "'>"
 	      "<img alt='' src='" << thumburl(e) << "'></a></div>\n";
     }
 }

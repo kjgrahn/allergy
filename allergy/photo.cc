@@ -115,12 +115,22 @@ std::string Photo::dir() const
 }
 
 /**
- * The relative URI of this photo.
+ * The relative URI of this photo (the actual image).
  */
 std::string Photo::url() const
 {
     std::ostringstream oss;
     oss << '/' << *this;
+    return oss.str();
+}
+
+/**
+ * The relative URI of this photo's page.
+ */
+std::string Photo::pageurl() const
+{
+    std::ostringstream oss;
+    oss << '/' << day << '/' << serial;
     return oss.str();
 }
 

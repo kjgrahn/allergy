@@ -58,6 +58,7 @@ namespace allergy {
     std::ostream& operator<< (std::ostream& os, const Entry& val);
 
     inline std::string url(const Entry& e) { return e.photo.url(); }
+    inline std::string pageurl(const Entry& e) { return e.photo.pageurl(); }
     inline std::string thumburl(const Entry& e) { return e.photo.thumburl(); }
     inline std::string dir(const Entry& e) { return e.photo.dir(); }
     std::string path(const Entry&);

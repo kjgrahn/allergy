@@ -71,6 +71,7 @@ namespace allergy {
 
 	std::string dir() const;
 	std::string url() const;
+	std::string pageurl() const;
 	std::string thumburl() const;
 
     private:

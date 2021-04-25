@@ -52,6 +52,7 @@ namespace allergy {
 	    const Photo p {"2020-07-24_0001.jpg"};
 	    orchis::assert_true(p.valid());
 	    assert_eq(p.url(), "/2020-07-24_0001.jpg");
+	    assert_eq(p.pageurl(), "/2020-07-24/0001");
 	    assert_eq(p.thumburl(), "/thumb/2020-07-24_0001.jpg");
 	}
 
@@ -77,6 +78,7 @@ namespace allergy {
 		const Photo p {"210515_0001.jpg"};
 		orchis::assert_true(p.valid());
 		assert_eq(p.url(), "/2021-05-15_0001.jpg");
+		assert_eq(p.pageurl(), "/2021-05-15/0001");
 		assert_eq(p.thumburl(), "/thumb/2021-05-15_0001.jpg");
 	    }
 
