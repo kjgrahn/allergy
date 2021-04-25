@@ -68,6 +68,18 @@ The special description
 .IR ibidem )
 means the description is the same as for the previous photo in the file.
 .
+.PP
+The
+.I ordering
+of entries has no special significance.
+You probably want to keep them in time order most of the time, but
+sometimes it makes sense to shuffle them around so you can use
+.B ibid
+better.
+.BR allergyd (1)
+orders the photos by timestamp (or else timestamp in the filename),
+then by file order.
+.
 .SS "Tags"
 A photo can be tagged, i.e. associated with one or more tags.
 There are two ways to do this, and both mean embedding tags in the description.
@@ -119,6 +131,13 @@ hygget S om [V\(:arpekullen]
 2020-05-16 14:11
 ibid
 .fi
+.
+.
+.SH "HISTORY"
+.
+The file format was first documented in a section of the
+.BR allergy (1)
+man page in 2005.
 .
 .
 .SH "SEE ALSO"
