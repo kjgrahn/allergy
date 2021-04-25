@@ -4,6 +4,8 @@
  */
 #include "calendar.h"
 
+#include "../strtou.h"
+
 #include <cstring>
 
 namespace {
@@ -62,28 +64,6 @@ namespace {
 	if (val < a) return false;
 	if (b < val) return false;
 	return true;
-    }
-
-    /**
-     * Find an unsigned decimal number at the beginning of [a..b);
-     * update a to point to the first non-digit; return 0 unless
-     * val < limit.
-     *
-     * Because std::strtoul() only handles C strings, and std::stou()
-     * throws exceptions at random, and I don't have std::string_view.
-     */
-    template <class It>
-    unsigned strtou(It& a, const It b, unsigned limit)
-    {
-	unsigned acc = 0;
-
-	while (a!=b && in<char, '0', '9'>(*a)) {
-	    char ch = *a++;
-	    acc = 10*acc + (ch - '0');
-	}
-
-	if (acc < limit) return acc;
-	return 0;
     }
 
     /**

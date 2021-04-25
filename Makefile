@@ -102,6 +102,7 @@ libtest.a: test/test_date.o
 libtest.a: test/test_lineparse.o
 libtest.a: test/test_join.o
 libtest.a: test/split.o
+libtest.a: test/test_strtou.o
 libtest.a: test/test_glob.o
 libtest.a: test/test_regex.o
 libtest.a: allergy/test/test_index.o
