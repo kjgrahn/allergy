@@ -88,6 +88,7 @@ parse: allergy/parse.o liballergy.a
 libtest.a: test/test_request.o
 libtest.a: test/test_uri.o
 libtest.a: test/test_quote.o
+libtest.a: test/test_lower_bound.o
 libtest.a: test/test_utf8.o
 libtest.a: test/test_filter.o
 libtest.a: test/test_blob.o
