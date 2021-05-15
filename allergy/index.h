@@ -9,6 +9,7 @@
 
 #include "entry.h"
 #include "keyword.h"
+#include "../range.h"
 
 #include <iosfwd>
 #include <vector>
@@ -21,6 +22,10 @@ namespace allergy {
     /**
      * A parsed set of allergy(5) files: named and timestamped photos,
      * tagged with keywords.
+     *
+     * It's mainly an array of entries:
+     * - sorted by timestamp
+     * - with Photo as key (Photo is derived from timestamp and serial)
      */
     class Index {
     public:
@@ -30,18 +35,23 @@ namespace allergy {
 
 	bool valid() const { return true; }
 
-	using iterator = std::vector<Entry>::const_iterator;
-	iterator begin() const { return entries.begin(); }
-	iterator end() const { return entries.end(); }
+	using Range = ::Range<std::vector<Entry>::const_iterator>;
 
 	bool has(const Photo& p) const;
-	const Entry& get(const Day& day, const Serial& serial) const;
+	const Entry& get(const Photo& p) const;
 
-	std::vector<Entry> all() const;
+	Range all() const;
+	Range in(const Year& key) const;
+	Range in(const Month& key) const;
+	Range on(const Day& key) const;
 
-	std::vector<Entry> in(const Year& key) const;
-	std::vector<Entry> in(const Month& key) const;
-	std::vector<Entry> on(const Day& key) const;
+	Range cluster(const Photo& p) const;
+
+	Day prev(const Day& day) const;
+	Day next(const Day& day) const;
+
+	Photo prev(const Photo& p) const;
+	Photo next(const Photo& p) const;
 
 	std::vector<Entry> key(const Key& k) const;
 
@@ -53,7 +63,6 @@ namespace allergy {
     private:
 	std::vector<Entry> entries;
 	struct {
-	    std::map<Photo, unsigned> name;
 	    std::map<Key, std::vector<unsigned>> key;
 	} by;
     };

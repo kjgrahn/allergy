@@ -75,6 +75,7 @@ backlog.o: CXXFLAGS+=-Wno-old-style-cast
 deflate.o: CXXFLAGS+=-Wno-old-style-cast
 httpd.o: CXXFLAGS+=-Wno-old-style-cast
 log.o: CXXFLAGS+=-std=c++14
+allergy/index.o: CXXFLAGS+=-std=c++14
 
 allergyd: httpd.o liballergy.a
 	$(CXX) $(CXXFLAGS) -o $@ httpd.o -L. -lallergy -lrt -lz
@@ -111,6 +112,7 @@ libtest.a: allergy/test/test_timestamp.o
 libtest.a: allergy/test/test_calendar.o
 libtest.a: allergy/test/test_keys.o
 libtest.a: allergy/test/test_photo.o
+libtest.a: allergy/test/test_serial.o
 libtest.a: allergy/test/test_chunk.o
 libtest.a: allergy/test/test_files.o
 	$(AR) $(ARFLAGS) $@ $^

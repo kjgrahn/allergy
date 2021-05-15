@@ -33,24 +33,23 @@ namespace allergy {
 	namespace helper {
 
 	    /* Convenience wrapper around a valid allergy::Index
-	     * which generated no warnings.
+	     * which generates no warnings.
 	     */
 	    struct Index {
 		explicit Index(std::istream& is)
 		    : files {is},
-		      index {os, files}
+		      index {os, files},
+		      all {index.all()}
 		{
 		    orchis::assert_true(index.valid());
 		    orchis::assert_eq(os.str(), "");
 		    assert_drained(files);
 		}
 
-		allergy::Index::iterator begin() const { return index.begin(); }
-		allergy::Index::iterator end()   const { return index.end(); }
-
 		std::ostringstream os;
 		Files files;
 		const allergy::Index index;
+		const allergy::Index::Range all;
 	    };
 	}
 

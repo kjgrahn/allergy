@@ -1,6 +1,4 @@
-/* -*- c++ -*-
- *
- * Copyright (c) 2016 Jörgen Grahn
+/* Copyright (c) 2021 Jörgen Grahn
  * All rights reserved.
  *
  */
@@ -16,22 +14,36 @@ namespace allergy {
 
     /**
      * A timestamp from an allergy(5) picture information file.
-     * Fairly free-form, but must at least start yyyy-mm-dd.
+     * Fairly free-form, but must at least start yyyy-mm-dd,
+     * and the rest should be time-of-day.
      */
     class Timestamp {
     public:
 	Timestamp() = default;
 	explicit Timestamp(const std::string& s);
-	bool valid() const { return !str.empty(); }
+	Timestamp& operator= (const Timestamp& other) = default;
 
-	bool operator== (const Timestamp& other) const { return str==other.str; }
-	bool operator<  (const Timestamp& other) const { return str<other.str; }
+	bool valid() const { return bool{day}; }
+	bool operator== (const Timestamp& other) const;
+	bool operator<  (const Timestamp& other) const;
 
-	Year  year;
-	Month month;
-	Day   day;
-	std::string str;
+	Day day;
+	std::string time;
     };
+
+    inline
+    bool Timestamp::operator== (const Timestamp& other) const
+    {
+	if (day != other.day) return false;
+	return time==other.time;
+    }
+
+    inline
+    bool Timestamp::operator< (const Timestamp& other) const
+    {
+	if (day==other.day) return time < other.time;
+	return day < other.day;
+    }
 
     std::ostream& operator<< (std::ostream& os, const Timestamp& val);
 }

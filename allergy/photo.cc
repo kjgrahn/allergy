@@ -4,133 +4,133 @@
  */
 #include "photo.h"
 #include "../root.h"
+#include "../strtou.h"
 
 #include <cctype>
+#include <sstream>
+#include <algorithm>
 
 
+using allergy::Serial;
 using allergy::Photo;
 
 namespace {
-    const char* eat_digits(const char* a)
-    {
-	while (std::isdigit(static_cast<unsigned char>(*a))) a++;
-	return a;
-    }
 
-    template <class It>
-    unsigned strtou(It a, It b)
+    unsigned short narrow(unsigned n)
     {
-	unsigned n = 0;
-	while (a!=b) {
-	    n = 10*n + (*a++ - '0');
-	}
-	return n;
-    }
-
-    /**
-     * The quarter 1--4, or 0.  Assumes an otherwise validated file
-     * name.
-     */
-    unsigned quarter_of(const std::string& s)
-    {
-	const char* a = s.c_str();
-	const char* c = eat_digits(a);
-	c = (c-a == 4) ? a+5 : a+2;
-	unsigned n = strtou(c, c+2);
-	unsigned q = 1 + (n-1) / 3;
-	if (q > 4) q = 0;
-	return q;
-    }
-
-    unsigned year_of(const std::string& s)
-    {
-	const char* a = s.c_str();
-	const char* c = eat_digits(a);
-	if (c-a == 4) return strtou(a, a+4);
-	return 2000 + strtou(a, a+2);
+	return static_cast<unsigned short>(n);
     }
 }
 
-Photo::Photo(const std::string& s)
-    : val {s},
-      quarter {0}
+Serial::Serial(const char* a, const char* b)
+    : digits {narrow(b-a)}
 {
-    const char* a = val.c_str();
-    const char* const b = a + val.size();
-    const char* c;
+    n = narrow(::strtou(a, b, 65000));
+    if (a!=b) digits = 0;
+}
 
-    c = eat_digits(a);
-    if (c-a == 4) {
-	if (*c != '-') return;
-	a = c+1;
+Serial::Serial(const std::string& s)
+    : Serial {s.data(), s.data() + s.size()}
+{}
 
-	c = eat_digits(a);
-	if (c-a != 2) return;
-	if (*c != '-') return;
-	a = c+1;
+std::ostream& Serial::put(std::ostream& os) const
+{
+    char buf[10];
+    std::snprintf(buf, sizeof buf, "%0*hu", digits, n);
+    return os << buf;
+}
 
-	c = eat_digits(a);
-	if (c-a != 2) return;
+namespace {
+
+    /**
+     * Parse a yymmdd date in [a, b).
+     */
+    template <class It>
+    allergy::Day shortdate(It a, const It b)
+    {
+	unsigned n = strtou(a, b, 1e6);
+	if (a != b) return {};
+	unsigned dd = n % 100; n /= 100;
+	unsigned mm = n % 100; n /= 100;
+	unsigned yyyy = 2000 + n;
+	return {yyyy, mm, dd};
     }
-    else if (c-a != 6) {
+}
+
+/**
+ * Construct from a photo filename, which is one of
+ *   yyyy-mm-dd_serial.jpg
+ *   yymmdd_serial.jpg
+ */
+Photo::Photo(const char* a, const char* const b)
+{
+    auto c = std::find(a, b, '_');
+    if (c==b) return;
+
+    if (c-a == 10) {
+	day = {a, c};
+    }
+    else if (c-a == 6) {
+	day = shortdate(a, c);
+    }
+    else {
 	return;
     }
 
-    if (*c != '_') return;
-    a = c+1;
+    a = c + 1;
+    c = std::find(a, b, '.');
+    if (std::string(c, b) != ".jpg") { day = {}; return; }
 
-    c = eat_digits(a);
-    if (c-a < 1) return;
-    if (*c != '.') return;
-    a = c+1;
-    if (std::string(a, b) != "jpg") return;
-
-    quarter = quarter_of(val);
+    serial = {a, c};
 }
 
-Photo::Photo(const char* a, const char* const b)
-    : Photo {std::string{a, b}}
+Photo::Photo(const std::string& s)
+    : Photo {s.data(), s.data() + s.size()}
 {}
+
+bool Photo::operator== (const Photo& other) const
+{
+    return day==other.day && serial==other.serial;
+}
+
+bool Photo::operator< (const Photo& other) const
+{
+    if (day==other.day) return serial < other.serial;
+    return day < other.day;
+}
 
 std::ostream& Photo::put(std::ostream& os) const
 {
-    return os << val;
+    return os << day << '_' << serial << ".jpg";
 }
 
+/**
+ * The directory (relative to some root) where this
+ * photo's file lives.  Year and quarter, e.g. 2021.2.
+ */
 std::string Photo::dir() const
 {
-    if (!quarter) return {};
-
-    return std::to_string(year_of(val)) + '.' + std::to_string(quarter);
+    if (!valid()) return {};
+    return day.quarter();
 }
 
 /**
- * The (relative) path to the photo in the file system.
+ * The relative URI of this photo.
  */
-std::string Photo::path() const
-{
-    return dir() + "/" + val;
-}
-
 std::string Photo::url() const
 {
-    return "/" + val;
-}
-
-std::string Photo::thumburl() const
-{
-    return "/thumb/" + val;
-}
-
-int Photo::open(const Root& root) const
-{
-    return root.open(path());
+    std::ostringstream oss;
+    oss << '/' << *this;
+    return oss.str();
 }
 
 /**
- * Open 'p' relative to the root. The photo needs to be valid().
+ * The relative URI of this photo's thumbnail.
  */
-int allergy::open(const Root& r, const Photo& p)
+std::string Photo::thumburl() const
 {
-    return p.open(r);
+    std::ostringstream oss;
+    oss << "/thumb/" << *this;
+    return oss.str();
 }
+

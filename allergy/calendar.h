@@ -25,10 +25,13 @@ namespace allergy {
 
 	explicit operator bool() const { return val[0] && val[1] && val[2]; }
 	bool operator== (const Day& other) const { return val==other.val; }
+	bool operator!= (const Day& other) const { return val!=other.val; }
 	bool operator<  (const Day& other) const { return val<other.val; }
+	bool operator<= (const Day& other) const { return !(other < *this); }
 
 	Year year() const;
 	Month month() const;
+	std::string quarter() const;
 	unsigned mday() const { return val[2]; }
 	bool first() const { return *this && mday()==1; }
 
@@ -53,11 +56,13 @@ namespace allergy {
 	explicit operator bool() const { return val[0] && val[1]; }
 	bool operator== (const Month& other) const { return val==other.val; }
 	bool operator<  (const Month& other) const { return val<other.val; }
+	bool operator<= (const Month& other) const { return !(other < *this); }
 	Month operator-- (int);
 	Month operator++ (int);
 
 	const char* name() const;
 	Year year() const;
+	std::string quarter() const;
 	unsigned num() const { return val[1]; }
 
 	std::string url() const;
@@ -82,6 +87,7 @@ namespace allergy {
 	explicit operator bool() const { return val; }
 	bool operator== (const Year& other) const { return val==other.val; }
 	bool operator<  (const Year& other) const { return val<other.val; }
+	bool operator<= (const Year& other) const { return !(other < *this); }
 	Year operator-- (int) { auto prev = *this; val--; return prev; }
 	Year operator++ (int) { auto prev = *this; val++; return prev; }
 	std::array<Month, 12> months() const;

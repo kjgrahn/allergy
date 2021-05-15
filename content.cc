@@ -168,9 +168,8 @@ Response* Content::redirect(const timespec& t, const std::string&) const { retur
 
 Response* Content::photo(const timespec& t, const allergy::Photo& p) const
 {
-    if (!p.valid()) throw Status<404> {};
-    if (!index.has(p)) throw Status<404> {};
-    return open<response::Image>(t, root, p);
+    const allergy::Entry& e = index.get(p);
+    return open<response::Image>(t, root, e);
 }
 
 /**
@@ -183,17 +182,16 @@ Response* Content::photo(const timespec& t, const allergy::Photo& p) const
  */
 Response* Content::thumbnail(const timespec& t, const allergy::Photo& p) const
 {
-    if (!p.valid()) throw Status<404> {};
-    if (!index.has(p)) throw Status<404> {};
+    const allergy::Entry& e = index.get(p);
 
-    const int fd = open(thumb, p);
+    const int fd = open(thumb, e);
     if (fd==-1 && errno==ENOENT) {
-	if (!allergy::thumbnail(root, thumb, p)) {
+	if (!allergy::thumbnail(root, thumb, e)) {
 	    Warning(Syslog::log) << p << ": failed to thumbnail";
 	    throw Status<404> {};
 	}
 	Info(Syslog::log) << p << ": thumbnailed";
-	return open<response::Image>(t, thumb, p);
+	return open<response::Image>(t, thumb, e);
     }
     return open<response::Image>(t, thumb, fd);
 }

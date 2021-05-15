@@ -63,9 +63,19 @@ namespace allergy {
 		    assert_false(c.end());
 		    assert_eq(c.first(), first);
 		    assert_eq(c.last(), last);
-		    const auto v = c.val(cont);
-		    const std::string s {begin(v), end(v)};
-		    assert_eq(s, val);
+
+		    {
+			const auto v = c.val(cont);
+			const std::string s {begin(v), end(v)};
+			assert_eq(s, val);
+		    }
+
+		    {
+			Range<typename Cont::const_iterator> r {begin(cont), end(cont)};
+			const auto v = c.val(cont);
+			const std::string s {begin(v), end(v)};
+			assert_eq(s, val);
+		    }
 		}
 
 		void empty(TC)

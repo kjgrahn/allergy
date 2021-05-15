@@ -107,6 +107,8 @@ Year Day::year() const { return Year {val[0]}; }
 
 Month Day::month() const { return Month {val[0], val[1]}; }
 
+std::string Day::quarter() const { return month().quarter(); }
+
 /**
  * In the classic swedish d.m.year format, with each part
  * hyperlinked.
@@ -209,6 +211,18 @@ const char* Month::name() const
 }
 
 Year Month::year() const { return Year {val[0]}; }
+
+/**
+ * E.g. "2021.2" for April--June 2021.
+ */
+std::string Month::quarter() const
+{
+    unsigned q = 1 + (val[1]-1) / 3;
+    char buf[7];
+    std::snprintf(buf, sizeof buf, "%4hu.%u",
+		  val[0], q);
+    return buf;
+}
 
 std::string Month::url() const
 {

@@ -26,10 +26,23 @@ namespace allergy {
 	{
 	    const Timestamp ts("2016-08-14 09:18");
 	    orchis::assert_true(ts.valid());
-	    orchis::assert_eq(ts.str, "2016-08-14 09:18");
-	    orchis::assert_eq(ts.year, allergy::Year{"2016"});
-	    orchis::assert_eq(ts.month, allergy::Month{"2016-08"});
 	    orchis::assert_eq(ts.day, allergy::Day{"2016-08-14"});
+	    orchis::assert_eq(ts.time, "09:18");
+	}
+
+	void compare(TC)
+	{
+	    const Timestamp a("2016-08-14 09:18");
+	    const Timestamp b("2016-08-14 09:20");
+	    const Timestamp c("2016-08-17 06:02");
+
+	    orchis::assert_eq(a, a);
+	    orchis::assert_eq(b, b);
+	    orchis::assert_eq(c, c);
+
+	    orchis::assert_lt(a, b);
+	    orchis::assert_lt(b, c);
+	    orchis::assert_lt(a, c);
 	}
 
 	void invalid(TC)
@@ -40,6 +53,14 @@ namespace allergy {
 	    assert_invalid("2016-08-34 09:18");
 	    assert_invalid("2016-18-14 09:18");
 	    assert_invalid("2016-08");
+	}
+
+	void format(TC)
+	{
+	    const std::string s {"2016-08-14 09:18"};
+	    std::ostringstream oss;
+	    oss << Timestamp {s};
+	    orchis::assert_eq(oss.str(), s);
 	}
     }
 }

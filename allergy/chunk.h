@@ -7,6 +7,8 @@
 #ifndef ALLERGY_ALLERGY_CHUNK_H
 #define ALLERGY_ALLERGY_CHUNK_H
 
+#include "../range.h"
+
 #include <vector>
 #include <cstdlib>
 
@@ -58,6 +60,9 @@ namespace allergy {
 		template <class C>
 		std::vector<typename C::value_type> val(const C& c) const;
 
+		template <class C>
+		Range<C> val(Range<C> range) const;
+
 	    private:
 		Chunk(unsigned size, size_t seq_size);
 
@@ -71,6 +76,14 @@ namespace allergy {
 	    {
 		auto a = std::begin(c) + i * size;
 		auto b = last() ? std::end(c) : a + size;
+		return {a, b};
+	    }
+
+	    template <class C>
+	    Range<C> Chunk::val(Range<C> range) const
+	    {
+		auto a = std::begin(range) + i * size;
+		auto b = last() ? std::end(range) : a + size;
 		return {a, b};
 	    }
 	}

@@ -110,6 +110,29 @@ namespace allergy {
 	    assert_invalid("2020-13");
 	}
 
+	void year(TC)
+	{
+	    const Month m {"2021-05"};
+	    orchis::assert_eq(m.year(), Year{"2021"});
+	}
+
+	void quarter(TC)
+	{
+	    auto assert_quarter = [] (const std::string& q, const char* s) {
+				      const Month m {s};
+				      orchis::assert_eq(m.quarter(), q);
+				  };
+
+	    assert_quarter("2020.1", "2020-01");
+	    assert_quarter("2020.1", "2020-03");
+	    assert_quarter("2020.2", "2020-04");
+	    assert_quarter("2020.2", "2020-06");
+	    assert_quarter("2020.3", "2020-07");
+	    assert_quarter("2020.3", "2020-09");
+	    assert_quarter("2020.4", "2020-10");
+	    assert_quarter("2020.4", "2020-12");
+	}
+
 	void url(TC)
 	{
 	    orchis::assert_eq(Month{"2021-04"}.url(),
@@ -167,6 +190,18 @@ namespace allergy {
 	    assert_invalid(2020, 11, 00);
 	    assert_invalid(2020, 02, 30);
 	    assert_invalid(2020, 11, 40);
+	}
+
+	void month(TC)
+	{
+	    const Day d {"2021-05-15"};
+	    orchis::assert_eq(d.month(), Month{"2021-05"});
+	}
+
+	void year(TC)
+	{
+	    const Day d {"2021-05-15"};
+	    orchis::assert_eq(d.year(), Year{"2021"});
 	}
 
 	void pretty(TC)

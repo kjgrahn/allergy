@@ -248,9 +248,6 @@ void allergy::page::Year::put(std::ostream& os, const Chunk chunk) const
 
 namespace {
 
-    std::string url(const allergy::Entry& e) { return e.filename.url(); }
-    std::string thumburl(const allergy::Entry& e) { return e.filename.thumburl(); }
-
     void thumbdiv(std::ostream& os, const allergy::Entry& e)
     {
 	os << "<div><a href='" << url(e) << "'>"
@@ -327,7 +324,7 @@ void allergy::page::Day::put(std::ostream& os, const Chunk chunk) const
 
 allergy::page::Photo::Photo(const Index& ix,
 			    allergy::Day day, const Serial& serial)
-    : e {ix.get(day, serial)}
+    : e {ix.get(allergy::Photo{day, serial})}
 {}
 
 void allergy::page::Photo::put(std::ostream& os, Chunk chunk) const

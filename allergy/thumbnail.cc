@@ -12,7 +12,7 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 
-using allergy::Photo;
+using allergy::Entry;
 
 
 namespace {
@@ -59,13 +59,13 @@ namespace {
     };
 
     [[noreturn]]
-    void djpeg(int wfd, const Root& src, const Photo& photo)
+    void djpeg(int wfd, const Root& src, const Entry& photo)
     {
 	std::ostringstream oss;
 	oss << "djpeg" << nil
 	    << "-scale" << nil
 	    << "1/8" << nil
-	    << photo.path();
+	    << path(photo);
 	Argv<4> argv(oss);
 	dup2(wfd, 1); close(wfd);
 	close(0); open("/dev/null", O_RDONLY);
@@ -76,7 +76,7 @@ namespace {
     }
 
     [[noreturn]]
-    void cjpeg(int rfd, const Root& dst, const Photo& photo)
+    void cjpeg(int rfd, const Root& dst, const Entry& photo)
     {
 	std::ostringstream oss;
 	oss << "cjpeg" << nil
@@ -85,7 +85,7 @@ namespace {
 	    << "-optimize" << nil
 	    << "-progressive" << nil
 	    << "-outfile" << nil
-	    << photo.path();
+	    << path(photo);
 	Argv<7> argv(oss);
 	dup2(rfd, 0); close(rfd);
 	close(1); open("/dev/null", O_WRONLY);
@@ -111,9 +111,9 @@ namespace {
  */
 bool allergy::thumbnail(const Root& src,
 			const Root& dst,
-			const Photo& photo)
+			const Entry& photo)
 {
-    if (!dst.mkdir(photo.dir())) return false;
+    if (!dst.mkdir(dir(photo))) return false;
 
     /* Pipeline. The unused stdin and stdout are set to /dev/null;
      * stderr is unchanged. So is any other file descriptor, so e.g.
@@ -163,7 +163,7 @@ bool allergy::thumbnail(const Root& src,
 
 	// cjpeg tends to create an empty file when it fails.
 	// (This is bad style, but it does anyway.)
-	dst.unlink(photo.path());
+	dst.unlink(path(photo));
 	return false;
     }
 

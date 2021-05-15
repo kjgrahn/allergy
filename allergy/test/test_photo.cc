@@ -14,43 +14,28 @@ namespace allergy {
 
 	using orchis::assert_eq;
 
+	void assert_valid(const char* s)
+	{
+	    orchis::assert_true(Photo(s).valid());
+	    orchis::assert_true(Photo(s));
+	}
+
+	void assert_invalid(const char* s)
+	{
+	    orchis::assert_false(Photo(s).valid());
+	    orchis::assert_false(Photo(s));
+	}
+
 	void valid(TC)
 	{
-	    auto assert_valid = [] (const char* s) {
-				    orchis::assert_true(Photo(s).valid());
-				};
-
 	    assert_valid("2020-07-24_0001.jpg");
 	    assert_valid("2020-07-24_01.jpg");
 	    assert_valid("2020-07-24_0.jpg");
 	    assert_valid("1900-09-01_0001.jpg");
 	}
 
-	void quarter(TC)
-	{
-	    auto assert_quarter = [] (const std::string& q, const char* s) {
-				      const Photo p {s};
-				      orchis::assert_true(p.valid());
-				      orchis::assert_eq(p.dir(), q);
-				      orchis::assert_eq(p.path(), q + '/' + s);
-				  };
-
-	    assert_quarter("2020.1", "2020-01-01_0001.jpg");
-	    assert_quarter("2020.1", "2020-03-31_0001.jpg");
-	    assert_quarter("2020.2", "2020-04-01_0001.jpg");
-	    assert_quarter("2020.2", "2020-06-30_0001.jpg");
-	    assert_quarter("2020.3", "2020-07-01_0001.jpg");
-	    assert_quarter("2020.3", "2020-07-31_0001.jpg");
-	    assert_quarter("2020.4", "2020-10-01_0001.jpg");
-	    assert_quarter("2020.4", "2020-12-31_0001.jpg");
-	}
-
 	void invalid(TC)
 	{
-	    auto assert_invalid = [] (const char* s) {
-				      orchis::assert_false(Photo(s).valid());
-				  };
-
 	    assert_invalid("");
 	    assert_invalid(".");
 	    assert_invalid("2020-07-24.jpg");
@@ -74,41 +59,29 @@ namespace allergy {
 
 	    void valid(TC)
 	    {
-		auto assert_valid = [] (const char* s) {
-		    orchis::assert_true(Photo(s).valid());
-		};
-
 		assert_valid("200724_0001.jpg");
 		assert_valid("200724_01.jpg");
 		assert_valid("200724_0.jpg");
 		assert_valid("000901_0001.jpg");
 	    }
 
-	    void quarter(TC)
+	    void equality(TC)
 	    {
-		auto assert_quarter = [] (const std::string& q, const char* s) {
-		    const Photo p {s};
-		    orchis::assert_true(p.valid());
-		    orchis::assert_eq(p.dir(), q);
-		    orchis::assert_eq(p.path(), q + '/' + s);
-		};
+		const Photo a {"2020-07-24_0001.jpg"};
+		const Photo b {"200724_0001.jpg"};
+		assert_eq(a, b);
+	    }
 
-		assert_quarter("2020.1", "200101_0001.jpg");
-		assert_quarter("2020.1", "200331_0001.jpg");
-		assert_quarter("2020.2", "200401_0001.jpg");
-		assert_quarter("2020.2", "200630_0001.jpg");
-		assert_quarter("2020.3", "200701_0001.jpg");
-		assert_quarter("2020.3", "200731_0001.jpg");
-		assert_quarter("2020.4", "201001_0001.jpg");
-		assert_quarter("2020.4", "201231_0001.jpg");
+	    void url(TC)
+	    {
+		const Photo p {"210515_0001.jpg"};
+		orchis::assert_true(p.valid());
+		assert_eq(p.url(), "/2021-05-15_0001.jpg");
+		assert_eq(p.thumburl(), "/thumb/2021-05-15_0001.jpg");
 	    }
 
 	    void invalid(TC)
 	    {
-		auto assert_invalid = [] (const char* s) {
-		    orchis::assert_false(Photo(s).valid());
-		};
-
 		assert_invalid("200724.jpg");
 		assert_invalid("200724_abcd.jpg");
 		assert_invalid("../200724.jpg");

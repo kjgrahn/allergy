@@ -63,7 +63,7 @@ namespace allergy {
 	    void put(std::ostream& os, Chunk n) const;
 
 	private:
-	    const std::vector<allergy::Entry> ee;
+	    const allergy::Index::Range ee;
 	    const allergy::Month month;
 	};
 
@@ -80,7 +80,7 @@ namespace allergy {
 	    void put(std::ostream& os, Chunk n) const;
 
 	private:
-	    const std::vector<allergy::Entry> ee;
+	    const allergy::Index::Range ee;
 	    const allergy::Day day;
 	    const allergy::Day prev;
 	    const allergy::Day next;

@@ -8,13 +8,13 @@
 #define OUTN_THUMBNAIL_H
 
 #include "../root.h"
-#include "photo.h"
+#include "entry.h"
 
 namespace allergy {
 
     bool thumbnail(const Root& src,
 		   const Root& dst,
-		   const Photo& photo);
+		   const allergy::Entry& photo);
 }
 
 #endif

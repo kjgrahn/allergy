@@ -6,6 +6,7 @@
 
 #include "files...h"
 #include "../status.h"
+#include "../lower_bound.h"
 
 #include <iostream>
 #include <sstream>
@@ -59,20 +60,6 @@ namespace {
 	return {filename, p, end, ts, ibid};
     }
 
-    void invert(std::ostream& err,
-		std::map<Photo, unsigned>& names,
-		const std::vector<Entry>& ee)
-    {
-	unsigned n = 0;
-	for (const Entry& e: ee) {
-	    auto res = names.emplace(e.filename, n);
-	    if (!res.second) {
-		err << "warning: duplicate name '" << e.filename << "'\n";
-	    }
-	    n++;
-	}
-    }
-
     void invert(std::map<Key, std::vector<unsigned>>& keys,
 		const std::vector<Entry>& ee)
     {
@@ -86,7 +73,7 @@ namespace {
     }
 }
 
-Index::Index(std::ostream& err, Files& in)
+Index::Index(std::ostream&, Files& in)
 {
     std::string s;
     std::vector<std::string> v;
@@ -113,101 +100,148 @@ Index::Index(std::ostream& err, Files& in)
 
     if(has_entry()) emit();
 
-    invert(err, by.name, entries);
+    std::stable_sort(begin(entries), end(entries));
+
     invert(by.key, entries);
 
     if (!entries.empty()) {
-	Year min = entries.front().timestamp.year;
-	Year max = min;
-	for (const Entry& e: entries) {
-	    max = std::max(max, e.timestamp.year);
-	    min = std::min(min, e.timestamp.year);
-	}
-	years.begin = min;
-	years.end = max;
+	years = {
+	    entries.front().timestamp.day.year(),
+	    entries.back().timestamp.day.year()
+	};
 	years.end++;
     }
 }
 
 namespace {
 
-    void sort(std::vector<Entry>& ee)
+    auto search(const std::vector<allergy::Entry>& ee, const Photo& p)
     {
-	auto earlier = [] (const Entry& a, const Entry& b) {
-			   return a.timestamp < b.timestamp;
-		       };
-	std::stable_sort(begin(ee), end(ee), earlier);
-    }
-
-    template <class Pred>
-    std::vector<Entry> get(const Index& ix, Pred p)
-    {
-	std::vector<Entry> v;
-	std::copy_if(ix.begin(), ix.end(), std::back_inserter(v), p);
-	sort(v);
-	return v;
-    }
-}
-
-bool Index::has(const Photo& p) const
-{
-    return by.name.count(p);
-}
-
-namespace {
-
-    Photo photo_of(const Day& day, const Serial& serial)
-    {
-	std::ostringstream oss;
-	day.put(oss) << '_' << serial << ".jpg";
-	return Photo {oss.str()};
-    }
-
-    Photo legacy_photo_of(const Day& day, const Serial& serial)
-    {
-	std::ostringstream oss;
-	day.put_short(oss) << '_' << serial << ".jpg";
-	return Photo {oss.str()};
+	auto it = ::lower_bound(begin(ee), end(ee),
+				[p] (const Entry& e) { return e.photo < p; });
+	if (it==end(ee)) return it;
+	if (it->photo == p) return it;
+	return end(ee);
     }
 }
 
 /**
- * Find the photo defined by a certain day and serial number, or
- * throw (out of laziness I suppose) Status<404>.
+ * True iff the index contains 'p'.
  */
-const Entry& Index::get(const Day& day, const Serial& serial) const
+bool Index::has(const Photo& p) const
 {
-    auto it = by.name.find(photo_of(day, serial));
-    if (it==by.name.end()) {
-	it = by.name.find(legacy_photo_of(day, serial));
-    }
-    if (it==by.name.end()) throw Status<404> {};
-    return entries[it->second];
+    auto it = search(entries, p);
+    return it != end(entries);
 }
 
-std::vector<Entry> Index::all() const
+/**
+ * Get the entry for 'p', or throw 404.
+ */
+const Entry& Index::get(const Photo& p) const
 {
-    std::vector<Entry> v{begin(), end()};
-    sort(v);
-    return v;
+    auto it = search(entries, p);
+    if (it != end(entries)) return *it;
+    throw Status<404> {};
 }
 
-std::vector<Entry> Index::in(const Year& key) const
+/**
+ * All photos, in order.
+ */
+Index::Range Index::all() const
 {
-    auto p = [&key] (const Entry& e) { return e.timestamp.year == key; };
-    return ::get(*this, p);
+    return {begin(entries),
+	    end(entries)};
 }
 
-std::vector<Entry> Index::in(const Month& key) const
-{
-    auto p = [&key] (const Entry& e) { return e.timestamp.month == key; };
-    return ::get(*this, p);
+namespace {
+
+    Year  year(const Timestamp& ts)  { return ts.day.year(); }
+    Month month(const Timestamp& ts) { return ts.day.month(); }
+    Day   day(const Timestamp& ts)   { return ts.day; }
 }
 
-std::vector<Entry> Index::on(const Day& key) const
+/**
+ * All photos for a certain year.
+ */
+Index::Range Index::in(const Year& key) const
 {
-    auto p = [&key] (const Entry& e) { return e.timestamp.day == key; };
-    return ::get(*this, p);
+    auto a = ::lower_bound(begin(entries), end(entries),
+			   [key] (const Entry& e) { return year(e.timestamp) < key; });
+    auto b = ::lower_bound(a, end(entries),
+			   [key] (const Entry& e) { return year(e.timestamp) <= key; });
+    return {a, b};
+}
+
+/**
+ * All photos for a certain month.
+ */
+Index::Range Index::in(const Month& key) const
+{
+    auto a = ::lower_bound(begin(entries), end(entries),
+			   [key] (const Entry& e) { return month(e.timestamp) < key; });
+    auto b = ::lower_bound(a, end(entries),
+			   [key] (const Entry& e) { return month(e.timestamp) <= key; });
+    return {a, b};
+}
+
+/**
+ * All photos for a certain day.
+ */
+Index::Range Index::on(const Day& key) const
+{
+    auto a = ::lower_bound(begin(entries), end(entries),
+			   [key] (const Entry& e) { return day(e.timestamp) < key; });
+    auto b = ::lower_bound(a, end(entries),
+			   [key] (const Entry& e) { return day(e.timestamp) <= key; });
+    return {a, b};
+}
+
+/**
+ * The last Day before 'day' with photos, or the invalid Day if there
+ * are no earlier photos. Note that there need not be any photos from
+ * 'day' for this to work.
+ */
+Day Index::prev(const Day& day) const
+{
+    auto a = ::lower_bound(begin(entries), end(entries),
+			   [day] (const Entry& e) { return e.timestamp.day < day; });
+    if (a==begin(entries)) return {};
+    return std::prev(a)->timestamp.day;
+}
+
+/**
+ * The first Day after 'day' with photos.
+ */
+Day Index::next(const Day& day) const
+{
+    auto a = ::lower_bound(begin(entries), end(entries),
+			   [day] (const Entry& e) { return e.timestamp.day <= day; });
+    if (a==end(entries)) return {};
+    return a->timestamp.day;
+}
+
+/**
+ * The photo before 'p', or Photo {}.
+ */
+Photo Index::prev(const Photo& p) const
+{
+    auto it = search(entries, p);
+    if (it==end(entries)) return {};
+    if (it==begin(entries)) return {};
+    it--;
+    return it->photo;
+}
+
+/**
+ * The photo after 'p', or Photo {}.
+ */
+Photo Index::next(const Photo& p) const
+{
+    auto it = search(entries, p);
+    if (it==end(entries)) return {};
+    it++;
+    if (it==end(entries)) return {};
+    return it->photo;
 }
 
 std::vector<Entry> Index::key(const Key& key) const
@@ -219,6 +253,6 @@ std::vector<Entry> Index::key(const Key& key) const
     for (unsigned n: it->second) {
 	v.push_back(entries[n]);
     }
-    sort(v);
+    std::stable_sort(begin(v), end(v));
     return v;
 }
