@@ -110,8 +110,10 @@ std::pair<A, B> match(const Uri& uri)
     const auto nil = std::make_pair(uri.nil<A>(),
 				    uri.nil<B>());
     if (!uri.segments(2)) return nil;
-    return std::make_pair(uri.make<A>(0),
-			  uri.make<B>(1));
+    auto m = std::make_pair(uri.make<A>(0),
+			    uri.make<B>(1));
+    if (m.first && m.second) return m;
+    return nil;
 }
 
 template <> inline

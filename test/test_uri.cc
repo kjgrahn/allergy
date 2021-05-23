@@ -114,12 +114,29 @@ namespace uri {
 
 	namespace pair {
 
+	    struct Three: public Seg {
+		using Seg::Seg;
+		explicit operator bool() const {
+		    return s.size() && s.size() % 3 == 0;
+		}
+	    };
+
 	    void simple(TC)
+	    {
+		const std::string s = "/foo/bar";
+		const Uri uri {s};
+
+		const auto m = match<Three, Three>(uri);
+		assert_eq(m.first, "foo");
+		assert_eq(m.second, "bar");
+	    }
+
+	    void percent(TC)
 	    {
 		const std::string s = "/f%2Foo/b%2Far";
 		const Uri uri {s};
 
-		const auto m = match<Seg, std::string>(uri);
+		const auto m = match<Seg, Seg>(uri);
 		assert_eq(m.first, "f/oo");
 		assert_eq(m.second, "b/ar");
 	    }
@@ -129,9 +146,8 @@ namespace uri {
 		const std::string s = "/f%2Foo";
 		const Uri uri {s};
 
-		const auto m = match<Seg, std::string>(uri);
+		const auto m = match<Seg, Seg>(uri);
 		assert_false(m.first);
-		assert_eq(m.second.size(), 0);
 	    }
 
 	    void too_long(TC)
@@ -139,9 +155,17 @@ namespace uri {
 		const std::string s = "/f%2Foo/b%2Far/";
 		const Uri uri {s};
 
-		const auto m = match<Seg, std::string>(uri);
+		const auto m = match<Seg, Seg>(uri);
 		assert_false(m.first);
-		assert_eq(m.second.size(), 0);
+	    }
+
+	    void wrong(TC)
+	    {
+		const std::string s = "/foo/bart";
+		const Uri uri {s};
+
+		const auto m = match<Three, Three>(uri);
+		assert_false(m.first);
 	    }
 	}
 
