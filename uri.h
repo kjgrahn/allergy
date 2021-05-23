@@ -86,9 +86,6 @@ T match(const Uri& uri)
     return uri.make<T>(0);
 }
 
-template <class A, class B>
-std::pair<A, B> match(const Uri& uri);
-
 template <>
 bool match<bool>(const Uri& uri);
 
