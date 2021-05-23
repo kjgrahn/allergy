@@ -45,6 +45,7 @@ namespace allergy {
 	      const Timestamp& timestamp,
 	      const Entry* prev);
 
+	explicit operator bool() const { return bool {photo}; }
 	bool operator< (const Entry& other) const { return timestamp < other.timestamp; }
 
 	Photo photo;

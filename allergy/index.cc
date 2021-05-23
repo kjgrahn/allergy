@@ -108,10 +108,15 @@ Index::Index(std::ostream& err, Files& in)
     auto has_entry = [&v] () { return !v.empty(); };
 
     auto emit = [&] () {
-		    Entry e = parse(v, entries);
-		    entries.push_back(e);
-		    v.clear();
-		};
+	Entry e = parse(v, entries);
+	if (e) {
+	    entries.push_back(e);
+	}
+	else {
+	    err << in.position() << ": ignoring bad entry '" << e.filename << "'\n";
+	}
+	v.clear();
+    };
 
     while(in.getline(s)) {
 	if(in.first() && has_entry()) {
