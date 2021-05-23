@@ -204,6 +204,12 @@ namespace allergy {
 	    orchis::assert_eq(d.year(), Year{"2021"});
 	}
 
+	void url(TC)
+	{
+	    orchis::assert_eq(Day{"2021-05-23"}.url(),
+			      "/2021-05-23");
+	}
+
 	void pretty(TC)
 	{
 	    std::ostringstream oss;

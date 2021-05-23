@@ -109,6 +109,14 @@ Month Day::month() const { return Month {val[0], val[1]}; }
 
 std::string Day::quarter() const { return month().quarter(); }
 
+std::string Day::url() const
+{
+    char buf[12];
+    std::snprintf(buf, sizeof buf, "/%4hu-%02hu-%02hu",
+		  val[0], val[1], val[2]);
+    return buf;
+}
+
 /**
  * In the classic swedish d.m.year format, with each part
  * hyperlinked.
@@ -117,7 +125,7 @@ std::ostream& Day::put_pretty(std::ostream& os) const
 {
     const auto mm = month();
     const auto yyyy = year();
-    os << "<a href='/"; put(os); os << "'>" << mday() << "</a>.";
+    os << "<a href='" << url() << "'>" << mday() << "</a>.";
     os << "<a href='" << mm.url() << "'>" << mm.num() << "</a>.";
     os << "<a href='" << yyyy.url() << "'>" << yyyy << "</a>";
     return os;

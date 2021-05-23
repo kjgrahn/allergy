@@ -35,6 +35,7 @@ namespace allergy {
 	unsigned mday() const { return val[2]; }
 	bool first() const { return *this && mday()==1; }
 
+	std::string url() const;
 	std::ostream& put_pretty(std::ostream& os) const;
 	std::ostream& put(std::ostream& os) const;
 	std::ostream& put_short(std::ostream& os) const;
