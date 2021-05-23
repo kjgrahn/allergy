@@ -60,6 +60,34 @@ namespace {
 	return {filename, p, end, ts, ibid};
     }
 
+    /**
+     * Weed out duplicate entries (entries for the same Photo) in a
+     * sorted list, and log while doing it. Duplicates would have been
+     * mostly harmless, but would have messed with prev/next(photo).
+     */
+    void weed(std::ostream& err, std::vector<Entry>& ee)
+    {
+	auto eq = [] (const Entry& a, const Entry& b) {
+	    return a.photo == b.photo;
+	};
+
+	/* Have to do two passes, because the trailing elements left
+	 * by std::unique at the end are more likely to be garbage
+	 * Entries than the weeded ones.
+	 */
+	auto a = begin(ee);
+	const auto b = end(ee);
+	while (1) {
+	    a = std::adjacent_find(a, b, eq);
+	    if (a==b) break;
+	    a++;
+	    err << "warning: ignoring duplicate entry '" << a->photo << "'\n";
+	}
+
+	a = std::unique(begin(ee), b, eq);
+	ee.erase(a, b);
+    }
+
     void invert(std::map<Key, std::vector<unsigned>>& keys,
 		const std::vector<Entry>& ee)
     {
@@ -73,7 +101,7 @@ namespace {
     }
 }
 
-Index::Index(std::ostream&, Files& in)
+Index::Index(std::ostream& err, Files& in)
 {
     std::string s;
     std::vector<std::string> v;
@@ -101,6 +129,7 @@ Index::Index(std::ostream&, Files& in)
     if(has_entry()) emit();
 
     std::stable_sort(begin(entries), end(entries));
+    weed(err, entries);
 
     invert(by.key, entries);
 
