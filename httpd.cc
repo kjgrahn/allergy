@@ -265,6 +265,9 @@ int main(int argc, char ** argv)
     const int lfd = listening_socket(std::cerr, addr, port);
     if (lfd==-1) return 1;
 
+    if (addr.empty()) addr = "*";
+    Info(Syslog::log) << "listening on " << addr << ':' << port;
+
     ignore_sigpipe();
 
     if(daemonize) {
