@@ -19,14 +19,14 @@ thumburl() {
 }
 
 test() {
-    url $@ | xargs curl --limit-rate 500k -fL | md5sum
+    url $@ | xargs curl --limit-rate 800k -fL | md5sum
 }
 
 reference() {
     (cd ~/photo/2017.3 && cat $@) | md5sum
 }
 
-test css robots.txt nonexistent &
+test css robots.txt nonexistent icon &
 test 2017-07-26_00{17,18,19,20}.jpg &
 test 2017-07-06_0070.jpg &
 test 2017-07-06_00{7,8}{0,1,2,3,4,5,6,7,8,9}.jpg &
@@ -34,8 +34,8 @@ test 2017-09-02_00{0,1,2}{0,1,2,3,4,5,6,7,8,9}.jpg
 
 exit 0
 
-38c0373a92cd2a50f7abeeb4ca0f3035  -
-59312c3ef17d9ee2c4ad9dc570f8ab43  -
-80780333a2a2ce34eb6b0f5a2e435925  -
-8ed5d309bf0b87c37822dcca9595284c  -
-a40e110a2523a57ac4f734e3afb1c9b6  -
+5781fd79e6c0fb36172b13ef0a34d0cf  2017-09-02_00{0,1,2}{0,1,2,3,4,5,6,7,8,9}.jpg
+7195d2af0cb2d2dbf805783b5fef6372  2017-07-06_0070.jpg
+8b3372d45473b4746e426d10336fe5dd  2017-07-06_00{7,8}{0,1,2,3,4,5,6,7,8,9}.jpg
+a40e110a2523a57ac4f734e3afb1c9b6  2017-07-26_00{17,18,19,20}.jpg
+c52b1883f6a63adf08084394e929dfc2  css robots.txt nonexistent icon
