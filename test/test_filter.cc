@@ -146,20 +146,20 @@ namespace filter {
 
 	    size_t n = 0;
 	    while(f.write(p.fd(), karen)) {
-		n += 2 + 2 + 0x44 + 2;
+		n += 2 + 2 + 0x53 + 2;
 	    }
 	    assert_gt(n, 0);
 
 	    while(n) {
-		p.assert_read("44\r\n");
+		p.assert_read("53\r\n");
 		p.assert_read(karen);
 		p.assert_read("\r\n");
-		n -= 2 + 2 + 0x44 + 2;
+		n -= 2 + 2 + 0x53 + 2;
 	    }
 	    p.assert_empty();
 
 	    assert_eq(f.end(p.fd()), true);
-	    p.assert_read("44\r\n");
+	    p.assert_read("53\r\n");
 	    p.assert_read(karen);
 	    p.assert_read("\r\n");
 	    p.assert_read("0\r\n"
