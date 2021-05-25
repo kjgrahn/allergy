@@ -7,6 +7,7 @@
 #include "files...h"
 #include "../status.h"
 #include "../lower_bound.h"
+#include "../utf8.h"
 
 #include <iostream>
 #include <sstream>
@@ -128,7 +129,7 @@ Index::Index(std::ostream& err, Files& in)
 
 	if(empty(s) && has_entry()) emit();
 
-	if(!empty(s)) v.emplace_back(s);
+	if(!empty(s)) v.push_back(utf8::encode(s));
     }
 
     if(has_entry()) emit();
