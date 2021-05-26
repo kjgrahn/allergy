@@ -19,11 +19,17 @@ namespace allergy {
 	bool operator<  (const Key& other) const { return val<other.val; }
 	std::ostream& put(std::ostream& os) const;
 
-    private:
-	std::string val;
+	struct Url { const Key& val; };
+
+	const std::string val;
     };
 
     inline
+    Key::Url url(const Key& val) { return {val}; }
+
+    inline
     std::ostream& operator<< (std::ostream& os, const Key& val) { return val.put(os); }
+
+    std::ostream& operator<< (std::ostream& os, const Key::Url& val);
 }
 #endif
