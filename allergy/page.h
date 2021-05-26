@@ -93,7 +93,7 @@ namespace allergy {
 	public:
 	    Photo(const Index& ix, allergy::Day day, const Serial& serial);
 
-	    using Chunk = page::Chunk<1>;
+	    using Chunk = page::Chunk<2>;
 
 	    Chunk begin() const { return {}; }
 	    void put(std::ostream& os, Chunk n) const;

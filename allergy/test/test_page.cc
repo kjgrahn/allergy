@@ -174,9 +174,10 @@ namespace allergy {
 		assert_contains(html, "<ul>");
 		assert_contains(html, "<li>", 4);
 		assert_contains(html, "<img class='photo'");
-		assert_contains(html, "vide");
-		assert_contains(html, "Toltorpsdalen");
-		assert_contains(html, "Rosen &amp; Sons");
+		assert_contains(html, "vide", 3);
+		assert_contains(html, "Toltorpsdalen", 3);
+		assert_contains(html, "Rosen &amp; Sons", 3);
+		assert_contains(html, "Salix", 2);
 
 		assert_contains(html, "</html>");
 	    }

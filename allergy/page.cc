@@ -341,13 +341,22 @@ void allergy::page::Photo::put(std::ostream& os, Chunk chunk) const
 	      "<li>";
 	e.timestamp.day.put_pretty(os) << "\n"
 	      "<li>" << quote(e.text) << "\n"
-	      "</ul>\n"
-	      "\n"
-	      "<p><img class='photo' alt='' src='" << url(e) << "'>\n"
-	      "\n";
+	      "</ul>\n";
     }
 
     if (chunk.last()) {
+
+	const char* pre = "\n<p>\n";
+	for (const Key& key: e.keywords) {
+	    os << pre
+	       << "<a href='" << url(key) << "'>" << quote(key.val) << "</a>\n";
+	    pre = "";
+	}
+
+	os << "\n"
+	      "<p><img class='photo' alt='' src='" << url(e) << "'>\n"
+	      "\n";
+
 	epilogue(os);
     }
 }
