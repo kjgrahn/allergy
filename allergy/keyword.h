@@ -21,7 +21,7 @@ namespace allergy {
 
 	struct Url { const Key& val; };
 
-	const std::string val;
+	std::string val;
     };
 
     inline

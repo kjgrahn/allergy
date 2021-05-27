@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <errno.h>
 
 Root::Root(const std::string& path)
     : dirfd {::open(path.c_str(), O_DIRECTORY | O_PATH)}
