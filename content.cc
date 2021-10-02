@@ -5,6 +5,7 @@
 #include "content.h"
 
 #include "root.h"
+#include "hostnames.h"
 #include "request.h"
 #include "response.h"
 #include "status.h"
@@ -15,8 +16,6 @@
 #include <iostream>
 
 namespace {
-
-    bool wrong_host(const Blob&) { return false; }
 
     template <class ErrorPage>
     Response* open(const timespec& t, const Root& lib)
@@ -63,10 +62,10 @@ namespace {
 }
 
 Content::Content(std::ostream& err,
-		 const std::string& host,
+		 const Hostnames& hosts,
 		 const allergy::Index& index,
 		 const std::string& root_)
-    : host{host},
+    : hosts{hosts},
       index{index},
       lib{"lib"},
       thumb{"thumb"},
@@ -93,7 +92,7 @@ Response* Content::response_of(const Request& req, const timespec& t) const
     if(req.method != Request::Property::GET) return resp501(t, lib);
 
     const auto& host = req.header(Request::Property::Host);
-    if(wrong_host(host)) return resp400(t, lib);
+    if(!hosts.match(host)) return resp400(t, lib);
 
     const auto& uri = req.request_uri();
 

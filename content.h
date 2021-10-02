@@ -16,6 +16,7 @@
 #include <string>
 
 class Request;
+class Hostnames;
 class Response;
 class timespec;
 
@@ -30,7 +31,7 @@ class timespec;
 class Content {
 public:
     Content(std::ostream& err,
-	    const std::string& host,
+	    const Hostnames& hosts,
 	    const allergy::Index& index,
 	    const std::string& path);
     ~Content();
@@ -42,7 +43,7 @@ public:
     Response* response_of(const Request& request, const timespec& ts) const;
 
 private:
-    const std::string host;
+    const Hostnames& hosts;
     const allergy::Index& index;
     const Root lib;
     const Root thumb;

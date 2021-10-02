@@ -23,6 +23,7 @@
 #include "error.h"
 #include "server.h"
 #include "session.h"
+#include "hostnames.h"
 #include "content.h"
 #include "allergy/index.h"
 #include "allergy/files...h"
@@ -209,7 +210,7 @@ int main(int argc, char ** argv)
     bool daemonize = false;
     string addr = "";
     string port = "http";
-    string host;
+    Hostnames hosts;
     string root;
 
     int ch;
@@ -226,7 +227,7 @@ int main(int argc, char ** argv)
 	    port = optarg;
 	    break;
 	case 'H':
-	    host = optarg;
+	    hosts.add(optarg);
 	    break;
 	case 'r':
 	    root = optarg;
@@ -236,7 +237,7 @@ int main(int argc, char ** argv)
 	    return 0;
 	case 'v':
 	    std::cout << "allergyd " << version() << '\n'
-		      << "Copyright (c) 2010-2020 Jörgen Grahn\n";
+		      << "Copyright (c) 2010-2021 Jörgen Grahn\n";
 	    return 0;
 	    break;
 	case ':':
@@ -251,7 +252,7 @@ int main(int argc, char ** argv)
 
     Files indices {argv+optind, argv+argc, false};
 
-    if(host.empty() || root.empty() || indices.empty()) {
+    if(hosts.empty() || root.empty() || indices.empty()) {
 	    std::cerr << usage << '\n';
 	    return 1;
     }
@@ -259,7 +260,7 @@ int main(int argc, char ** argv)
     const allergy::Index index {std::cerr, indices};
     if (!index.valid()) return 1;
 
-    const Content content(std::cerr, host, index, root);
+    const Content content(std::cerr, hosts, index, root);
     if (!content.valid()) return 1;
 
     const int lfd = listening_socket(std::cerr, addr, port);

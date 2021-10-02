@@ -3,7 +3,7 @@
 .IP \\fB\\$*
 ..
 .
-.TH allergyd 1 "APR 2021" "Allergy" "User Manuals"
+.TH allergyd 1 "OCT 2021" "Allergy" "User Manuals"
 .
 .SH "NAME"
 allergyd \- serve a photo gallery over HTTP
@@ -15,8 +15,9 @@ allergyd \- serve a photo gallery over HTTP
 .IR listen-address ]
 .RB [ \-p
 .IR port ]
-.B --host
-.I hostname
+.RB [ --host
+.IR hostname ]
+\&...
 .B \-r
 .I root
 .I index
@@ -101,9 +102,10 @@ The port to listen to, instead of port 80
 .IP "\fB--host\fP \fIhostname"
 The server name, i.e. the
 .B Host
-header allowed in requests.
-.\" Should be optional (accept anything).
-.\" Should be repeatable, and support globbing.
+header (minus the port number, if any) allowed in requests.
+You can specify multiple allowed server names \- or none, which
+means allowing anything.
+.\" Should support globbing.
 .
 .IP "\fB\-r\fP, \fB--root\fP \fIroot"
 The root directory containing the actual photos.

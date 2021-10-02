@@ -42,6 +42,7 @@ liballergy.a: textread.o
 liballergy.a: requestqueue.o
 liballergy.a: request.o
 liballergy.a: uri.o
+liballergy.a: hostnames.o
 liballergy.a: quote.o
 liballergy.a: utf8.o
 liballergy.a: date.o
@@ -89,6 +90,7 @@ parse: allergy/parse.o liballergy.a
 #libtest.a: test/test_response.o
 libtest.a: test/test_request.o
 libtest.a: test/test_uri.o
+libtest.a: test/test_hostnames.o
 libtest.a: test/test_quote.o
 libtest.a: test/test_lower_bound.o
 libtest.a: test/test_utf8.o
