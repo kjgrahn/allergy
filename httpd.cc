@@ -195,7 +195,7 @@ int main(int argc, char ** argv)
 	" --host hostname"
 	" -r root"
 	" index ...";
-    const char optstring[] = "+dp:a:r:";
+    const char optstring[] = "dp:a:r:";
     struct option long_options[] = {
 	{"daemon",       0, 0, 'd'},
 	{"address",      1, 0, 'a'},
