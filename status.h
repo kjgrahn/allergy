@@ -13,6 +13,7 @@
 template <unsigned n> class Status;
 
 template <> struct Status<200> {
+    static constexpr unsigned val = 200;
     static constexpr const char* text = "200 OK";
 };
 template <> struct Status<201> {
@@ -57,14 +58,17 @@ template <> struct Status<307> {
 };
 
 template <> struct Status<400> {
+    static constexpr unsigned val = 400;
     static constexpr const char* text = "400 Bad Request";
     static constexpr const char* file = "400";
 };
 template <> struct Status<403> {
+    static constexpr unsigned val = 403;
     static constexpr const char* text = "403 Forbidden";
     static constexpr const char* file = "403";
 };
 template <> struct Status<404> {
+    static constexpr unsigned val = 404;
     static constexpr const char* text = "404 Not Found";
     static constexpr const char* file = "404";
 };
@@ -109,10 +113,12 @@ template <> struct Status<417> {
 };
 
 template <> struct Status<500> {
+    static constexpr unsigned val = 500;
     static constexpr const char* text = "500 Internal Server Error";
     static constexpr const char* file = "500";
 };
 template <> struct Status<501> {
+    static constexpr unsigned val = 501;
     static constexpr const char* text = "501 Not Implemented";
     static constexpr const char* file = "501";
 };

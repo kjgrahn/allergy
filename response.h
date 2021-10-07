@@ -69,10 +69,13 @@
  */
 class Response {
 public:
-    Response() = default;
+    template <class Status>
+    explicit Response(Status status) : status {status.val} {}
     virtual ~Response() = default;
     Response(const Response&) = delete;
     Response& operator= (const Response&) = delete;
+
+    const unsigned status;
 
     /**
      * Assuming !done and 'fd' is writable, push towards completion.
@@ -166,7 +169,8 @@ namespace response {
     template <class Status>
     struct Error : public Response {
 	explicit Error(const timespec& ts)
-	    : body(backlog, Status::text),
+	    : Response(Status{}),
+	      body(backlog, Status::text),
 	      headers(ts, backlog, body, Status{})
 	{}
 
@@ -191,7 +195,8 @@ namespace response {
 	using status = Status;
 
 	ErrorPage(const timespec& ts, int fd)
-	    : body(backlog, fd, "text/html"),
+	    : Response(Status{}),
+	      body(backlog, fd, "text/html"),
 	      headers(ts, backlog, body, Status{})
 	{}
 	bool tick(int fd) override
@@ -212,7 +217,8 @@ namespace response {
      */
     struct File : public Response {
 	File(const timespec& ts, int fd, const char* mime)
-	    : body(backlog, fd, mime),
+	    : Response(Status<200>{}),
+	      body(backlog, fd, mime),
 	      headers(ts, backlog, body, Status<200>{})
 	{}
 
@@ -229,7 +235,8 @@ namespace response {
      */
     struct Image : public Response {
 	Image(const timespec& ts, int fd)
-	    : body(backlog, fd),
+	    : Response {Status<200>{}},
+	      body(backlog, fd),
 	      headers(ts, backlog, body, Status<200>{})
 	{}
 
@@ -248,7 +255,8 @@ namespace response {
     struct Generated : public Response {
 	template <class ... Args>
 	Generated(const timespec& ts, Args&& ... argv)
-	    : body(backlog, argv ...),
+	    : Response(Status<200>{}),
+	      body(backlog, argv ...),
 	      headers(ts, backlog, body, Status<200>{})
 	{}
 

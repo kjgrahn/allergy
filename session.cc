@@ -138,9 +138,10 @@ void Session::pop_req(const timespec& t)
     assert(!response);
 
     const Request req = req_queue.front();
-    Info(Syslog::log) << *this << ' ' << req.method << ' ' << req.request_uri();
     req_queue.pop();
     response.reset(content.response_of(req, t));
+    Info(Syslog::log) << *this << ' ' << response->status
+		      << ' ' << req.method << ' ' << req.request_uri();
     history.began(*response, t);
 }
 
