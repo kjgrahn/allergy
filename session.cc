@@ -53,8 +53,7 @@ Session::Session(const Content& content,
     : content(content),
       peer(peer),
       history(t),
-      reader("\r\n"),
-      response(0)
+      reader("\r\n")
 {
     Info(Syslog::log) << *this << " connected";
 }
@@ -63,7 +62,6 @@ Session::Session(const Content& content,
 Session::~Session()
 {
     Info(Syslog::log) << *this << " closed. " << history;
-    delete response;
 }
 
 
@@ -118,8 +116,7 @@ Session::State Session::write(int fd, const timespec& t)
 
 	if(response->done) {
 	    history.ended(*response, t);
-	    delete response;
-	    response = 0;
+	    response.reset();
 
 	    /* XXX how about broken()? */
 	    if (req_queue.complete()) {
@@ -143,7 +140,7 @@ void Session::pop_req(const timespec& t)
     const Request req = req_queue.front();
     Info(Syslog::log) << *this << ' ' << req.method << ' ' << req.request_uri();
     req_queue.pop();
-    response = content.response_of(req, t);
+    response.reset(content.response_of(req, t));
     history.began(*response, t);
 }
 

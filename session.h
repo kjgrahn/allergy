@@ -9,6 +9,8 @@
 #define GB_SESSION_H_
 
 #include <iosfwd>
+#include <memory>
+
 #include <netinet/in.h>
 #include <sys/epoll.h>
 
@@ -135,7 +137,7 @@ private:
     History history;
     sockutil::TextReader reader;
     RequestQueue req_queue;
-    Response* response;
+    std::unique_ptr<Response> response;
 };
 
 
