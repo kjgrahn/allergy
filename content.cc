@@ -137,7 +137,11 @@ namespace {
     template <class Page, class ... Args>
     Response* generated(const Request& req, Args&& ... argv)
     {
-	return new response::Generated<Page> {req.T, argv ... };
+	if (req.version==Request::Property::HTTP10) {
+	    return new response::Generated<Page, Filter::P> {req.T, argv ... };
+	}
+
+	return new response::Generated<Page, Filter::C> {req.T, argv ... };
     }
 }
 

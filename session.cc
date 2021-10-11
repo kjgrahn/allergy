@@ -118,6 +118,7 @@ Session::State Session::write(int fd, const timespec& t)
 	if(response->done) {
 	    history.ended(*response, t);
 	    response.reset();
+	    if (close) return DIE;
 
 	    /* XXX how about broken()? */
 	    if (req_queue.complete()) {
@@ -140,6 +141,7 @@ void Session::pop_req()
     assert(!response);
 
     const Request req = req_queue.front();
+    close = req.version==Request::Property::HTTP10;
     req_queue.pop();
     response.reset(content.response_of(req));
     Info(Syslog::log) << *this << ' ' << response->status

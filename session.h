@@ -105,6 +105,8 @@ std::ostream& operator<< (std::ostream& os, const History& val)
  * - the fd is writable
  * - have you had no success lately?
  *
+ * HTTP/1.0 support is bolted on, and doesn't fit the diagram above.
+ *
  */
 class Session {
 public:
@@ -138,6 +140,7 @@ private:
     sockutil::TextReader reader;
     RequestQueue req_queue;
     std::unique_ptr<Response> response;
+    bool close = false;
 };
 
 
