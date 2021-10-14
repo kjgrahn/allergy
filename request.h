@@ -29,6 +29,9 @@
  * fed line by line until 'complete', at which point it may also be
  * 'broken'.
  *
+ * A complete request has a time T, which is the time we read its
+ * completing last part.
+ *
  * Since we don't support POST, this class is optimized for fairly
  * short requests, with no extremely long message body.
  *
@@ -104,12 +107,13 @@ public:
 
     Request();
 
-    void add(const char* a, const char* b);
+    void add(const timespec& t, const char* a, const char* b);
 
     bool complete;
     bool broken;
     Property method;
     Property version;
+    timespec T;
 
     Blob header(Property prop) const;
     Uri request_uri() const;
@@ -130,7 +134,7 @@ private:
     void first_line(const char* a, const char* const b);
     void plain_line(const char* a, const char* const b);
     void cont_line(const char* a, const char* const b);
-    void end_line(const char* a, const char* const b);
+    void end_line(const timespec& t, const char* a, const char* const b);
 
     void insert(Property prop, const char* a, const char* const b);
 };

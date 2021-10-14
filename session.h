@@ -130,7 +130,7 @@ private:
     Session(const Session&) = delete;
     Session& operator= (const Session& other) = delete;
 
-    void pop_req(const timespec& t);
+    void pop_req();
 
     const Content& content;
     sockaddr_storage peer;

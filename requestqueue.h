@@ -22,7 +22,7 @@ class RequestQueue {
 public:
     RequestQueue() {}
 
-    void add(const char* a, const char* b);
+    void add(const timespec& t, const char* a, const char* b);
     bool complete() const;
     bool broken() const;
 

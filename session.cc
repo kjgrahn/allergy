@@ -77,7 +77,7 @@ Session::State Session::read(int fd, const timespec& t)
     char* a;
     char* b;
     while(reader.read(a, b)) {
-	req_queue.add(a, b);
+	req_queue.add(t, a, b);
     }
 
     /* At this point these are the interesting states
@@ -94,7 +94,8 @@ Session::State Session::read(int fd, const timespec& t)
     if(response) return WRITING;
     if(req_queue.broken()) return DIE;
     if (req_queue.complete()) {
-	pop_req(t);
+	pop_req();
+	history.began(*response, t);
 	return WRITING;
     }
 
@@ -120,7 +121,8 @@ Session::State Session::write(int fd, const timespec& t)
 
 	    /* XXX how about broken()? */
 	    if (req_queue.complete()) {
-		pop_req(t);
+		pop_req();
+		history.began(*response, t);
 	    }
 	}
     }
@@ -132,17 +134,16 @@ Session::State Session::write(int fd, const timespec& t)
 /**
  * Ugly little helper.
  */
-void Session::pop_req(const timespec& t)
+void Session::pop_req()
 {
     assert(req_queue.complete());
     assert(!response);
 
     const Request req = req_queue.front();
     req_queue.pop();
-    response.reset(content.response_of(req, t));
+    response.reset(content.response_of(req));
     Info(Syslog::log) << *this << ' ' << response->status
 		      << ' ' << req.method << ' ' << req.request_uri();
-    history.began(*response, t);
 }
 
 

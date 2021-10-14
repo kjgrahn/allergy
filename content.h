@@ -40,7 +40,7 @@ public:
 
     bool valid() const;
 
-    Response* response_of(const Request& request, const timespec& ts) const;
+    Response* response_of(const Request& request) const;
 
 private:
     const Hostnames& hosts;
@@ -49,21 +49,21 @@ private:
     const Root thumb;
     const Root root;
 
-    Response* frontpage(const timespec& t) const;
-    Response* by_date(const timespec& t) const;
-    Response* calendar(const timespec& t, const allergy::Year&) const;
-    Response* calendar(const timespec& t, const allergy::Month&) const;
-    Response* calendar(const timespec& t, const allergy::Day&) const;
-    Response* redirect(const timespec& t, const std::string& s) const;
-    Response* photo(const timespec& t, const allergy::Photo& p) const;
-    Response* thumbnail(const timespec& t, const allergy::Photo& p) const;
-    Response* photopage(const timespec& t, const allergy::Day&,
+    Response* frontpage(const Request& req) const;
+    Response* by_date(const Request& req) const;
+    Response* calendar(const Request& req, const allergy::Year&) const;
+    Response* calendar(const Request& req, const allergy::Month&) const;
+    Response* calendar(const Request& req, const allergy::Day&) const;
+    Response* redirect(const Request& req, const std::string& s) const;
+    Response* photo(const Request& req, const allergy::Photo& p) const;
+    Response* thumbnail(const Request& req, const allergy::Photo& p) const;
+    Response* photopage(const Request& req, const allergy::Day&,
 			const allergy::Serial&) const;
-    Response* keywords(const timespec& t) const;
-    Response* keyword(const timespec& t, const allergy::Key&) const;
-    Response* robots(const timespec& t) const;
-    Response* css(const timespec& t) const;
-    Response* favicon(const timespec& t) const;
+    Response* keywords(const Request& req) const;
+    Response* keyword(const Request& req, const allergy::Key&) const;
+    Response* robots(const Request& req) const;
+    Response* css(const Request& req) const;
+    Response* favicon(const Request& req) const;
 };
 
 #endif

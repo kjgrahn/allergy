@@ -6,12 +6,12 @@
 #include "requestqueue.h"
 
 
-void RequestQueue::add(const char* a, const char* b)
+void RequestQueue::add(const timespec& t, const char* a, const char* b)
 {
     if(val.empty() || val.back().complete) {
 	val.push(Request());
     }
-    val.back().add(a, b);
+    val.back().add(t, a, b);
 }
 
 

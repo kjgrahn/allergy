@@ -68,7 +68,7 @@ Request::Request()
 {}
 
 
-void Request::add(const char* a, const char* b)
+void Request::add(const timespec& t, const char* a, const char* b)
 {
     if(method==Property::END) {
 	first_line(a, b);
@@ -77,7 +77,7 @@ void Request::add(const char* a, const char* b)
 	const char* p = ws(a, b);
 
 	if(p==b) {
-	    end_line(a, b);
+	    end_line(t, a, b);
 	}
 	else if(p==a || properties.size()==1) {
 	    plain_line(a, b);
@@ -170,9 +170,11 @@ void Request::cont_line(const char* a, const char* b)
  * A whitespace-only line, after at least first_line().
  * Completes the Request.
  */
-void Request::end_line(const char*, const char* const)
+void Request::end_line(const timespec& t,
+		       const char*, const char* const)
 {
     complete = true;
+    T = t;
     broken = broken || v.size() > std::numeric_limits<unsigned short>::max();
     insert(Property::END, 0, 0);
 }

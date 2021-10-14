@@ -14,7 +14,7 @@ namespace {
     void add(Request& req, const std::string& s)
     {
 	const char* p = s.c_str();
-	req.add(p, p+s.size());
+	req.add({}, p, p+s.size());
     }
 
     void assert_header(const Request& req, Property prop,
