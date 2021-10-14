@@ -30,7 +30,7 @@ namespace entity {
 	template<class Filter>
 	bool tick(int fd, Filter& filter);
 
-    public:
+    private:
 	const Page src;
 	typename Page::Chunk chunk;
     };

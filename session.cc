@@ -143,7 +143,7 @@ void Session::pop_req()
 
 
 /**
- * It's 't' o'clock; is the session is such a bad shape that the best
+ * It's 't' o'clock; is the session in such a bad shape that the best
  * thing to do is kill it unilaterally?
  *
  * XXX Should take overall load into account, not just the history of

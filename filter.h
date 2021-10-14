@@ -23,6 +23,8 @@
  * (d) chunked data
  * (e) compressed and chunked data
  *
+ * Except noone seems to support compression [3.6].
+ *
  * The thing is, what's at the bottom is a nonblocking socket
  * which may only partially accept a write(), but we need something
  * inbetween which will buffer the remainder *and* at the same time

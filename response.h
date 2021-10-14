@@ -95,8 +95,8 @@ namespace response {
      */
     struct Headers {
 	template <class B, class Status>
-	explicit Headers(const timespec& ts, Backlog& backlog,
-			 const B& body, const Status status)
+	Headers(const timespec& ts, Backlog& backlog,
+		const B& body, const Status status)
 	    : text(""),
 	      filter(backlog)
 	{
@@ -199,6 +199,7 @@ namespace response {
 	      body(backlog, fd, "text/html"),
 	      headers(ts, backlog, body, Status{})
 	{}
+
 	bool tick(int fd) override
 	{
 	    bool blocked = response::tick(fd, backlog, headers, body);

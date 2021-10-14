@@ -20,7 +20,9 @@
  */
 class RequestQueue {
 public:
-    RequestQueue() {}
+    RequestQueue() = default;
+    RequestQueue(const RequestQueue&) = delete;
+    RequestQueue& operator= (const RequestQueue&) = delete;
 
     void add(const timespec& t, const char* a, const char* b);
     bool complete() const;
@@ -30,9 +32,6 @@ public:
     void pop();
 
 private:
-    RequestQueue(const RequestQueue&);
-    RequestQueue& operator= (const RequestQueue&);
-
     std::queue<Request> val;
 };
 
