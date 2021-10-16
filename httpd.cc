@@ -89,7 +89,7 @@ namespace {
 	    return -1;
 	}
 
-	int fd;
+	int fd = -1;
 	const addrinfo* rp;
 	for(rp = result; rp; rp = rp->ai_next) {
 	    const addrinfo& r = *rp;
