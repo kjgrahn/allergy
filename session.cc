@@ -37,13 +37,6 @@ namespace {
 	}
 	return os << hbuf << ':' << sbuf;
     }
-
-    std::string getnameinfo(const sockaddr_storage& sa)
-    {
-	std::ostringstream oss;
-	oss << sa;
-	return oss.str();
-    }
 }
 
 

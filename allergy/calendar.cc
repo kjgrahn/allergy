@@ -40,7 +40,8 @@ namespace {
     template <class It>
     bool match(It a, const It b, const char* p)
     {
-	if (std::distance(a, b) != std::strlen(p)) return false;
+	const size_t n = std::distance(a, b);
+	if (n != std::strlen(p)) return false;
 	while (a!=b) {
 	    if (*p=='n') {
 		if (!std::isdigit(static_cast<unsigned char>(*a))) return false;

@@ -110,8 +110,6 @@ namespace {
 
 Keys::Keys(const std::string& str)
 {
-    const char* p = str.data();
-    const char* const q = p + str.size();
     TextStack stack;
     for (char ch: str) stack.put(ch);
     std::string s0 = s;
