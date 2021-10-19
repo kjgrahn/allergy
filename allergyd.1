@@ -132,6 +132,29 @@ If this worries you, run it behind a proxy (which you might want to do anyway).
 .SH "BUGS"
 .
 .
+.SH "HISTORY"
+.
+.B allergyd
+started in 2010 as an attempt to write an NNTP server called
+.IR gresabladet ,
+suitable for keeping local newsgroups in a team or organization.
+(There was still some hope for traditional Internet protocols and open standards at that time.)
+I also wanted to learn techniques for reliably serving TCP, without threads or forking,
+or underdocumented and overhyped frameworks like Boost.Asio.
+When that work stalled, around 2012, I wanted to turn the code into a
+lightweight HTTP server for static files, named
+.IR outnumbered .
+Then I got absorbed by paid work for a number of years,
+and then I got disillusioned with Python, which I had used for
+generating and/or serving photo galleries under the name
+.I allergy
+since 2001.
+So I figured that I could get a useful and feasible project by combining the code from
+.I outnumbered/gresabladet
+and the task from
+.IR allergy .
+.
+.
 .SH "SEE ALSO"
 .
 .BR allergy (5),
