@@ -167,7 +167,10 @@ Response* Content::calendar(const Request& req, const allergy::Day& day) const
     return generated<allergy::page::Day>(req, index, day);
 }
 
-Response* Content::redirect(const Request& req, const std::string&) const { return resp404(req, lib); }
+Response* Content::redirect(const Request& req, const std::string& uri) const
+{
+    return new response::Redirect {req.T, uri};
+}
 
 Response* Content::photo(const Request& req, const allergy::Photo& p) const
 {

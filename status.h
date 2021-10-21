@@ -39,6 +39,7 @@ template <> struct Status<300> {
     static constexpr const char* text = "300 Multiple Choices";
 };
 template <> struct Status<301> {
+    static constexpr unsigned val = 301;
     static constexpr const char* text = "301 Moved Permanently";
 };
 template <> struct Status<302> {

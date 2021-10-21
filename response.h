@@ -15,9 +15,11 @@
 #include "entity/file.h"
 #include "entity/image.h"
 #include "entity/generated.h"
+#include "uri.h"
 
 #include <cassert>
 #include <sstream>
+#include <initializer_list>
 
 
 /**
@@ -103,8 +105,22 @@ namespace response {
 	    std::ostringstream oss;
 	    oss << "HTTP/1.1 " << status.text << "\r\n";
 	    general_headers(oss, ts, body.chunked);
-	    response_headers(oss);
+	    response_headers(oss, {});
 	    body.entity_headers(oss) << "\r\n";
+	    text = entity::String{oss};
+	}
+
+	template <class Status>
+	Headers(const timespec& ts, Backlog& backlog,
+		const Status status,
+		std::initializer_list<const std::string> hh)
+	    : text(""),
+	      filter(backlog)
+	{
+	    std::ostringstream oss;
+	    oss << "HTTP/1.1 " << status.text << "\r\n";
+	    general_headers(oss, ts, false);
+	    response_headers(oss, hh) << "\r\n";
 	    text = entity::String{oss};
 	}
 
@@ -118,7 +134,8 @@ namespace response {
 	std::ostream& general_headers(std::ostream& oss,
 				      const timespec& ts,
 				      bool chunked) const;
-	std::ostream& response_headers(std::ostream& oss) const;
+	std::ostream& response_headers(std::ostream& oss,
+				       std::initializer_list<const std::string> hh) const;
     };
 
     /**
@@ -162,6 +179,26 @@ namespace response {
 	assert(!body.done());
 	return body.tick(fd);
     }
+
+    /**
+     * Like tick(fd, backlog, headers, body) but for responses with no
+     * body.
+     */
+    bool tick(int fd, Backlog& backlog,
+	      response::Headers& headers);
+
+    /**
+     * A 301 Moved Permanently with no body.
+     */
+    struct Redirect : public Response {
+	Redirect(const timespec& ts, const std::string& uri);
+
+	bool tick(int fd) override;
+
+    private:
+	Backlog backlog;
+	Headers headers;
+    };
 
     /**
      * An error (like 404 Not Found) with a minimal body.
