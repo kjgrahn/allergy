@@ -45,6 +45,7 @@ public:
 
     const Hostnames& hosts;
     const allergy::Index& index;
+    const timespec epoch;
     const Root lib;
     const Root thumb;
     const Root root;

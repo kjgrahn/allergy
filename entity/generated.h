@@ -41,7 +41,8 @@ namespace entity {
     template <class Page>
     std::ostream& Generated<Page>::headers(std::ostream& os) const
     {
-	return os << "Content-Type: text/html; charset=utf-8" << "\r\n";
+	return os << "Content-Type: text/html; charset=utf-8" << "\r\n"
+		  << "Last-Modified: " << content.epoch << "\r\n";
     }
 
     template <class Page>

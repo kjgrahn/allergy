@@ -7,7 +7,7 @@
 #ifndef GB_ENTITY_ENTITY_H_
 #define GB_ENTITY_ENTITY_H_
 
-class Content;
+#include "../content.h"
 
 namespace entity {
 
@@ -36,7 +36,6 @@ namespace entity {
 	Entity& operator= (const Entity&) = delete;
 	Entity& operator= (Entity&&) = default;
 
-    private:
 	const Content& content;
     };
 }

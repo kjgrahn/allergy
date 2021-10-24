@@ -8,6 +8,7 @@
 #define GB_ENTITY_FILE_H_
 
 #include "entity.h"
+#include "stat.h"
 
 #include <iosfwd>
 
@@ -27,13 +28,13 @@ namespace entity {
 
 	std::ostream& headers(std::ostream& os) const;
 
-	bool done() const { return n == st_size; }
+	bool done() const { return n == stat.size; }
 	template<class Filter>
 	bool tick(int fd, Filter& filter);
 
     private:
 	const int src;
-	const size_t st_size;
+	const Stat stat;
 	const char* const mime;
 	size_t n = 0;
     };

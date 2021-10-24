@@ -6,6 +6,7 @@
 
 #include "root.h"
 #include "hostnames.h"
+#include "times.h"
 #include "request.h"
 #include "response.h"
 #include "status.h"
@@ -69,6 +70,7 @@ Content::Content(std::ostream& err,
 		 const std::string& root_)
     : hosts{hosts},
       index{index},
+      epoch{now()},
       lib{"lib"},
       thumb{"thumb"},
       root{root_}

@@ -4,6 +4,7 @@
  */
 #include "string.h"
 
+#include "stat.h"
 #include "../filter.h"
 
 #include <iostream>
@@ -22,7 +23,7 @@ std::ostream& String::headers(std::ostream& os) const
     os << "Content-Type: " << mime << "\r\n"
        << "Content-Language: sv\r\n"
        << "Content-Length: " << s.size() << "\r\n"
-       << "Last-Modified: Mon, 04 Aug 2014 22:05:06 GMT\r\n";
+       << "Last-Modified: " << content.epoch << "\r\n";
 
     return os;
 }
