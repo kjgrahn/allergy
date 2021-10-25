@@ -6,6 +6,7 @@
 
 #include "stat.h"
 #include "../filter.h"
+#include "../crlf.h"
 
 #include <iostream>
 
@@ -20,10 +21,10 @@ String::String(const Content& content, const char* s, const char* mime)
 
 std::ostream& String::headers(std::ostream& os) const
 {
-    os << "Content-Type: " << mime << "\r\n"
-       << "Content-Language: sv\r\n"
-       << "Content-Length: " << s.size() << "\r\n"
-       << "Last-Modified: " << content.epoch << "\r\n";
+    os << "Content-Type: " << mime << crlf
+       << "Content-Language: sv" << crlf
+       << "Content-Length: " << s.size() << crlf
+       << "Last-Modified: " << content.epoch << crlf;
 
     return os;
 }

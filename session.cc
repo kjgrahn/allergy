@@ -6,6 +6,7 @@
  */
 #include "session.h"
 #include "content.h"
+#include "crlf.h"
 #include "log.h"
 
 #include <iostream>
@@ -46,7 +47,7 @@ Session::Session(const Content& content,
     : content(content),
       peer(peer),
       history(t),
-      reader("\r\n")
+      reader(crlf)
 {
     Info(Syslog::log) << *this << " connected";
 }

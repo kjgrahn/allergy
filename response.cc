@@ -5,6 +5,7 @@
 #include "response.h"
 
 #include "date.h"
+#include "crlf.h"
 
 
 using response::Headers;
@@ -21,9 +22,9 @@ std::ostream& Headers::general_headers(std::ostream& oss,
 				       bool chunked) const
 {
     static DateConv dateconv;
-    oss << "Date: " << dateconv.format(ts.tv_sec) << "\r\n";
+    oss << "Date: " << dateconv.format(ts.tv_sec) << crlf;
     if (chunked) {
-	oss << "Transfer-Encoding: chunked" << "\r\n";
+	oss << "Transfer-Encoding: chunked" << crlf;
     }
     return oss;
 }
@@ -35,12 +36,12 @@ std::ostream& Headers::general_headers(std::ostream& oss,
 std::ostream& Headers::response_headers(std::ostream& oss,
 					std::initializer_list<const std::string> hh) const
 {
-    oss << "Server: allergy\r\n";
+    oss << "Server: allergy" << crlf;
     auto p = begin(hh);
     while (p!=end(hh)) {
 	const auto& name = *p++;
 	const auto& val = *p++;
-	oss << name << ": " << val << "\r\n";
+	oss << name << ": " << val << crlf;
     }
     return oss;
 }

@@ -7,6 +7,8 @@
 #ifndef GB_ENTITY_GENERATED_H_
 #define GB_ENTITY_GENERATED_H_
 
+#include "../crlf.h"
+
 #include <iostream>
 #include <sstream>
 
@@ -41,8 +43,8 @@ namespace entity {
     template <class Page>
     std::ostream& Generated<Page>::headers(std::ostream& os) const
     {
-	return os << "Content-Type: text/html; charset=utf-8" << "\r\n"
-		  << "Last-Modified: " << content.epoch << "\r\n";
+	return os << "Content-Type: text/html; charset=utf-8" << crlf
+		  << "Last-Modified: " << content.epoch << crlf;
     }
 
     template <class Page>

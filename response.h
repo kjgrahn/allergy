@@ -9,6 +9,7 @@
 
 #include "backlog.h"
 #include "filter.h"
+#include "crlf.h"
 
 #include "status.h"
 #include "entity/string.h"
@@ -104,10 +105,10 @@ namespace response {
 	      filter(backlog)
 	{
 	    std::ostringstream oss;
-	    oss << "HTTP/1.1 " << status.text << "\r\n";
+	    oss << "HTTP/1.1 " << status.text << crlf;
 	    general_headers(oss, ts, body.chunked);
 	    response_headers(oss, {});
-	    body.entity_headers(oss) << "\r\n";
+	    body.entity_headers(oss) << crlf;
 	    text = oss.str();
 	    blob = Blob {text};
 	}
@@ -120,9 +121,9 @@ namespace response {
 	      filter(backlog)
 	{
 	    std::ostringstream oss;
-	    oss << "HTTP/1.1 " << status.text << "\r\n";
+	    oss << "HTTP/1.1 " << status.text << crlf;
 	    general_headers(oss, ts, false);
-	    response_headers(oss, hh) << "\r\n";
+	    response_headers(oss, hh) << crlf;
 	    text = oss.str();
 	    blob = Blob {text};
 	}

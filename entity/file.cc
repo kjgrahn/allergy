@@ -6,6 +6,7 @@
 
 #include "../error.h"
 #include "../filter.h"
+#include "../crlf.h"
 
 #include <unistd.h>
 
@@ -27,9 +28,9 @@ File::~File()
 
 std::ostream& File::headers(std::ostream& os) const
 {
-    os << "Content-Type: " << mime << "\r\n"
-       << "Content-Length: " << stat.size << "\r\n"
-       << "Last-Modified: " << stat.mtime << "\r\n";
+    os << "Content-Type: " << mime << crlf
+       << "Content-Length: " << stat.size << crlf
+       << "Last-Modified: " << stat.mtime << crlf;
 
     return os;
 }
