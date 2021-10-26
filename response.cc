@@ -11,7 +11,9 @@ using response::Headers;
 
 bool Headers::tick(int fd)
 {
-    return text.tick(fd, filter);
+    const Blob b = consume(blob);
+    if (blob.empty()) return filter.end(fd, b);
+    return filter.write(fd, b);
 }
 
 std::ostream& Headers::general_headers(std::ostream& oss,
@@ -45,7 +47,7 @@ std::ostream& Headers::response_headers(std::ostream& oss,
 
 bool response::Headers::done() const
 {
-    return text.done();
+    return blob.empty();
 }
 
 bool response::tick(int fd, Backlog& backlog,

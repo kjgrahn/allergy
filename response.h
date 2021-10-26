@@ -107,7 +107,8 @@ namespace response {
 	    general_headers(oss, ts, body.chunked);
 	    response_headers(oss, {});
 	    body.entity_headers(oss) << "\r\n";
-	    text = entity::String{oss};
+	    text = oss.str();
+	    blob = Blob {text};
 	}
 
 	template <class Status>
@@ -121,14 +122,16 @@ namespace response {
 	    oss << "HTTP/1.1 " << status.text << "\r\n";
 	    general_headers(oss, ts, false);
 	    response_headers(oss, hh) << "\r\n";
-	    text = entity::String{oss};
+	    text = oss.str();
+	    blob = Blob {text};
 	}
 
 	bool tick(int fd);
 	bool done() const;
 
     private:
-	entity::String text;
+	std::string text;
+	Blob blob;
 	Filter::P filter;
 
 	std::ostream& general_headers(std::ostream& oss,
@@ -207,7 +210,7 @@ namespace response {
     struct Error : public Response {
 	explicit Error(const timespec& ts)
 	    : Response(Status{}),
-	      body(backlog, Status::text),
+	      body(backlog, Status::text, "text/plain"),
 	      headers(ts, backlog, body, Status{})
 	{}
 

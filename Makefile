@@ -49,6 +49,7 @@ liballergy.a: date.o
 liballergy.a: dateparse.o
 liballergy.a: names.o
 liballergy.a: filter.o
+liballergy.a: blob.o
 liballergy.a: backlog.o
 liballergy.a: chunk.o
 liballergy.a: deflate.o

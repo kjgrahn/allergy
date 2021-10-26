@@ -10,41 +10,20 @@
 
 using entity::String;
 
-String::String(const char* s)
+String::String(const char* s, const char* mime)
     : s(s),
-      blob(s)
-{}
-
-String::String(const std::string& s)
-    : s(s),
-      blob(s)
+      blob(s),
+      mime(mime)
 {}
 
 std::ostream& String::headers(std::ostream& os) const
 {
-    os << "Content-Type: foo\r\n"
+    os << "Content-Type: " << mime << "\r\n"
        << "Content-Language: sv\r\n"
        << "Content-Length: " << s.size() << "\r\n"
        << "Last-Modified: Mon, 04 Aug 2014 22:05:06 GMT\r\n";
 
     return os;
-}
-
-namespace {
-
-    /**
-     * Consume a sizeable chunk off the blob.
-     *
-     * Should be placed elsewhere.
-     */
-    Blob consume(Blob& blob)
-    {
-	auto a = std::begin(blob);
-	auto b = std::end(blob);
-	size_t n = std::min(size_t{8192}, blob.size());
-	blob = {a+n, b};
-	return {a, a+n};
-    }
 }
 
 template<class Filter>

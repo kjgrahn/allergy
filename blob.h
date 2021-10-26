@@ -55,14 +55,13 @@ public:
     bool empty() const { return !n; }
     size_t size() const { return n; }
     operator const void*() const { return empty()? 0: this; }
-    bool operator== (const Blob& other) const {
-	return size()==other.size() &&
-	    std::equal(begin(), end(), other.begin());
-    }
+    bool operator== (const Blob& other) const;
 
 private:
     const uint8_t* a;
     size_t n;
 };
+
+Blob consume(Blob& blob);
 
 #endif

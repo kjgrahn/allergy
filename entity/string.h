@@ -21,13 +21,8 @@ namespace entity {
      */
     class String : public Entity {
     public:
-	explicit String(const char* s);
-	explicit String(const std::string& s);
-	template <class C>
-	explicit String(const C& c)
-	    : s(c.str()),
-	      blob(s)
-	{}
+	String(const char* s, const char* mime);
+	String(const std::string& s, const char* mime);
 
 	String& operator= (String&&) = default;
 
@@ -39,8 +34,9 @@ namespace entity {
 	bool tick(int fd, Filter& filter);
 
     private:
-	std::string s;
+	const std::string s;
 	Blob blob;
+	const char* const mime;
     };
 }
 
