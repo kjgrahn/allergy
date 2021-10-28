@@ -22,7 +22,7 @@ namespace entity {
      */
     class SendFile : public Entity {
     public:
-	SendFile(int fd, const char* mime);
+	SendFile(const Content& content, int fd, const char* mime);
 	~SendFile();
 
 	std::ostream& headers(std::ostream& os) const;

@@ -26,7 +26,8 @@ class timespec;
  * static HTML, dynamic content and images.
  *
  * Note that it's shared by all sessions, and could leak information
- * between users (if we had any to leak).
+ * between users (if we had any to leak, but the fact that it's all
+ * const shows that we don't).
  */
 class Content {
 public:
@@ -42,13 +43,13 @@ public:
 
     Response* response_of(const Request& request) const;
 
-private:
     const Hostnames& hosts;
     const allergy::Index& index;
     const Root lib;
     const Root thumb;
     const Root root;
 
+private:
     Response* frontpage(const Request& req) const;
     Response* by_date(const Request& req) const;
     Response* calendar(const Request& req, const allergy::Year&) const;

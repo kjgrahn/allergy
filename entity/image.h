@@ -16,8 +16,8 @@ namespace entity {
      */
     class Image : public SendFile {
     public:
-	explicit Image(int fd)
-	    : SendFile(fd, "image/jpeg")
+	Image(const Content& content, int fd)
+	    : SendFile(content, fd, "image/jpeg")
 	{}
     };
 }

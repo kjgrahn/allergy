@@ -21,8 +21,8 @@ namespace entity {
      */
     class String : public Entity {
     public:
-	String(const char* s, const char* mime);
-	String(const std::string& s, const char* mime);
+	String(const Content& content, const char* s, const char* mime);
+	String(const Content& content, const std::string& s, const char* mime);
 
 	String& operator= (String&&) = default;
 

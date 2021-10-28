@@ -24,8 +24,9 @@ namespace {
     }
 }
 
-SendFile::SendFile(int fd, const char* mime)
-    : src(fd),
+SendFile::SendFile(const Content& content, int fd, const char* mime)
+    : Entity{content},
+      src(fd),
       st_size(size_of(src)),
       mime(mime)
 {}

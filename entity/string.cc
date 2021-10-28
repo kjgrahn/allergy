@@ -10,8 +10,9 @@
 
 using entity::String;
 
-String::String(const char* s, const char* mime)
-    : s(s),
+String::String(const Content& content, const char* s, const char* mime)
+    : Entity(content),
+      s(s),
       blob(s),
       mime(mime)
 {}

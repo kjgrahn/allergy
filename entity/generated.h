@@ -10,6 +10,8 @@
 #include <iostream>
 #include <sstream>
 
+#include "../content.h"
+
 namespace entity {
 
     /**
@@ -19,8 +21,9 @@ namespace entity {
     class Generated : public Entity {
     public:
 	template <class ... Args>
-	Generated(Args&& ... argv)
-	    : src {argv ...},
+	Generated(const Content& content, Args&& ... argv)
+	    : Entity {content},
+	      src {content.index, argv ...},
 	      chunk {src.begin()}
 	{}
 

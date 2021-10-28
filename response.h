@@ -21,6 +21,7 @@
 #include <sstream>
 #include <initializer_list>
 
+class Content;
 
 /**
  * A complete, specific HTTP response in the form of a state machine.
@@ -208,9 +209,9 @@ namespace response {
      */
     template <class Status>
     struct Error : public Response {
-	explicit Error(const timespec& ts)
+	Error(const Content& c, const timespec& ts)
 	    : Response(Status{}),
-	      body(backlog, Status::text, "text/plain"),
+	      body(backlog, c, Status::text, "text/plain"),
 	      headers(ts, backlog, body, Status{})
 	{}
 
@@ -234,9 +235,9 @@ namespace response {
     struct ErrorPage : public Response {
 	using status = Status;
 
-	ErrorPage(const timespec& ts, int fd)
+	ErrorPage(const Content& c, const timespec& ts, int fd)
 	    : Response(Status{}),
-	      body(backlog, fd, "text/html"),
+	      body(backlog, c, fd, "text/html"),
 	      headers(ts, backlog, body, Status{})
 	{}
 
@@ -257,9 +258,9 @@ namespace response {
      * Anything successfully read from file, with MIME type.
      */
     struct File : public Response {
-	File(const timespec& ts, int fd, const char* mime)
+	File(const Content& c, const timespec& ts, int fd, const char* mime)
 	    : Response(Status<200>{}),
-	      body(backlog, fd, mime),
+	      body(backlog, c, fd, mime),
 	      headers(ts, backlog, body, Status<200>{})
 	{}
 
@@ -275,9 +276,9 @@ namespace response {
      * A JPEG image, read from file.
      */
     struct Image : public Response {
-	Image(const timespec& ts, int fd)
+	Image(const Content& c, const timespec& ts, int fd)
 	    : Response {Status<200>{}},
-	      body(backlog, fd),
+	      body(backlog, c, fd),
 	      headers(ts, backlog, body, Status<200>{})
 	{}
 
@@ -298,9 +299,9 @@ namespace response {
     template <class Page, class Filter>
     struct Generated : public Response {
 	template <class ... Args>
-	Generated(const timespec& ts, Args&& ... argv)
+	Generated(const Content& c, const timespec& ts, Args&& ... argv)
 	    : Response(Status<200>{}),
-	      body(backlog, argv ...),
+	      body(backlog, c, argv ...),
 	      headers(ts, backlog, body, Status<200>{})
 	{}
 

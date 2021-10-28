@@ -7,6 +7,8 @@
 #ifndef GB_ENTITY_ENTITY_H_
 #define GB_ENTITY_ENTITY_H_
 
+class Content;
+
 namespace entity {
 
     /**
@@ -22,12 +24,20 @@ namespace entity {
      *
      * An entity can stream its entity headers [7.1] and feed its
      * entity-body through a filter using tick() and done().
+     *
+     * An entity also has const access to the Content, i.e. the
+     * overall, static server state. It's used for things like the
+     * Last-Modified: time for entities which have no natural such
+     * time.
      */
     struct Entity {
-	Entity() = default;
+	explicit Entity(const Content& content) : content{content} {}
 	Entity(const Entity&) = delete;
 	Entity& operator= (const Entity&) = delete;
 	Entity& operator= (Entity&&) = default;
+
+    private:
+	const Content& content;
     };
 }
 

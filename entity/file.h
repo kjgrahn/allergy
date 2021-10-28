@@ -22,7 +22,7 @@ namespace entity {
      */
     class File : public Entity {
     public:
-	File(int fd, const char* mime);
+	File(const Content& content, int fd, const char* mime);
 	~File();
 
 	std::ostream& headers(std::ostream& os) const;
