@@ -27,10 +27,11 @@ namespace {
 	return new ErrorPage{req.T, fd};
     }
 
-    Response* resp400(const Request& req, const Root& lib) { return open<response::ErrorPage<Status<400>>>(req, lib); }
-    Response* resp404(const Request& req, const Root& lib) { return open<response::ErrorPage<Status<404>>>(req, lib); }
-    Response* resp500(const Request& req, const Root& lib) { return open<response::ErrorPage<Status<500>>>(req, lib); }
-    Response* resp501(const Request& req, const Root& lib) { return open<response::ErrorPage<Status<501>>>(req, lib); }
+    template <unsigned code>
+    Response* resp(const Request& req, const Root& lib)
+    {
+	return open<response::ErrorPage<Status<code>>>(req, lib);
+    }
 
     /* Trivial open() overload, for thumbnail().
      */
@@ -89,10 +90,10 @@ bool Content::valid() const
 
 Response* Content::response_of(const Request& req) const
 {
-    if(req.method != Request::Property::GET) return resp501(req, lib);
+    if(req.method != Request::Property::GET) return resp<501>(req, lib);
 
     const auto& host = req.header(Request::Property::Host);
-    if(!hosts.match(host)) return resp400(req, lib);
+    if(!hosts.match(host)) return resp<400>(req, lib);
 
     const auto& uri = req.request_uri();
 
@@ -123,13 +124,13 @@ Response* Content::response_of(const Request& req) const
 	if (match<bool>(uri, "icon"))        return favicon(req);
     }
     catch (Status<404>) {
-	return resp404(req, lib);
+	return resp<404>(req, lib);
     }
     catch (Status<500>) {
-	return resp500(req, lib);
+	return resp<500>(req, lib);
     }
 
-    return resp404(req, lib);
+    return resp<404>(req, lib);
 }
 
 namespace {
@@ -150,7 +151,7 @@ Response* Content::frontpage(const Request& req) const
     return generated<allergy::page::Frontpage>(req, index);
 }
 
-Response* Content::by_date(const Request& req) const { return resp404(req, lib); }
+Response* Content::by_date(const Request& req) const { return resp<404>(req, lib); }
 
 Response* Content::calendar(const Request& req, const allergy::Year& yyyy) const
 {
@@ -209,7 +210,7 @@ Response* Content::photopage(const Request& req,
     return generated<allergy::page::Photo>(req, index, day, serial);
 }
 
-Response* Content::keywords(const Request& req) const { return resp404(req, lib); }
+Response* Content::keywords(const Request& req) const { return resp<404>(req, lib); }
 
 Response* Content::keyword(const Request& req, const allergy::Key& key ) const
 {
