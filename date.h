@@ -1,18 +1,37 @@
 /* -*- c++ -*-
  *
- * Copyright (c) 2013 Jörgen Grahn
+ * Copyright (c) 2013, 2021 Jörgen Grahn
  * All rights reserved.
  *
  */
 #ifndef OUTN_DATE_H
 #define OUTN_DATE_H
 
+#include <array>
 #include <string>
-#include <map>
-#include <functional>
 #include <time.h>
 
 class Blob;
+
+/**
+ * A precalculated table of months and weekdays.
+ */
+template <unsigned Epoch, unsigned N>
+class Calendar {
+public:
+    Calendar();
+    unsigned find(time_t) const;
+    unsigned end() const { return N*12; }
+
+    unsigned year(unsigned n) const { return Epoch + n/12; }
+    unsigned mon(unsigned n)  const { return n % 12; }
+    unsigned wday(unsigned n) const { return wal[n]; }
+    unsigned dt(unsigned n, time_t t) const;
+
+private:
+    std::array<time_t, N*12> val;
+    std::array<char, N*12> wal;
+};
 
 /**
  * Date conversion between HTTP dates (the three forms in [3.3])
@@ -41,14 +60,14 @@ class Blob;
  */
 class DateConv {
 public:
+    DateConv();
     time_t parse(const std::string& s);
     time_t parse(const Blob& s);
 
-    std::string format(time_t t);
+    std::string format(time_t t) const;
 
 private:
-    typedef std::map<time_t, std::string, std::greater<time_t>> Cal;
-    Cal calendar;
+    const Calendar<1980, 50> cal;
 
     static char* format(char* buf, time_t t);
     static char* format(char* buf, const struct tm& tm);
