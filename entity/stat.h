@@ -25,8 +25,6 @@ namespace entity {
 	size_t size;
 	timespec mtime;
     };
-
-    std::ostream& operator<< (std::ostream& os, const timespec& val);
 }
 
 #endif

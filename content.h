@@ -8,6 +8,8 @@
 #define OUTN_CONTENT_H_
 
 #include "root.h"
+#include "date.h"
+
 #include "allergy/index.h"
 #include "allergy/calendar.h"
 #include "allergy/keyword.h"
@@ -45,7 +47,11 @@ public:
 
     const Hostnames& hosts;
     const allergy::Index& index;
+
+    const DateConv dateconv;
+    std::string format(const timespec& t) const { return dateconv.format(t.tv_sec); }
     const timespec epoch;
+
     const Root lib;
     const Root thumb;
     const Root root;

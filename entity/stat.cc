@@ -4,7 +4,6 @@
  */
 #include "stat.h"
 #include "../error.h"
-#include "../date.h"
 
 #include <iostream>
 
@@ -22,10 +21,4 @@ Stat::Stat(int fd)
 
     size = st.st_size;
     mtime = st.st_mtim;
-}
-
-std::ostream& entity::operator<< (std::ostream& os, const timespec& val)
-{
-    DateConv dc;
-    return os << dc.format(val.tv_sec);
 }

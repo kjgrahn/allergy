@@ -4,7 +4,7 @@
  */
 #include "response.h"
 
-#include "date.h"
+#include "content.h"
 #include "crlf.h"
 
 
@@ -18,11 +18,11 @@ bool Headers::tick(int fd)
 }
 
 std::ostream& Headers::general_headers(std::ostream& oss,
+				       const Content& c,
 				       const timespec& ts,
 				       bool chunked) const
 {
-    static DateConv dateconv;
-    oss << "Date: " << dateconv.format(ts.tv_sec) << crlf;
+    oss << "Date: " << c.dateconv.format(ts.tv_sec) << crlf;
     if (chunked) {
 	oss << "Transfer-Encoding: chunked" << crlf;
     }
@@ -59,9 +59,10 @@ bool response::tick(int fd, Backlog& backlog,
     return headers.tick(fd);
 }
 
-response::Redirect::Redirect(const timespec& ts, const std::string& uri)
+response::Redirect::Redirect(const Content& c, const timespec& ts,
+			     const std::string& uri)
     : Response(Status<301>{}),
-      headers {ts, backlog, Status<301>{},
+      headers {c, ts, backlog, Status<301>{},
 	       {"Location", uri,
 		"Content-Length", "0"}}
 {}

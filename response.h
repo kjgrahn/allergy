@@ -99,14 +99,15 @@ namespace response {
      */
     struct Headers {
 	template <class B, class Status>
-	Headers(const timespec& ts, Backlog& backlog,
+	Headers(const Content& c,
+		const timespec& ts, Backlog& backlog,
 		const B& body, const Status status)
 	    : text(""),
 	      filter(backlog)
 	{
 	    std::ostringstream oss;
 	    oss << "HTTP/1.1 " << status.text << crlf;
-	    general_headers(oss, ts, body.chunked);
+	    general_headers(oss, c, ts, body.chunked);
 	    response_headers(oss, {});
 	    body.entity_headers(oss) << crlf;
 	    text = oss.str();
@@ -114,7 +115,8 @@ namespace response {
 	}
 
 	template <class Status>
-	Headers(const timespec& ts, Backlog& backlog,
+	Headers(const Content& c,
+		const timespec& ts, Backlog& backlog,
 		const Status status,
 		std::initializer_list<const std::string> hh)
 	    : text(""),
@@ -122,7 +124,7 @@ namespace response {
 	{
 	    std::ostringstream oss;
 	    oss << "HTTP/1.1 " << status.text << crlf;
-	    general_headers(oss, ts, false);
+	    general_headers(oss, c, ts, false);
 	    response_headers(oss, hh) << crlf;
 	    text = oss.str();
 	    blob = Blob {text};
@@ -137,6 +139,7 @@ namespace response {
 	Filter::P filter;
 
 	std::ostream& general_headers(std::ostream& oss,
+				      const Content& c,
 				      const timespec& ts,
 				      bool chunked) const;
 	std::ostream& response_headers(std::ostream& oss,
@@ -196,7 +199,8 @@ namespace response {
      * A 301 Moved Permanently with no body.
      */
     struct Redirect : public Response {
-	Redirect(const timespec& ts, const std::string& uri);
+	Redirect(const Content& c, const timespec& ts,
+		 const std::string& uri);
 
 	bool tick(int fd) override;
 
@@ -211,9 +215,9 @@ namespace response {
     template <class Status>
     struct Error : public Response {
 	Error(const Content& c, const timespec& ts)
-	    : Response(Status{}),
-	      body(backlog, c, Status::text, "text/plain"),
-	      headers(ts, backlog, body, Status{})
+	    : Response {Status{}},
+	      body {backlog, c, Status::text, "text/plain"},
+	      headers {c, ts, backlog, body, Status{}}
 	{}
 
 	bool tick(int fd) override
@@ -237,9 +241,9 @@ namespace response {
 	using status = Status;
 
 	ErrorPage(const Content& c, const timespec& ts, int fd)
-	    : Response(Status{}),
-	      body(backlog, c, fd, "text/html"),
-	      headers(ts, backlog, body, Status{})
+	    : Response {Status{}},
+	      body {backlog, c, fd, "text/html"},
+	      headers {c, ts, backlog, body, Status{}}
 	{}
 
 	bool tick(int fd) override
@@ -260,9 +264,9 @@ namespace response {
      */
     struct File : public Response {
 	File(const Content& c, const timespec& ts, int fd, const char* mime)
-	    : Response(Status<200>{}),
-	      body(backlog, c, fd, mime),
-	      headers(ts, backlog, body, Status<200>{})
+	    : Response {Status<200>{}},
+	      body {backlog, c, fd, mime},
+	      headers {c, ts, backlog, body, Status<200>{}}
 	{}
 
 	bool tick(int fd) override;
@@ -279,8 +283,8 @@ namespace response {
     struct Image : public Response {
 	Image(const Content& c, const timespec& ts, int fd)
 	    : Response {Status<200>{}},
-	      body(backlog, c, fd),
-	      headers(ts, backlog, body, Status<200>{})
+	      body {backlog, c, fd},
+	      headers {c, ts, backlog, body, Status<200>{}}
 	{}
 
 	bool tick(int fd) override;
@@ -301,9 +305,9 @@ namespace response {
     struct Generated : public Response {
 	template <class ... Args>
 	Generated(const Content& c, const timespec& ts, Args&& ... argv)
-	    : Response(Status<200>{}),
-	      body(backlog, c, argv ...),
-	      headers(ts, backlog, body, Status<200>{})
+	    : Response {Status<200>{}},
+	      body {backlog, c, argv ...},
+	      headers {c, ts, backlog, body, Status<200>{}}
 	{}
 
 	bool tick(int fd) override

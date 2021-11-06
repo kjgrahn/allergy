@@ -173,7 +173,7 @@ Response* Content::calendar(const Request& req, const allergy::Day& day) const
 
 Response* Content::redirect(const Request& req, const std::string& uri) const
 {
-    return new response::Redirect {req.T, uri};
+    return new response::Redirect {*this, req.T, uri};
 }
 
 Response* Content::photo(const Request& req, const allergy::Photo& p) const

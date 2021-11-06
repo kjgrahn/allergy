@@ -30,7 +30,7 @@ std::ostream& File::headers(std::ostream& os) const
 {
     os << "Content-Type: " << mime << crlf
        << "Content-Length: " << stat.size << crlf
-       << "Last-Modified: " << stat.mtime << crlf;
+       << "Last-Modified: " << content.format(stat.mtime) << crlf;
 
     return os;
 }
