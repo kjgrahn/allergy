@@ -29,7 +29,6 @@ check: tests
 checkv: tests
 	valgrind -q ./tests -v
 
-liballergy.a: version.o
 liballergy.a: log.o
 liballergy.a: server.o
 liballergy.a: content.o

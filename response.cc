@@ -1,10 +1,11 @@
-/* Copyright (c) 2012, 2013, 2020 Jörgen Grahn
+/* Copyright (c) 2012, 2013, 2020, 2021 Jörgen Grahn
  * All rights reserved.
  *
  */
 #include "response.h"
 
 #include "content.h"
+#include "version.h"
 #include "crlf.h"
 
 
@@ -36,7 +37,7 @@ std::ostream& Headers::general_headers(std::ostream& oss,
 std::ostream& Headers::response_headers(std::ostream& oss,
 					std::initializer_list<const std::string> hh) const
 {
-    oss << "Server: allergy" << crlf;
+    oss << "Server: allergyd/" << version() << crlf;
     auto p = begin(hh);
     while (p!=end(hh)) {
 	const auto& name = *p++;
