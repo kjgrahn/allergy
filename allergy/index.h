@@ -60,7 +60,6 @@ namespace allergy {
 	    Year end;
 	} years;
 
-    private:
 	std::vector<Entry> entries;
 	struct {
 	    std::map<Key, std::vector<unsigned>> key;

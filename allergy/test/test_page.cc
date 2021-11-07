@@ -182,5 +182,39 @@ namespace allergy {
 		assert_contains(html, "</html>");
 	    }
 	}
+
+	namespace keywords {
+
+	    void simple(TC)
+	    {
+		std::stringstream ss;
+		ss << "2021-04-18_0155.jpg\n"
+		      "2021-04-18 14:49:08\n"
+		      "blommande [vide], [Toltorpsdalen]\n"
+		      "[Rosen & Sons]\n"
+		      "{Salix}\n"
+		      "\n"
+		      "2021-04-18_0156.jpg\n"
+		      "2021-04-18 14:49:09\n"
+		      "ibid\n" ;
+		const helper::Index ix {ss};
+		const page::Words page {ix.index};
+
+		std::ostringstream os;
+
+		page::Words::Chunk chunk = page.begin();
+		while (!chunk.end()) {
+		    page.put(os, chunk++);
+		}
+
+		const auto html = os.str();
+		assert_contains(html, "vide", 2);
+		assert_contains(html, "Toltorpsdalen", 2);
+		assert_contains(html, "Rosen &amp; Sons", 2);
+		assert_contains(html, "Salix", 2);
+
+		assert_contains(html, "</html>");
+	    }
+	}
     }
 }

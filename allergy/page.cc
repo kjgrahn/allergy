@@ -6,6 +6,7 @@
 
 #include "index.h"
 #include "calendar.h"
+#include "../range.h"
 #include "../quote.h"
 #include "../status.h"
 
@@ -388,5 +389,72 @@ void allergy::page::Keyword::put(std::ostream& os, const Chunk chunk) const
 
     if (chunk.last()) {
 	epilogue(os << "</div>\n");
+    }
+}
+
+namespace {
+
+    /**
+     * Mapping the page::Words chunk to the alphabet.
+     */
+    std::string val(allergy::page::Words::Chunk chunk)
+    {
+	static constexpr std::array<const char*, 25> index {
+	    "Aa", "Bb", "Cc", "Dd", "Ee", "Ff",
+	    "Gg", "Hh", "Ii", "Jj", "Kk", "Ll",
+	    "Mm", "Nn", "Oo", "PpQq",
+	    "Rr", "Ss", "Tt", "Uu",
+	    "VWvw", "XxYyZz",
+	    "Åå", "Ää", "Öö",
+	};
+	return index[chunk.val()];
+    }
+
+    /**
+     * The map entries where the key starts with a certain letter;
+     * used with Index.by.key.
+     */
+    template <class Map>
+    Range<typename Map::const_iterator> range(const Map& map, char letter)
+    {
+	auto key_begins = [] (typename Map::const_iterator p, char letter) {
+	    const allergy::Key& key = p->first;
+	    return key.val.size() && key.val[0] == letter;
+	};
+
+	const auto a = map.lower_bound(allergy::Key{{letter}});
+	auto b = a;
+	while (b != end(map) && key_begins(b, letter)) {
+	    b++;
+	}
+	return {a, b};
+    }
+}
+
+void allergy::page::Words::put(std::ostream& os, const Chunk chunk) const
+{
+    if (chunk.first()) {
+	preamble(os, "Keywords");
+
+	os << "<body>\n"
+	      "\n"
+	      "<h1>Keywords</h1>\n";
+    }
+
+    const std::string letters = val(chunk);
+
+    os << "<h2>" << letters << "</h2>\n"
+	  "<p>";
+
+    for (const char letter : letters) {
+	for (const auto& kv : range(ix.by.key, letter)) {
+	    const auto& key = kv.first;
+	    os << "<a href='" << url(key) << "'>" << quote(key.val) << "</a>\n";
+	}
+    }
+    os << '\n';
+
+    if (chunk.last()) {
+	epilogue(os);
     }
 }

@@ -118,6 +118,22 @@ namespace allergy {
 	    const std::vector<allergy::Entry> ee;
 	    const allergy::Key key;
 	};
+
+	/**
+	 * The "all keywords" page, /key/.
+	 */
+	class Words {
+	public:
+	    explicit Words(const allergy::Index& ix) : ix{ix} {}
+
+	    using Chunk = page::Chunk<25>;
+
+	    Chunk begin() const { return {}; }
+	    void put(std::ostream& os, Chunk n) const;
+
+	private:
+	    const allergy::Index& ix;
+	};
     }
 }
 

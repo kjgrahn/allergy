@@ -213,7 +213,10 @@ Response* Content::photopage(const Request& req,
     return generated<allergy::page::Photo>(req, *this, day, serial);
 }
 
-Response* Content::keywords(const Request& req) const { return resp<404>(req, *this); }
+Response* Content::keywords(const Request& req) const
+{
+    return  generated<allergy::page::Words>(req, *this);
+}
 
 Response* Content::keyword(const Request& req, const allergy::Key& key ) const
 {
